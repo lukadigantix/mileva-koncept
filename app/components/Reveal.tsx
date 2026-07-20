@@ -19,7 +19,7 @@ type RevealProps = {
 
 /**
  * Generic scroll reveal: block rises into place while fading in.
- * Defaults follow the analysis — 0.8s / expo.out / trigger "top bottom".
+ * Defaults follow the analysis - 0.8s / expo.out / trigger "top bottom".
  */
 export default function Reveal({
   children,

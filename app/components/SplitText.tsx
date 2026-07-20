@@ -16,7 +16,7 @@ type SplitTextProps = {
   delay?: number;
   /**
    * Play on mount instead of on scroll. Use for above-the-fold content (the
-   * hero), which must reveal the moment the page opens — a ScrollTrigger keyed
+   * hero), which must reveal the moment the page opens - a ScrollTrigger keyed
    * to the viewport can misfire there on navigation.
    */
   immediate?: boolean;
@@ -62,7 +62,7 @@ export default function SplitText({
         stagger,
         delay,
         // Strip the inline transform/clip once revealed so the resting layout
-        // is pure CSS — prevents words overlapping after a re-init.
+        // is pure CSS - prevents words overlapping after a re-init.
         clearProps: "transform,clipPath,willChange",
       };
 

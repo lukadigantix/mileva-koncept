@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "./SmoothScroll";
 
 /**
- * Branded page transition that doubles as a loader — a dark `--overlay` panel
+ * Branded page transition that doubles as a loader - a dark `--overlay` panel
  * rises to cover the screen with the Mileva logo centred, the route changes
  * behind it, then the panel lifts away to reveal the NEW page.
  *
@@ -17,7 +17,7 @@ import { useLenis } from "./SmoothScroll";
  *   2. the new route has actually finished loading.
  * The load signal is `useTransition().isPending`: we push the route inside
  * `startTransition`, and `isPending` stays true while the new route is fetching
- * / rendering — so a slow page keeps the panel up until it's ready instead of
+ * / rendering - so a slow page keeps the panel up until it's ready instead of
  * revealing a blank screen. A hard cap guarantees we never get stuck.
  *
  * App Router has no exit-animation hook, so we intercept internal-link clicks
@@ -59,7 +59,7 @@ export default function PageTransition() {
     const mark = markRef.current;
     if (!panel || !mark) return;
 
-    // New page is committed — recompute scroll-driven positions first.
+    // New page is committed - recompute scroll-driven positions first.
     ScrollTrigger.refresh();
 
     const tl = gsap.timeline({
@@ -107,7 +107,7 @@ export default function PageTransition() {
             tryReveal();
           }, MIN_HOLD)
         );
-        // Hard cap — if the load never settles, reveal anyway.
+        // Hard cap - if the load never settles, reveal anyway.
         timersRef.current.push(
           window.setTimeout(() => {
             minHoldDoneRef.current = true;

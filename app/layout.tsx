@@ -6,7 +6,7 @@ import PageTransition from "./components/PageTransition";
 import { LanguageProvider } from "./i18n/LanguageProvider";
 
 /**
- * Single typeface across the whole site — Noto Serif JP, weight 400 only.
+ * Single typeface across the whole site - Noto Serif JP, weight 400 only.
  * CJK fonts are large, so we opt out of preload/subset-splitting and let
  * `font-display: swap` handle the FOUT (mirrors the site's Web Font Loader).
  */
@@ -18,9 +18,9 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Akaneya — Sumibiyaki",
+  title: "Милева концепт - Гривац",
   description:
-    "Fire, tradition, and the most exclusive wagyū transport us to a small sumibiyaki in Kyoto. Akaneya — Madrid · Barcelona · Paris.",
+    "Где традиција сусреће луксуз, а гостопримство постаје уметност. Ресторан, смештај и мирни дани у срцу Шумадије - Гривац, Кнић, Србија.",
 };
 
 export default function RootLayout({

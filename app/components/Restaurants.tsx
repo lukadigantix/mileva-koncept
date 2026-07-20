@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "../i18n/LanguageProvider";
 
+// Order matches t.restaurants.categories: Restoran, Smeštaj, Događaji.
 const LOCATIONS: { name: string; image: string; href: string }[] = [
-  { name: "MARIE AKANEYA", image: "/restoran.webp", href: "/restoran" },
-  { name: "CARLOTA AKANEYA", image: "/smestaj.webp", href: "#" },
-  { name: "PILAR AKANEYA", image: "/drvo.webp", href: "#" },
+  { name: "restoran", image: "/restoran.webp", href: "/restoran" },
+  { name: "smestaj", image: "/smestaj.webp", href: "/smestaj" },
+  { name: "dogadjaji", image: "/drvo.webp", href: "/dogadjaji" },
 ];
 
 /**
@@ -29,7 +30,7 @@ export default function Restaurants() {
             href={loc.href}
             className="group relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center md:min-h-0 md:border-r md:last:border-r-0"
           >
-            {/* Background image — dark, brightens on hover */}
+            {/* Background image - dark, brightens on hover */}
             <div className="absolute inset-0">
               <div className="relative h-full w-full scale-105 opacity-60 grayscale transition-all duration-700 ease-[var(--ease-expo-out)] group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
                 <Image

@@ -8,7 +8,7 @@ import Featured from "./components/Featured";
 import Footer from "./components/Footer";
 
 /**
- * Akaneya home page — 8 top-level components mirroring the reference document
+ * Akaneya home page - 8 top-level components mirroring the reference document
  * structure (analysis §4): header, sidebar, hero, dynamic ×2, restaurants,
  * featured, footer.
  */

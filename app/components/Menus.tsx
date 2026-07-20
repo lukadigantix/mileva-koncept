@@ -10,9 +10,9 @@ import { useLang } from "../i18n/LanguageProvider";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Menus — the reference's `.component--menus` three-column section
+ * Menus - the reference's `.component--menus` three-column section
  * (AKANEYA / MATSUSAKA / MATSUSAKA-ITO RANCH menus). Every value below is
- * transcribed verbatim from the live Akaneya bundle (Marie Akaneya, Paris —
+ * transcribed verbatim from the live Akaneya bundle (Marie Akaneya, Paris -
  * wp-content/themes/akaneya, GSAP 3.15 + Lenis 1.2) and its CSS; nothing here
  * is approximated. It is the three-column sibling of `Featured` and reuses the
  * exact same reveal recipe.
@@ -21,7 +21,7 @@ gsap.registerPlugin(ScrollTrigger);
  * OUTER two drift in opposite directions while the MIDDLE one holds still, so
  * the three titles/images scissor past one another as the section transits the
  * viewport (measured live: col0 +102.5px → −102.5px, col1 0, col2 −102.5px →
- * +102.5px, crossing zero at mid-scroll — i.e. px(128), signs [1, 0, -1]).
+ * +102.5px, crossing zero at mid-scroll - i.e. px(128), signs [1, 0, -1]).
  *
  * Reference scale helper:  px(n) = n / 2400 * innerWidth   (5.333vw at n=128).
  *
@@ -53,7 +53,7 @@ gsap.registerPlugin(ScrollTrigger);
  *       img yPercent -10 → 10, ease "none".
  *  4. Titles + descriptions use the signature per-word `SplitText` reveal.
  *
- * Placeholder imagery + copy per the brief — swap for real menus/art later.
+ * Placeholder imagery + copy per the brief - swap for real menus/art later.
  */
 
 /** Card imagery, one per recommendation (order matches `daily.items`). */
@@ -62,7 +62,7 @@ const IMAGES = ["/pihtije.webp", "/menu2.webp", "/menu3.webp"];
 /** Reference scale unit: n / 2400 of the viewport width, in px. */
 const px = (n: number) => (n / 2400) * window.innerWidth;
 
-/** Column drift signs — outer columns scissor, middle column holds still. */
+/** Column drift signs - outer columns scissor, middle column holds still. */
 const SIGN = [1, 0, -1];
 
 export default function Menus() {
@@ -83,7 +83,7 @@ export default function Menus() {
       const inners = innerRefs.current.filter(Boolean) as HTMLDivElement[];
       const items = itemRefs.current.filter(Boolean) as HTMLDivElement[];
 
-      // 1. Image clip reveal + scale/opacity — fires once on enter, every
+      // 1. Image clip reveal + scale/opacity - fires once on enter, every
       //    breakpoint. Uniform inset (all four sides) shrinking to zero.
       frames.forEach((frame, i) => {
         const inner = inners[i];
@@ -166,7 +166,7 @@ export default function Menus() {
       ref={sectionRef}
       className="bg-[var(--bg)] py-[max(80px,min(6.944vw,133.33px))] text-black"
     >
-      {/* Header — daily recommendation eyebrow + heading. */}
+      {/* Header - daily recommendation eyebrow + heading. */}
       <div className="mb-[clamp(2.5rem,6vw,6rem)] flex flex-col items-center px-[var(--gutter)] text-center">
         <span className="text-[clamp(11px,2.6vw,13px)] uppercase tracking-[0.3em] text-[var(--main)]">
           {daily.eyebrow}
@@ -180,7 +180,7 @@ export default function Menus() {
 
       {/* .container.--xlarge → .columns : narrow, centred 3-up grid.
           68.63vw (1317.76px @1920) capped, gap 0.75rem (13.33px). Below lg it
-          collapses to one full-width column — where the tight reference gutter
+          collapses to one full-width column - where the tight reference gutter
           would cram the stacked cards, so mobile gets a generous row gap. */}
       <div className="mx-auto grid w-[86vw] grid-cols-1 gap-[clamp(3rem,9vw,4rem)] lg:w-[min(68.63vw,1318px)] lg:grid-cols-3 lg:gap-[max(10px,min(0.694vw,13.333px))]">
         {daily.items.map((card, i) => (
@@ -192,7 +192,7 @@ export default function Menus() {
             className="flex flex-col"
           >
             {/* .card */}
-            {/* .title — dish name. mb 2rem (35.56px). */}
+            {/* .title - dish name. mb 2rem (35.56px). */}
             <SplitText
               as="h3"
               text={card.title}
@@ -200,7 +200,7 @@ export default function Menus() {
               className="mb-[clamp(1.25rem,3vw,35.56px)] text-center text-[clamp(20px,5vw,24.44px)] uppercase leading-[1.3]"
             />
 
-            {/* .media — mb 2rem. `.image` is the clip frame (aspect 0.739). */}
+            {/* .media - mb 2rem. `.image` is the clip frame (aspect 0.739). */}
             <div className="mb-[clamp(1.25rem,3vw,35.56px)]">
               <div
                 ref={(el) => {
@@ -208,7 +208,7 @@ export default function Menus() {
                 }}
                 className="relative aspect-[0.739] w-full overflow-hidden"
               >
-                {/* inner — carries scale/opacity reveal + yPercent parallax. */}
+                {/* inner - carries scale/opacity reveal + yPercent parallax. */}
                 <div
                   ref={(el) => {
                     innerRefs.current[i] = el;
@@ -226,7 +226,7 @@ export default function Menus() {
               </div>
             </div>
 
-            {/* .wysiwyg — dish description. LEFT aligned. */}
+            {/* .wysiwyg - dish description. LEFT aligned. */}
             <div className="text-left">
               <SplitText
                 as="p"

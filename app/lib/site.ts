@@ -1,5 +1,5 @@
 /**
- * Shared, language-independent contact details. Placeholders for now — swap in
+ * Shared, language-independent contact details. Placeholders for now - swap in
  * the real values when available.
  */
 export const EMAIL = "info@milevakoncept.rs";

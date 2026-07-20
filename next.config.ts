@@ -2,14 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Placeholder imagery — swap for real asset host(s) later.
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "picsum.photos",
-        pathname: "/**",
-      },
-    ],
+    // Serve AVIF where supported (best compression), WebP as fallback.
+    formats: ["image/avif", "image/webp"],
   },
 };
 

@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# original (uncompressed) hero videos - kept out of the repo
+/_video_originals/

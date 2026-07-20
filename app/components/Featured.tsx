@@ -10,12 +10,12 @@ import { useLang } from "../i18n/LanguageProvider";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Featured — the reference's `.component--featured` two-panel section
+ * Featured - the reference's `.component--featured` two-panel section
  * (Reservations / Gift / Menus). Every value below is transcribed verbatim from
  * the live Akaneya bundle (wp-content/themes/akaneya/js/app.min.js) and its CSS;
  * nothing here is approximated.
  *
- * Two SEPARATE portrait photos, one per column — not one split image. The two
+ * Two SEPARATE portrait photos, one per column - not one split image. The two
  * columns are staggered and drift in OPPOSITE directions, so they scissor past
  * one another as the section transits the viewport.
  *
@@ -25,7 +25,7 @@ gsap.registerPlugin(ScrollTrigger);
  *  - `.columns` : flex, 2 cols, gap max(10px, min(0.661vw, 11.111px)).
  *  - `.box` : height max(818px, min(54.101vw, 908.88px))  (mobile: 420/27.778vw/466).
  *  NOTE: the reference seats the right column ~120px lower with a constant
- *  padding-top. We deliberately drop that here — a constant offset can never
+ *  padding-top. We deliberately drop that here - a constant offset can never
  *  cancel, so the split image could never truly connect. Instead the columns'
  *  vertical stagger comes ONLY from the scrubbed drift (below), which is zero
  *  at mid-scroll, so the two halves line up perfectly at the midpoint.
@@ -33,7 +33,7 @@ gsap.registerPlugin(ScrollTrigger);
  * Animations (GSAP, gsap = l.Ay, ScrollTrigger = w.A):
  *  1. Column drift (scrub, trigger = section, start "top bottom" → end
  *     "bottom top"):  left  y: px(128) → px(-128);  right  y: px(-128) → px(128).
- *     Both reach y:0 at progress 0.5 — the panels converge there and the split
+ *     Both reach y:0 at progress 0.5 - the panels converge there and the split
  *     image reads as one continuous photo, then part again toward the end.
  *  2. Image clip reveal (once, start "top bottom"):
  *       set  image  clipPath: inset(px(32)px)  (25.6px @1920)  → to inset(0px),
@@ -44,19 +44,19 @@ gsap.registerPlugin(ScrollTrigger);
  *       img  yPercent -10 → 10, ease "none".
  *
  * Right-panel links: three stacked items, gap max(90px, min(5.952vw, 99.999px)).
- * Underline is `li::after` — border-bottom 1px, bottom max(-0.794vw, -15.228px),
+ * Underline is `li::after` - border-bottom 1px, bottom max(-0.794vw, -15.228px),
  * width 50% at rest, 100% on hover, transition all .4s var(--expoOut),
  * translateX(-50%): it grows symmetrically FROM THE CENTRE (not left-to-right).
  *
  * Imagery: ONE photo (half.webp) split across both panels. Each panel's inner
  * layer paints the same image sized to the FULL combined width of both columns
- * plus the gutter — `background-size: calc(200% + var(--fgap)) auto` — and
+ * plus the gutter - `background-size: calc(200% + var(--fgap)) auto` - and
  * windows onto its half with `background-position` (left column → left center,
  * right column → right center). A background only paints within its own box, so
  * each 1-column panel shows exactly its half of the shared image. All the
  * existing transforms (clip reveal, scale/opacity, ±y parallax, opposite column
  * drift) stay on these same layers, so the two halves parallax at slightly
- * different rates — the intended split effect.
+ * different rates - the intended split effect.
  */
 
 const PANELS = [
@@ -69,7 +69,10 @@ const px = (n: number) => (n / 2400) * window.innerWidth;
 
 export default function Featured() {
   const { t } = useLang();
-  const ctaLinks = [t.nav.blog, t.nav.landmarks, t.nav.nature];
+  const ctaLinks: { label: string; href: string }[] = [
+    { label: t.nav.blog, href: "/blog" },
+    { label: t.nav.landmarks, href: "/znamenitosti" },
+  ];
 
   const sectionRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -85,7 +88,7 @@ export default function Featured() {
       const inners = innerRefs.current.filter(Boolean) as HTMLDivElement[];
       const items = itemRefs.current.filter(Boolean) as HTMLDivElement[];
 
-      // 2. Image clip reveal + scale/opacity — fires once on enter, every
+      // 2. Image clip reveal + scale/opacity - fires once on enter, every
       //    breakpoint. Uniform inset (all four sides) shrinking to zero.
       frames.forEach((frame, i) => {
         const inner = inners[i];
@@ -122,7 +125,7 @@ export default function Featured() {
         //    That is the only thing offsetting the two columns vertically (the
         //    right column no longer has a structural padding-top), so the two
         //    halves are maximally offset at the start, slide together, and line
-        //    up into one continuous image at the midpoint of the scroll — then
+        //    up into one continuous image at the midpoint of the scroll - then
         //    part again toward the end.
         const sign = [1, -1];
         items.forEach((item, i) => {
@@ -174,8 +177,14 @@ export default function Featured() {
       // split-image maths (background-size), so the two halves always meet.
       style={{ ["--fgap" as string]: "max(10px,min(0.661vw,11.111px))" } as React.CSSProperties}
     >
-      {/* .columns — flex/grid, 2 cols, gap max(10px, min(0.661vw, 11.111px)) */}
-      <div className="mx-[clamp(20px,7.4vw,180px)] grid grid-cols-1 gap-[var(--fgap)] lg:grid-cols-2">
+      {/* .columns - flex/grid, 2 cols, gap max(10px, min(0.661vw, 11.111px)).
+          data-dark-section: while the tall dark photo panels sit under the
+          fixed header, the nav flips to its light tone (scoped to the columns,
+          not the section, so the cream padding above/below stays dark-on-light). */}
+      <div
+        data-dark-section
+        className="mx-[clamp(20px,7.4vw,180px)] grid grid-cols-1 gap-[var(--fgap)] lg:grid-cols-2"
+      >
         {PANELS.map((panel, i) => {
           const isRight = i === 1;
           return (
@@ -185,17 +194,17 @@ export default function Featured() {
                 itemRefs.current[i] = el;
               }}
             >
-              {/* .box — height max(818px, min(54.101vw, 908.88px)) desktop,
+              {/* .box - height max(818px, min(54.101vw, 908.88px)) desktop,
                   max(420px, min(27.778vw, 466.662px)) mobile. */}
               <div className="relative h-[max(420px,min(27.778vw,466.662px))] w-full overflow-hidden lg:h-[max(818px,min(54.101vw,908.88px))]">
-                {/* .image — the clip frame (clip-path inset lives here). */}
+                {/* .image - the clip frame (clip-path inset lives here). */}
                 <div
                   ref={(el) => {
                     frameRefs.current[i] = el;
                   }}
                   className="absolute inset-0 overflow-hidden"
                 >
-                  {/* inner — carries scale/opacity reveal + yPercent parallax.
+                  {/* inner - carries scale/opacity reveal + yPercent parallax.
                       Paints this panel's half of the shared half.webp: sized to
                       the full combined width (200% + gutter), windowed by
                       background-position (left/right center). */}
@@ -215,7 +224,7 @@ export default function Featured() {
                 {/* Legibility wash over the photo (white content sits above). */}
                 <div className="absolute inset-0 bg-black/30" />
 
-                {/* .center — absolute, centred content. */}
+                {/* .center - absolute, centred content. */}
                 {isRight ? (
                   <nav
                     aria-label="Featured"
@@ -223,11 +232,11 @@ export default function Featured() {
                   >
                     {ctaLinks.map((link) => (
                       <CtaLink
-                        key={link}
-                        href="#"
+                        key={link.label}
+                        href={link.href}
                         className="text-[clamp(1.5rem,1.9vw,2rem)] text-[var(--white)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]"
                       >
-                        {link}
+                        {link.label}
                       </CtaLink>
                     ))}
                   </nav>

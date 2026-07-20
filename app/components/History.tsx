@@ -6,7 +6,7 @@ import MediaReveal from "./MediaReveal";
 import { useLang } from "../i18n/LanguageProvider";
 
 /**
- * Dynamic #1 — "HISTORY" (analysis §3). Centered eyebrow 歴史 (terracotta) and
+ * Dynamic #1 - "HISTORY" (analysis §3). Centered eyebrow 歴史 (terracotta) and
  * heading, a two-column image pair, then a centered body paragraph.
  */
 export default function History() {
@@ -23,7 +23,7 @@ export default function History() {
             height={1453}
             className="mx-auto mb-3 block h-[30px] w-auto"
           />
-          {/* Ref: 24.4px / weight 400 / uppercase / lh ~1.5 — a restrained label,
+          {/* Ref: 24.4px / weight 400 / uppercase / lh ~1.5 - a restrained label,
               not a display heading. */}
           <SplitText
             as="h2"
@@ -32,7 +32,7 @@ export default function History() {
           />
         </div>
 
-        {/* Two columns at every breakpoint — side by side on mobile too (ref).
+        {/* Two columns at every breakpoint - side by side on mobile too (ref).
             The second image keeps its vertical stagger from md up. */}
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-[var(--space)]">
           <MediaReveal className="aspect-[3/4] rounded-[var(--radius2)]" parallax>

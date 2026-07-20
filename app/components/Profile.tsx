@@ -6,7 +6,7 @@ import MediaReveal from "./MediaReveal";
 import { useLang } from "../i18n/LanguageProvider";
 
 /**
- * Profile section — a centred person block from the reference site: a small
+ * Profile section - a centred person block from the reference site: a small
  * kanji eyebrow, the name heading, a large centred portrait, then a bio.
  * (This section was missing from the initial build.)
  */
@@ -42,7 +42,7 @@ export default function Profile() {
             sizes="(min-width: 768px) 56rem, 100vw"
             className="object-cover object-center"
           />
-          {/* Warm colour grade — terracotta multiply + orange soft-light. */}
+          {/* Warm colour grade - terracotta multiply + orange soft-light. */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-[var(--main)] opacity-30 mix-blend-multiply"

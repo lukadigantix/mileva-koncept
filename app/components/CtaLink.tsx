@@ -3,7 +3,7 @@ import type { MouseEventHandler, ReactNode } from "react";
 type CtaLinkProps = {
   href: string;
   children: ReactNode;
-  /** Size / colour / shadow — set by the caller. */
+  /** Size / colour / shadow - set by the caller. */
   className?: string;
   /** Optional click handler (e.g. to intercept in-page anchors for smooth scroll). */
   onClick?: MouseEventHandler<HTMLAnchorElement>;

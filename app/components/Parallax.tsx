@@ -13,7 +13,7 @@ type ParallaxProps = {
   y?: number;
   /**
    * Symmetric scrub override: drift from `from`% to `to`% across the trigger
-   * range. When both are set they take precedence over `y` — used for the
+   * range. When both are set they take precedence over `y` - used for the
    * Featured columns, which drift in opposite directions (left +8.4 → −8.4,
    * right −8.4 → +8.4) as the section transits the viewport.
    */
@@ -27,9 +27,9 @@ type ParallaxProps = {
 };
 
 /**
- * Scroll-scrubbed drift (analysis §5 — ease "none"). Ties to the nearest
+ * Scroll-scrubbed drift (analysis §5 - ease "none"). Ties to the nearest
  * `[data-parallax-root]` so an element moves relative to its whole section
- * rather than just its own transit — used for the hero kanji + tagline and the
+ * rather than just its own transit - used for the hero kanji + tagline and the
  * Featured section's opposite-drifting columns.
  */
 export default function Parallax({

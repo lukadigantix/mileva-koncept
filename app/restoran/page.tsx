@@ -9,9 +9,9 @@ import MenuBoard from "../components/MenuBoard";
 import Footer from "../components/Footer";
 
 export const metadata: Metadata = {
-  title: "Ресторан — Милева концепт",
+  title: "Ресторан - Милева концепт",
   description:
-    "Ресторан одмаралишта Милева концепт — ватра, укус и гостопримство у срцу Шумадије.",
+    "Ресторан одмаралишта Милева концепт - ватра, укус и гостопримство у срцу Шумадије.",
 };
 
 /**

@@ -17,18 +17,18 @@ type SidebarProps = {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { t } = useLang();
 
-  // Restoran, Smeštaj, Priroda, Znamenitosti, Blog, Događaji, Kontakt.
-  // Reservations dropped (it lives inside Accommodation); Blog is new.
+  // Restoran, Smeštaj, Znamenitosti, Blog, Događaji, Kontakt.
+  // Reservations dropped (it lives inside Accommodation); Priroda dropped (its
+  // content now lives inside Znamenitosti); Blog is new.
   const [restaurant, accommodation, events] = t.restaurants.categories;
   const links: { label: string; href: string }[] = [
     { label: t.nav.home, href: "/" },
     { label: restaurant, href: "/restoran" },
-    { label: accommodation, href: "#" },
-    { label: t.nav.nature, href: "#" },
-    { label: t.nav.landmarks, href: "#" },
-    { label: t.nav.blog, href: "#" },
-    { label: events, href: "#" },
-    { label: t.contact.title, href: "#" },
+    { label: accommodation, href: "/smestaj" },
+    { label: t.nav.landmarks, href: "/znamenitosti" },
+    { label: t.nav.blog, href: "/blog" },
+    { label: events, href: "/dogadjaji" },
+    { label: t.contact.title, href: "/kontakt" },
   ];
 
   const reveal = (i: number) =>
@@ -43,7 +43,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         open ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
     >
-      {/* Šumadija — rolling forested hills, a warm terracotta landscape motif
+      {/* Šumadija - rolling forested hills, a warm terracotta landscape motif
           along the foot of the menu. Purely decorative, sits behind content. */}
       <svg
         aria-hidden

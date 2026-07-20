@@ -14,12 +14,12 @@ type MediaRevealProps = {
   duration?: number;
   /**
    * When true, adds a continuous scroll-linked parallax drift on the inner
-   * media (scrub) on top of the one-shot reveal — the analysis' 7 scrubbed
+   * media (scrub) on top of the one-shot reveal - the analysis' 7 scrubbed
    * triggers (start "top bottom", end "bottom top", ease "none").
    */
   parallax?: boolean;
   /**
-   * Rest overscale for parallax blocks — the headroom that keeps the ±10% drift
+   * Rest overscale for parallax blocks - the headroom that keeps the ±10% drift
    * within the frame. Default 1.2; the Featured columns use 1.3 to match the
    * reference (measured img scale 1.3).
    */

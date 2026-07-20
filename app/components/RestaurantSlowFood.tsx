@@ -5,7 +5,7 @@ import SplitText from "./SplitText";
 import { useLang } from "../i18n/LanguageProvider";
 
 /**
- * Restaurant slow-food section — the resort's core kitchen philosophy: slow
+ * Restaurant slow-food section - the resort's core kitchen philosophy: slow
  * cooking over open fire, with every ingredient sourced from households within
  * ~20km. Text only for now (imagery may follow), matching the intro's type
  * treatment: terracotta eyebrow, centred heading, left-aligned body.
@@ -17,7 +17,7 @@ export default function RestaurantSlowFood() {
   return (
     <section className="bg-[var(--bg)] pb-[clamp(6rem,13vw,13rem)]">
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
-        {/* Brand icon above the heading — same mark as the intro section. */}
+        {/* Brand icon above the heading - same mark as the intro section. */}
         <Image
           src="/mileva-logo-icon.png"
           alt=""

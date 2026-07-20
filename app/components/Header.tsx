@@ -20,7 +20,12 @@ type HeaderProps = {
 export default function Header({ open, overDark, onToggle }: HeaderProps) {
   const { lang, setLang, t } = useLang();
   const tone = overDark ? "text-[var(--bg)]" : "text-[var(--dark)]";
-  const navLinks = [t.nav.blog, t.nav.nature, t.nav.landmarks];
+  const navLinks: { label: string; href: string }[] = [
+    { label: t.nav.accommodation, href: "/smestaj" },
+    { label: t.nav.landmarks, href: "/znamenitosti" },
+    { label: t.nav.blog, href: "/blog" },
+    { label: t.nav.contact, href: "/kontakt" },
+  ];
 
   return (
     <header
@@ -85,7 +90,7 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
           />
         </Link>
 
-        {/* Right: primary nav — hidden while the full-screen menu is open,
+        {/* Right: primary nav - hidden while the full-screen menu is open,
             since the menu lists these links itself. */}
         <nav
           aria-label={t.aria.primary}
@@ -94,13 +99,13 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
           }`}
         >
           {navLinks.map((link) => (
-            <a
-              key={link}
-              href="#"
+            <Link
+              key={link.label}
+              href={link.href}
               className="link-underline text-[15.56px] tracking-[-0.01em]"
             >
-              {link}
-            </a>
+              {link.label}
+            </Link>
           ))}
         </nav>
       </div>

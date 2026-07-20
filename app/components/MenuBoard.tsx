@@ -5,12 +5,12 @@ import SplitText from "./SplitText";
 import { useLang } from "../i18n/LanguageProvider";
 
 type MenuBoardProps = {
-  /** Which board to render — the food menu or the drinks card. */
+  /** Which board to render - the food menu or the drinks card. */
   source: "menuList" | "drinksList";
 };
 
 /**
- * MenuBoard — a Šumadija-styled à la carte board (food menu or drinks card).
+ * MenuBoard - a Šumadija-styled à la carte board (food menu or drinks card).
  * A centred header (brand mark + eyebrow + heading + sourcing note), then the
  * courses in two columns on desktop, one on mobile. Each item is a row: name on
  * the left, price on the right, joined by a dotted leader, with a muted
@@ -49,11 +49,11 @@ export default function MenuBoard({ source }: MenuBoardProps) {
           </p>
         </div>
 
-        {/* Courses — two columns on desktop, one on mobile. */}
+        {/* Courses - two columns on desktop, one on mobile. */}
         <div className="mx-auto mt-[clamp(2.5rem,6vw,6rem)] grid max-w-4xl grid-cols-1 gap-x-[clamp(2.5rem,5vw,5rem)] gap-y-[clamp(2.5rem,5vw,4rem)] md:grid-cols-2">
           {menu.sections.map((section) => (
             <div key={section.title}>
-              {/* Course title — serif small-caps with a terracotta hairline. */}
+              {/* Course title - serif small-caps with a terracotta hairline. */}
               <h3 className="mb-[clamp(1rem,2.5vw,2rem)] flex items-center gap-4 text-[clamp(1rem,3.6vw,1.3rem)] uppercase tracking-[0.14em]">
                 <span className="whitespace-nowrap">{section.title}</span>
                 <span className="h-px flex-1 bg-[var(--main)]/40" />

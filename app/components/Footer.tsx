@@ -7,7 +7,7 @@ import { useLang } from "../i18n/LanguageProvider";
 import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "../lib/site";
 
 /**
- * Footer — editorial and restrained. An oversized e-mail "invitation" anchors
+ * Footer - editorial and restrained. An oversized e-mail "invitation" anchors
  * the top (with address + phone alongside); a single horizontal nav row and
  * socials sit below; a thin bottom bar carries the brand mark, copyright and
  * legal links.
@@ -15,24 +15,24 @@ import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "../lib/site";
 export default function Footer() {
   const { t } = useLang();
 
-  // Matches the main menu order: Restoran, Smeštaj, Priroda, Znamenitosti,
-  // Blog, Događaji, Kontakt (Reservations dropped, Blog added).
+  // Matches the main menu order: Restoran, Smeštaj, Znamenitosti, Blog,
+  // Događaji, Kontakt (Reservations dropped, Priroda folded into Znamenitosti,
+  // Blog added).
   const [restaurant, accommodation, events] = t.restaurants.categories;
   const quickLinks: { label: string; href: string }[] = [
     { label: t.nav.home, href: "/" },
     { label: restaurant, href: "/restoran" },
-    { label: accommodation, href: "#" },
-    { label: t.nav.nature, href: "#" },
-    { label: t.nav.landmarks, href: "#" },
-    { label: t.nav.blog, href: "#" },
-    { label: events, href: "#" },
-    { label: t.contact.title, href: "#" },
+    { label: accommodation, href: "/smestaj" },
+    { label: t.nav.landmarks, href: "/znamenitosti" },
+    { label: t.nav.blog, href: "/blog" },
+    { label: events, href: "/dogadjaji" },
+    { label: t.contact.title, href: "/kontakt" },
   ];
 
   return (
     <footer className="bg-[var(--overlay)] text-[var(--bg)]">
       <div className="mx-[var(--gutter)] py-[clamp(4rem,8vw,7rem)]">
-        {/* Invitation — big e-mail + contact details */}
+        {/* Invitation - big e-mail + contact details */}
         <Reveal from={30}>
           <div className="flex flex-col gap-8 border-b border-[var(--border2)] pb-[clamp(2.5rem,5vw,4rem)] lg:flex-row lg:items-end lg:justify-between">
             <div className="flex flex-col gap-4">
@@ -86,7 +86,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar — brand mark + copyright + legal */}
+        {/* Bottom bar - brand mark + copyright + legal */}
         <div className="flex flex-col items-start justify-between gap-4 pt-[clamp(1.75rem,3vw,2.5rem)] text-[11px] uppercase tracking-[0.12em] sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
             <Image
