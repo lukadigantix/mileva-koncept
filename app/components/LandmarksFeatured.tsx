@@ -18,15 +18,31 @@ const IMAGES = [
   "/znamenitosti/z3.webp",
 ];
 
-export default function LandmarksFeatured() {
+/** One featured landmark, backend or dictionary: the corner label is the
+    distance (dictionary) or the category (CMS - the API has no distances). */
+export type FeaturedLandmark = {
+  name: string;
+  desc: string;
+  label: string;
+  image: string;
+};
+
+export default function LandmarksFeatured({ items: cmsItems }: { items?: FeaturedLandmark[] }) {
   const { t } = useLang();
-  const items = t.landmarks.featured.items;
+  const items: FeaturedLandmark[] =
+    cmsItems ??
+    t.landmarks.featured.items.map((it, i) => ({
+      name: it.name,
+      desc: it.desc,
+      label: it.distance,
+      image: IMAGES[i],
+    }));
 
   return (
     <>
       <section data-dark-section className="bg-[var(--overlay)] text-[var(--bg)]">
         <div className="grid grid-cols-1 md:grid-cols-3 md:min-h-screen">
-          {items.map((item, i) => (
+          {items.map((item) => (
             <div
               key={item.name}
               className="group relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center md:min-h-0 md:border-r md:last:border-r-0"
@@ -35,7 +51,7 @@ export default function LandmarksFeatured() {
               <div className="absolute inset-0">
                 <div className="relative h-full w-full scale-105 opacity-60 grayscale transition-all duration-700 ease-[var(--ease-expo-out)] group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
                   <Image
-                    src={IMAGES[i]}
+                    src={item.image}
                     alt=""
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
@@ -49,7 +65,7 @@ export default function LandmarksFeatured() {
                   concept / activity cards. */}
               <div className="relative z-10 flex flex-col items-center">
                 <Image
-                  src="/mileva-logo-text.png"
+                  src="/logo/mileva-logo-text.png"
                   alt=""
                   width={3266}
                   height={701}
@@ -60,9 +76,9 @@ export default function LandmarksFeatured() {
                 </h3>
               </div>
 
-              {/* Distance - a small white label tucked in the corner. */}
+              {/* Distance/category - a small white label tucked in the corner. */}
               <span className="absolute bottom-[clamp(1.25rem,3vw,2rem)] left-[clamp(1.25rem,3vw,2rem)] z-10 text-[12px] uppercase tracking-[0.22em] text-white/80 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
-                {item.distance}
+                {item.label}
               </span>
             </div>
           ))}
@@ -92,7 +108,7 @@ export default function LandmarksFeatured() {
                   </p>
                 </div>
                 <span className="shrink-0 tracking-[0.05em] text-[var(--main)]">
-                  {item.distance}
+                  {item.label}
                 </span>
               </li>
             ))}

@@ -2,12 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import PostCard from "./PostCard";
 import { useLang } from "../i18n/LanguageProvider";
-import { POSTS, getPost, formatDate } from "../lib/blog";
+import { formatDate, type Post } from "../lib/blog";
 
 /**
  * Blog article - a single post rendered in the active language. Reads like a
@@ -15,15 +14,14 @@ import { POSTS, getPost, formatDate } from "../lib/blog";
  * full-bleed cinematic hero image (same treatment and height as the blog index
  * hero), then a wide, comfortable reading column with a dropped initial on the
  * lede, section subheadings and pull quotes. Closes with a "more from the blog"
- * trio.
+ * trio. The post and its related trio arrive from the server page (backend CMS,
+ * or the static fallback); CMS bodies are a single "html" block styled via the
+ * `.article-html` rules in globals.css.
  */
-export default function BlogArticle({ slug }: { slug: string }) {
+export default function BlogArticle({ post, related }: { post: Post; related: Post[] }) {
   const { lang, t } = useLang();
-  const post = getPost(slug);
-  if (!post) notFound();
 
   const c = post.content[lang];
-  const related = POSTS.filter((p) => p.slug !== slug).slice(0, 3);
   // The first paragraph is the lede - it gets the larger type + dropped initial.
   const firstP = c.body.findIndex((b) => b.type === "p");
 
@@ -81,6 +79,18 @@ export default function BlogArticle({ slug }: { slug: string }) {
                 <blockquote className="border-l-2 border-[var(--main)] pl-[clamp(1.5rem,3vw,2.25rem)] text-[clamp(1.4rem,3.4vw,1.9rem)] italic leading-[1.35] tracking-[-0.01em] text-[var(--dark)]">
                   {block.text}
                 </blockquote>
+              </Reveal>
+            );
+          }
+          if (block.type === "html") {
+            // CMS body (Tiptap HTML) - styled as one editorial column via
+            // the `.article-html` rules in globals.css.
+            return (
+              <Reveal key={i}>
+                <div
+                  className="article-html article-html--lede"
+                  dangerouslySetInnerHTML={{ __html: block.html }}
+                />
               </Reveal>
             );
           }

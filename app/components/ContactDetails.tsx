@@ -5,7 +5,8 @@ import Image from "next/image";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import { useLang } from "../i18n/LanguageProvider";
-import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "../lib/site";
+import { useSiteSettings } from "../lib/siteSettings";
+import type { WorkingDay } from "../lib/api";
 
 /**
  * Contact body - one centred editorial column on the page background (no
@@ -25,16 +26,48 @@ const LABEL = "mb-1 block text-[12px] uppercase tracking-[0.2em] text-[var(--mai
 const MAP_HREF =
   "https://www.google.com/maps/search/?api=1&query=Grivac%2C%2034240%20Kni%C4%87";
 
+/** "08:00" → "08"; keeps non-zero minutes ("08:30") - matches the site's style. */
+const fmtTime = (time: string) => time.replace(/:00$/, "");
+
+/**
+ * Collapses the admin's per-day working hours into display lines, joining
+ * consecutive days with the same schedule: "Ponedeljak - Petak · 08-19",
+ * "Nedelja · zatvoreno".
+ */
+function hoursLines(hours: WorkingDay[], days: string[], closed: string): string[] {
+  const sorted = [...hours].sort((a, b) => a.day - b.day);
+  const same = (a: WorkingDay, b: WorkingDay) =>
+    a.isOpen === b.isOpen && a.openTime === b.openTime && a.closeTime === b.closeTime;
+
+  const lines: string[] = [];
+  for (let i = 0; i < sorted.length; ) {
+    let j = i;
+    while (j + 1 < sorted.length && same(sorted[j + 1], sorted[i])) j++;
+    const label =
+      i === j ? days[sorted[i].day] : `${days[sorted[i].day]} - ${days[sorted[j].day]}`;
+    const time = sorted[i].isOpen
+      ? `${fmtTime(sorted[i].openTime)}-${fmtTime(sorted[i].closeTime)}`
+      : closed;
+    lines.push(`${label}  ·  ${time}`);
+    i = j + 1;
+  }
+  return lines;
+}
+
 export default function ContactDetails() {
   const { t } = useLang();
+  const s = useSiteSettings();
   const c = t.contact.page;
   const [sent, setSent] = useState(false);
 
   const details = [
-    { label: c.addressLabel, value: t.contact.address, href: MAP_HREF },
-    { label: c.phoneLabel, value: PHONE_LABEL, href: `tel:${PHONE_HREF}` },
-    { label: c.emailLabel, value: EMAIL, href: `mailto:${EMAIL}` },
+    { label: c.addressLabel, value: s.address ?? t.contact.address, href: MAP_HREF },
+    { label: c.phoneLabel, value: s.phoneLabel, href: `tel:${s.phoneHref}` },
+    { label: c.emailLabel, value: s.email, href: `mailto:${s.email}` },
   ];
+
+  // Radno vreme iz admina kada postoji, inače statični tekst iz rečnika.
+  const hours = s.hours ? hoursLines(s.hours, c.days, c.closed) : c.hours;
 
   return (
     <>
@@ -44,7 +77,7 @@ export default function ContactDetails() {
           <Reveal from={30}>
             <div className="flex flex-col items-center text-center">
               <Image
-                src="/mileva-logo-icon.png"
+                src="/logo/mileva-logo-icon.png"
                 alt=""
                 width={1306}
                 height={1453}
@@ -95,7 +128,7 @@ export default function ContactDetails() {
                   {c.hoursLabel}
                 </dt>
                 <dd className="flex flex-col text-[17px] text-[var(--dark)] sm:text-right">
-                  {c.hours.map((h) => (
+                  {hours.map((h) => (
                     <span key={h}>{h}</span>
                   ))}
                 </dd>
@@ -107,9 +140,9 @@ export default function ContactDetails() {
                   {c.followLabel}
                 </dt>
                 <dd className="flex gap-5 text-[17px] text-[var(--dark)]">
-                  {SOCIALS.map((s) => (
-                    <a key={s.label} href={s.href} className="link-underline">
-                      {s.label}
+                  {s.socials.map((social) => (
+                    <a key={social.label} href={social.href} className="link-underline">
+                      {social.label}
                     </a>
                   ))}
                 </dd>
@@ -223,7 +256,7 @@ export default function ContactDetails() {
         className="group relative flex h-[clamp(340px,52vh,600px)] w-full items-end overflow-hidden"
       >
         <Image
-          src="/horizont.webp"
+          src="/kontakt/horizont.webp"
           alt=""
           fill
           sizes="100vw"

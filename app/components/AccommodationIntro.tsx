@@ -20,7 +20,7 @@ export default function AccommodationIntro() {
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
         {/* Brand icon above the heading - same mark used across the site. */}
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt=""
           width={1306}
           height={1453}
@@ -45,7 +45,7 @@ export default function AccommodationIntro() {
         <div className="mx-auto mt-[clamp(3rem,6vw,6rem)] grid w-full max-w-5xl grid-cols-2 gap-[var(--space)]">
           <MediaReveal className="aspect-[3/4] rounded-[var(--radius2)]" parallax>
             <Image
-              src="/smestaj.webp"
+              src="/smestaj/smestaj.webp"
               alt="Smeštaj Mileva"
               fill
               sizes="50vw"
@@ -58,7 +58,7 @@ export default function AccommodationIntro() {
             parallax
           >
             <Image
-              src="/s2.webp"
+              src="/smestaj/s2.webp"
               alt="Smeštaj Mileva"
               fill
               sizes="50vw"

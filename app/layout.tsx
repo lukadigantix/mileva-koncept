@@ -4,6 +4,9 @@ import "./globals.css";
 import SmoothScroll from "./components/SmoothScroll";
 import PageTransition from "./components/PageTransition";
 import { LanguageProvider } from "./i18n/LanguageProvider";
+import { getFooterSettings, getWorkingHours } from "./lib/api";
+import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "./lib/site";
+import { SiteSettingsProvider, type SiteSettings } from "./lib/siteSettings";
 
 /**
  * Single typeface across the whole site - Noto Serif JP, weight 400 only.
@@ -23,16 +26,43 @@ export const metadata: Metadata = {
     "Где традиција сусреће луксуз, а гостопримство постаје уметност. Ресторан, смештај и мирни дани у срцу Шумадије - Гривац, Кнић, Србија.",
 };
 
-export default function RootLayout({
+/** Kontakt podaci i radno vreme iz admina; prazna polja → statični placeholderi.
+    Podrazumevane vrednosti se grade iz lib/site.ts ovde, na serveru — vrednosti
+    iz "use client" modula (siteSettings) nisu upotrebljive u server komponenti. */
+async function buildSiteSettings(): Promise<SiteSettings> {
+  const [footer, hours] = await Promise.all([getFooterSettings(), getWorkingHours()]);
+
+  const socials = [
+    { label: "Instagram", href: footer?.instagramUrl ?? "" },
+    { label: "Facebook", href: footer?.facebookUrl ?? "" },
+    { label: "Twitter", href: footer?.twitterUrl ?? "" },
+    { label: "TikTok", href: footer?.tiktokUrl ?? "" },
+  ].filter((s) => s.href);
+
+  return {
+    email: footer?.email || EMAIL,
+    phoneLabel: footer?.phone || PHONE_LABEL,
+    phoneHref: footer?.phone ? footer.phone.replace(/[^+\d]/g, "") : PHONE_HREF,
+    address: footer?.street && footer.city ? `${footer.street}, ${footer.city}` : null,
+    socials: socials.length ? socials : SOCIALS,
+    hours: hours?.length ? hours : null,
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await buildSiteSettings();
+
   return (
     <html lang="sr" className={notoSerifJP.variable}>
       <body>
         <SmoothScroll>
-          <LanguageProvider>{children}</LanguageProvider>
+          <SiteSettingsProvider value={settings}>
+            <LanguageProvider>{children}</LanguageProvider>
+          </SiteSettingsProvider>
           <PageTransition />
         </SmoothScroll>
       </body>

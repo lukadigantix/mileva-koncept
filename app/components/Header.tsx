@@ -78,7 +78,7 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
             to dark over light ones, matching the nav's colour switch. */}
         <Link href="/" className="absolute left-1/2 -translate-x-1/2">
           <Image
-            src="/mileva-logo-text.png"
+            src="/logo/mileva-logo-text.png"
             alt="Mileva koncept"
             width={3266}
             height={701}

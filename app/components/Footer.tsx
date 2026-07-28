@@ -4,16 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./Reveal";
 import { useLang } from "../i18n/LanguageProvider";
-import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "../lib/site";
+import { useSiteSettings } from "../lib/siteSettings";
 
 /**
  * Footer - editorial and restrained. An oversized e-mail "invitation" anchors
  * the top (with address + phone alongside); a single horizontal nav row and
  * socials sit below; a thin bottom bar carries the brand mark, copyright and
- * legal links.
+ * legal links. Contact details and socials come from the backend admin via
+ * SiteSettingsProvider (static placeholders until they're filled in there).
  */
 export default function Footer() {
   const { t } = useLang();
+  const s = useSiteSettings();
 
   // Matches the main menu order: Restoran, Smeštaj, Znamenitosti, Blog,
   // Događaji, Kontakt (Reservations dropped, Priroda folded into Znamenitosti,
@@ -40,17 +42,17 @@ export default function Footer() {
                 {t.contact.title}
               </span>
               <a
-                href={`mailto:${EMAIL}`}
+                href={`mailto:${s.email}`}
                 className="link-underline w-fit text-[clamp(1.9rem,5vw,4rem)] leading-none tracking-[-0.01em]"
               >
-                {EMAIL}
+                {s.email}
               </a>
             </div>
 
             <div className="flex flex-col gap-1 text-[15.56px] leading-relaxed text-[var(--sand)] lg:text-right">
-              <span>{t.contact.address}</span>
-              <a href={`tel:${PHONE_HREF}`} className="link-underline w-fit lg:self-end">
-                {PHONE_LABEL}
+              <span>{s.address ?? t.contact.address}</span>
+              <a href={`tel:${s.phoneHref}`} className="link-underline w-fit lg:self-end">
+                {s.phoneLabel}
               </a>
             </div>
           </div>
@@ -74,13 +76,13 @@ export default function Footer() {
           </nav>
 
           <div className="flex gap-[clamp(1.25rem,2.5vw,2rem)] text-[15.56px] text-[var(--sand)]">
-            {SOCIALS.map((s) => (
+            {s.socials.map((social) => (
               <a
-                key={s.label}
-                href={s.href}
+                key={social.label}
+                href={social.href}
                 className="link-underline transition-colors hover:text-[var(--bg)]"
               >
-                {s.label}
+                {social.label}
               </a>
             ))}
           </div>
@@ -90,7 +92,7 @@ export default function Footer() {
         <div className="flex flex-col items-start justify-between gap-4 pt-[clamp(1.75rem,3vw,2.5rem)] text-[11px] uppercase tracking-[0.12em] sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
             <Image
-              src="/mileva-logo-icon.png"
+              src="/logo/mileva-logo-icon.png"
               alt="Mileva"
               width={1306}
               height={1453}

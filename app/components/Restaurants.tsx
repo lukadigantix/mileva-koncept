@@ -6,9 +6,9 @@ import { useLang } from "../i18n/LanguageProvider";
 
 // Order matches t.restaurants.categories: Restoran, Smeštaj, Događaji.
 const LOCATIONS: { name: string; image: string; href: string }[] = [
-  { name: "restoran", image: "/restoran.webp", href: "/restoran" },
-  { name: "smestaj", image: "/smestaj.webp", href: "/smestaj" },
-  { name: "dogadjaji", image: "/drvo.webp", href: "/dogadjaji" },
+  { name: "restoran", image: "/restoran/restoran.webp", href: "/restoran" },
+  { name: "smestaj", image: "/smestaj/smestaj.webp", href: "/smestaj" },
+  { name: "dogadjaji", image: "/dogadjaji/drvo.webp", href: "/dogadjaji" },
 ];
 
 /**
@@ -46,7 +46,7 @@ export default function Restaurants() {
 
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src="/mileva-logo-text.png"
+                src="/logo/mileva-logo-text.png"
                 alt=""
                 width={3266}
                 height={701}

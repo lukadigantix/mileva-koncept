@@ -11,7 +11,7 @@ import { useLang } from "../i18n/LanguageProvider";
  *
  * IMAGE is a placeholder from the existing set - swap for a real editorial shot.
  */
-const IMAGE = "/midhero.webp";
+const IMAGE = "/pocetna/midhero.webp";
 
 export default function BlogHero() {
   const { t } = useLang();
@@ -22,7 +22,7 @@ export default function BlogHero() {
       {/* Title block - light bg, clears the fixed nav via top padding. */}
       <div className="mx-[var(--gutter)] flex flex-col items-center pt-[clamp(9rem,17vw,13rem)] pb-[clamp(3rem,6vw,5.5rem)] text-center">
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt="Mileva"
           width={1306}
           height={1453}

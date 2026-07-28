@@ -18,7 +18,7 @@ export default function Profile() {
       <div className="mx-[var(--gutter)]">
         <div className="mb-[clamp(2.5rem,5vw,4rem)] text-center">
           <Image
-            src="/mileva-logo-icon.png"
+            src="/logo/mileva-logo-icon.png"
             alt=""
             width={1306}
             height={1453}
@@ -36,7 +36,7 @@ export default function Profile() {
           parallax
         >
           <Image
-            src="/a1.webp"
+            src="/pocetna/a1.webp"
             alt={t.profile.name}
             fill
             sizes="(min-width: 768px) 56rem, 100vw"

@@ -82,15 +82,15 @@ export default function Hero({ variant = "home" }: HeroProps) {
   ];
   // The restaurant page runs its own hero clip; every other page uses the main one.
   const videoSrc = isRestaurant
-    ? "/restoran.mp4"
+    ? "/restoran/restoran.mp4"
     : isDogadjaji
-      ? "/snimak_21s.mp4"
+      ? "/dogadjaji/snimak_21s.mp4"
       : isSmestaj
-        ? "/smestaj.mp4"
-        : "/mileva1.mp4";
+        ? "/smestaj/smestaj.mp4"
+        : "/pocetna/mileva1.mp4";
   // First frame of each clip, extracted to /posters - paints instantly while
   // the video streams in, so the hero never flashes empty.
-  const posterSrc = videoSrc.replace(".mp4", ".jpg").replace("/", "/posters/");
+  const posterSrc = videoSrc.replace(/^.*\//, "/posters/").replace(".mp4", ".jpg");
 
   return (
     <section
@@ -126,7 +126,7 @@ export default function Hero({ variant = "home" }: HeroProps) {
             className="flex h-full flex-col items-center justify-center px-[var(--space)] text-center"
           >
             <Image
-              src="/mileva-logo.png"
+              src="/logo/mileva-logo.png"
               alt="Mileva"
               width={4000}
               height={3080}
@@ -194,7 +194,7 @@ export default function Hero({ variant = "home" }: HeroProps) {
           <div className="pointer-events-none absolute inset-x-0 top-[54%] z-10 flex justify-center">
             <Parallax y={-60}>
               <Image
-                src="/mileva-logo.png"
+                src="/logo/mileva-logo.png"
                 alt="Mileva"
                 width={4000}
                 height={3080}

@@ -57,7 +57,7 @@ gsap.registerPlugin(ScrollTrigger);
  */
 
 /** Card imagery, one per recommendation (order matches `daily.items`). */
-const IMAGES = ["/pihtije.webp", "/menu2.webp", "/menu3.webp"];
+const IMAGES = ["/restoran/pihtije.webp", "/restoran/menu2.webp", "/restoran/menu3.webp"];
 
 /** Reference scale unit: n / 2400 of the viewport width, in px. */
 const px = (n: number) => (n / 2400) * window.innerWidth;

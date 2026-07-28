@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import SplitText from "./SplitText";
-import { EMAIL } from "../lib/site";
+import { useSiteSettings } from "../lib/siteSettings";
 import { useLang } from "../i18n/LanguageProvider";
 
 /**
@@ -15,13 +15,14 @@ import { useLang } from "../i18n/LanguageProvider";
  */
 export default function ContactHero() {
   const { t } = useLang();
+  const { email } = useSiteSettings();
   const c = t.contact.page;
 
   return (
     <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[var(--bg)] pt-[clamp(6rem,14vh,9rem)] pb-[clamp(5rem,12vh,8rem)]">
       <div className="relative z-10 mx-[var(--gutter)] flex flex-col items-center text-center">
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt="Mileva"
           width={1306}
           height={1453}
@@ -45,10 +46,10 @@ export default function ContactHero() {
         </p>
 
         <a
-          href={`mailto:${EMAIL}`}
+          href={`mailto:${email}`}
           className="link-underline mt-[clamp(2rem,4vw,3rem)] w-fit text-[clamp(1.15rem,3vw,2rem)] leading-none tracking-[-0.01em] text-[var(--dark)]"
         >
-          {EMAIL}
+          {email}
         </a>
       </div>
 

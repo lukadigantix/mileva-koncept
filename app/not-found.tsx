@@ -25,7 +25,7 @@ export default function NotFound() {
         <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[var(--bg)] pt-[clamp(6rem,14vh,9rem)] pb-[clamp(5rem,12vh,8rem)]">
           <div className="relative z-10 mx-[var(--gutter)] flex flex-col items-center text-center">
             <Image
-              src="/mileva-logo-icon.png"
+              src="/logo/mileva-logo-icon.png"
               alt="Mileva"
               width={1306}
               height={1453}

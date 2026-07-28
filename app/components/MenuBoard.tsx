@@ -4,9 +4,20 @@ import Image from "next/image";
 import SplitText from "./SplitText";
 import { useLang } from "../i18n/LanguageProvider";
 
+export type BoardSection = {
+  title: string;
+  items: { name: string; desc: string; price: string }[];
+};
+
 type MenuBoardProps = {
   /** Which board to render - the food menu or the drinks card. */
   source: "menuList" | "drinksList";
+  /**
+   * Sections from the backend's digital menu. When present they replace the
+   * dictionary sections and their prices render verbatim (the admin types the
+   * full string, currency included). Absent/empty → static dictionary content.
+   */
+  sections?: BoardSection[];
 };
 
 /**
@@ -14,12 +25,15 @@ type MenuBoardProps = {
  * A centred header (brand mark + eyebrow + heading + sourcing note), then the
  * courses in two columns on desktop, one on mobile. Each item is a row: name on
  * the left, price on the right, joined by a dotted leader, with a muted
- * description beneath. Prices are in Serbian dinars. Content is picked from the
- * dictionary by `source`, so the food menu and drinks card share this markup.
+ * description beneath. Prices are in Serbian dinars. The chrome (eyebrow,
+ * heading, note) always comes from the dictionary by `source`; the courses come
+ * from the backend when `sections` is provided, otherwise from the dictionary.
  */
-export default function MenuBoard({ source }: MenuBoardProps) {
+export default function MenuBoard({ source, sections }: MenuBoardProps) {
   const { t } = useLang();
   const menu = t.restaurant[source];
+  const fromApi = Boolean(sections?.length);
+  const courses: BoardSection[] = fromApi ? sections! : menu.sections;
 
   return (
     <section
@@ -30,7 +44,7 @@ export default function MenuBoard({ source }: MenuBoardProps) {
         {/* Header */}
         <div className="flex flex-col items-center text-center">
           <Image
-            src="/mileva-logo-icon.png"
+            src="/logo/mileva-logo-icon.png"
             alt=""
             width={1306}
             height={1453}
@@ -51,7 +65,7 @@ export default function MenuBoard({ source }: MenuBoardProps) {
 
         {/* Courses - two columns on desktop, one on mobile. */}
         <div className="mx-auto mt-[clamp(2.5rem,6vw,6rem)] grid max-w-4xl grid-cols-1 gap-x-[clamp(2.5rem,5vw,5rem)] gap-y-[clamp(2.5rem,5vw,4rem)] md:grid-cols-2">
-          {menu.sections.map((section) => (
+          {courses.map((section) => (
             <div key={section.title}>
               {/* Course title - serif small-caps with a terracotta hairline. */}
               <h3 className="mb-[clamp(1rem,2.5vw,2rem)] flex items-center gap-4 text-[clamp(1rem,3.6vw,1.3rem)] uppercase tracking-[0.14em]">
@@ -72,12 +86,14 @@ export default function MenuBoard({ source }: MenuBoardProps) {
                         className="min-w-6 flex-1 translate-y-[-0.28em] border-b border-dotted border-[var(--border)]"
                       />
                       <span className="whitespace-nowrap text-[clamp(15px,4vw,17.78px)] tabular-nums text-[var(--main)]">
-                        {item.price} {menu.currency}
+                        {fromApi ? item.price : `${item.price} ${menu.currency}`}
                       </span>
                     </div>
-                    <p className="mt-[0.3rem] max-w-[42ch] text-[clamp(12.5px,3.2vw,14px)] leading-relaxed text-[var(--hint)]">
-                      {item.desc}
-                    </p>
+                    {item.desc && (
+                      <p className="mt-[0.3rem] max-w-[42ch] text-[clamp(12.5px,3.2vw,14px)] leading-relaxed text-[var(--hint)]">
+                        {item.desc}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>

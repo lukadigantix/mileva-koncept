@@ -186,6 +186,10 @@ export type Dict = {
       emailLabel: string;
       hoursLabel: string;
       hours: string[];
+      /** Nazivi dana (ponedeljak prvi) + oznaka za neradni dan - za radno
+          vreme iz backenda; statični `hours` tekst je fallback. */
+      days: string[];
+      closed: string;
       followLabel: string;
       formHeading: string;
       formNote: string;
@@ -220,7 +224,22 @@ export type Dict = {
       body: string;
       items: { name: string; tag: string; desc: string; body: string }[];
     };
+    /** Dated events from the backend CMS - only the section chrome is localised. */
+    upcoming: { eyebrow: string; heading: string };
     cta: { eyebrow: string; heading: string; body: string; button: string };
+  };
+  /** Stranica rentiranja kvadova - sadržaj (kvadovi, rute) stiže iz backenda,
+      ovde je samo lokalizovani okvir. */
+  quads: {
+    intro: { eyebrow: string; heading: string; body: string };
+    rental: { eyebrow: string; heading: string };
+    routes: {
+      eyebrow: string;
+      heading: string;
+      body: string;
+      difficulty: Record<"lako" | "srednje" | "tesko", string>;
+    };
+    cta: { body: string; button: string };
   };
   footer: { links: string[]; copyright: string; explore: string; tagline: string };
   notFound: { eyebrow: string; title: string; body: string; home: string };
@@ -635,6 +654,8 @@ export const dictionaries: Record<LangCode, Dict> = {
         emailLabel: "Имејл",
         hoursLabel: "Радно време",
         hours: ["Понедељак - Петак  ·  09-21", "Субота - Недеља  ·  09-23"],
+        days: ["Понедељак", "Уторак", "Среда", "Четвртак", "Петак", "Субота", "Недеља"],
+        closed: "затворено",
         followLabel: "Пратите нас",
         formHeading: "Пошаљите поруку",
         formNote: "Одговарамо у року од 24 сата.",
@@ -727,10 +748,32 @@ export const dictionaries: Record<LangCode, Dict> = {
           },
         ],
       },
+      upcoming: {
+        eyebrow: "Календар дешавања",
+        heading: "Предстојећи догађаји",
+      },
       cta: {
         eyebrow: "Планирате догађај?",
         heading: "Испричајте нам своју идеју.",
         body: "Прослава, јахање, руте или квадови - јавите се и заједно ћемо испланирати сваки детаљ.",
+        button: "Контактирајте нас",
+      },
+    },
+    quads: {
+      intro: {
+        eyebrow: "Рентирање квадова",
+        heading: "Авантура на четири точка.",
+        body: "Кроз брда, шумске путеве и ливаде око Милеве воде обележене руте за квадове. Изаберите возило из наше понуде, погледајте руте на мапи и јавите нам се да договоримо термин, опрему и вођену туру.",
+      },
+      rental: { eyebrow: "Понуда", heading: "Наши квадови" },
+      routes: {
+        eyebrow: "Мапа стаза",
+        heading: "Обележене руте",
+        body: "Изаберите руту са списка да је истакнете на мапи.",
+        difficulty: { lako: "Лако", srednje: "Средње", tesko: "Тешко" },
+      },
+      cta: {
+        body: "За резервацију термина, опреме и вођених тура - јавите нам се.",
         button: "Контактирајте нас",
       },
     },
@@ -1156,6 +1199,8 @@ export const dictionaries: Record<LangCode, Dict> = {
         emailLabel: "Imejl",
         hoursLabel: "Radno vreme",
         hours: ["Ponedeljak - Petak  ·  09-21", "Subota - Nedelja  ·  09-23"],
+        days: ["Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota", "Nedelja"],
+        closed: "zatvoreno",
         followLabel: "Pratite nas",
         formHeading: "Pošaljite poruku",
         formNote: "Odgovaramo u roku od 24 sata.",
@@ -1248,10 +1293,32 @@ export const dictionaries: Record<LangCode, Dict> = {
           },
         ],
       },
+      upcoming: {
+        eyebrow: "Kalendar dešavanja",
+        heading: "Predstojeći događaji",
+      },
       cta: {
         eyebrow: "Planirate događaj?",
         heading: "Ispričajte nam svoju ideju.",
         body: "Proslava, jahanje, rute ili kvadovi - javite se i zajedno ćemo isplanirati svaki detalj.",
+        button: "Kontaktirajte nas",
+      },
+    },
+    quads: {
+      intro: {
+        eyebrow: "Rentiranje kvadova",
+        heading: "Avantura na četiri točka.",
+        body: "Kroz brda, šumske puteve i livade oko Mileve vode obeležene rute za kvadove. Izaberite vozilo iz naše ponude, pogledajte rute na mapi i javite nam se da dogovorimo termin, opremu i vođenu turu.",
+      },
+      rental: { eyebrow: "Ponuda", heading: "Naši kvadovi" },
+      routes: {
+        eyebrow: "Mapa staza",
+        heading: "Obeležene rute",
+        body: "Izaberite rutu sa spiska da je istaknete na mapi.",
+        difficulty: { lako: "Lako", srednje: "Srednje", tesko: "Teško" },
+      },
+      cta: {
+        body: "Za rezervaciju termina, opreme i vođenih tura - javite nam se.",
         button: "Kontaktirajte nas",
       },
     },
@@ -1676,6 +1743,8 @@ export const dictionaries: Record<LangCode, Dict> = {
         emailLabel: "Email",
         hoursLabel: "Opening hours",
         hours: ["Monday - Friday  ·  09-21", "Saturday - Sunday  ·  09-23"],
+        days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        closed: "closed",
         followLabel: "Follow us",
         formHeading: "Send a message",
         formNote: "We reply within 24 hours.",
@@ -1768,10 +1837,32 @@ export const dictionaries: Record<LangCode, Dict> = {
           },
         ],
       },
+      upcoming: {
+        eyebrow: "What's on",
+        heading: "Upcoming events",
+      },
       cta: {
         eyebrow: "Planning an event?",
         heading: "Tell us your idea.",
         body: "A celebration, riding, routes or quads - get in touch and we'll plan every detail together.",
+        button: "Contact us",
+      },
+    },
+    quads: {
+      intro: {
+        eyebrow: "Quad rental",
+        heading: "Adventure on four wheels.",
+        body: "Marked quad routes wind through the hills, forest roads and meadows around Mileva. Pick a vehicle from our fleet, explore the routes on the map, and get in touch to arrange a time, gear and a guided tour.",
+      },
+      rental: { eyebrow: "The fleet", heading: "Our quads" },
+      routes: {
+        eyebrow: "Trail map",
+        heading: "Marked routes",
+        body: "Select a route from the list to highlight it on the map.",
+        difficulty: { lako: "Easy", srednje: "Moderate", tesko: "Hard" },
+      },
+      cta: {
+        body: "To book a time slot, gear or a guided tour - get in touch.",
         button: "Contact us",
       },
     },

@@ -9,7 +9,7 @@ import Image from "next/image";
  * (bazeni1, proslave1, bazeni2, proslave2). Placeholder copies live in /public
  * for now - dropping the final shots in with the same names needs no code change.
  */
-const IMAGES = ["/bazeni1.webp", "/proslave1.webp", "/bazeni2.webp", "/proslave2.webp"];
+const IMAGES = ["/smestaj/bazeni1.webp", "/smestaj/proslave1.webp", "/smestaj/bazeni2.webp", "/smestaj/proslave2.webp"];
 
 export default function LeisureGallery() {
   return (
@@ -37,7 +37,7 @@ export default function LeisureGallery() {
             {/* Centred Mileva mark - no label. */}
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src="/mileva-logo-text.png"
+                src="/logo/mileva-logo-text.png"
                 alt={i === 0 ? "Mileva" : ""}
                 width={3266}
                 height={701}

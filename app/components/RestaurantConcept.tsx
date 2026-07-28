@@ -12,7 +12,7 @@ import { useLang } from "../i18n/LanguageProvider";
  * slow-food concept and each is a button that opens a modal with the full image
  * + a short text. Images are placeholders until the final art arrives.
  */
-const CARDS: string[] = ["/rest3.webp", "/rest4.webp", "/rest5.webp"];
+const CARDS: string[] = ["/restoran/rest3.webp", "/restoran/rest4.webp", "/restoran/rest5.webp"];
 
 export default function RestaurantConcept() {
   const { t } = useLang();
@@ -48,7 +48,7 @@ export default function RestaurantConcept() {
 
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src="/mileva-logo-text.png"
+                src="/logo/mileva-logo-text.png"
                 alt=""
                 width={3266}
                 height={701}

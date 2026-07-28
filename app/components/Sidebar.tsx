@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLang } from "../i18n/LanguageProvider";
-import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "../lib/site";
+import { useSiteSettings } from "../lib/siteSettings";
 
 type SidebarProps = {
   open: boolean;
@@ -16,6 +16,7 @@ type SidebarProps = {
  */
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { t } = useLang();
+  const settings = useSiteSettings();
 
   // Restoran, Smeštaj, Znamenitosti, Blog, Događaji, Kontakt.
   // Reservations dropped (it lives inside Accommodation); Priroda dropped (its
@@ -111,11 +112,11 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             <span className="text-[18px] lg:text-[22px] leading-relaxed">
               {t.contact.address}
             </span>
-            <a href={`mailto:${EMAIL}`} className="link-underline text-[18px] lg:text-[22px]">
-              {EMAIL}
+            <a href={`mailto:${settings.email}`} className="link-underline text-[18px] lg:text-[22px]">
+              {settings.email}
             </a>
-            <a href={`tel:${PHONE_HREF}`} className="link-underline text-[18px] lg:text-[22px]">
-              {PHONE_LABEL}
+            <a href={`tel:${settings.phoneHref}`} className="link-underline text-[18px] lg:text-[22px]">
+              {settings.phoneLabel}
             </a>
           </div>
 
@@ -124,7 +125,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               {t.contact.follow}
             </span>
             <div className="flex gap-4 text-[18px] lg:text-[22px]">
-              {SOCIALS.map((s) => (
+              {settings.socials.map((s) => (
                 <a key={s.label} href={s.href} className="link-underline">
                   {s.label}
                 </a>

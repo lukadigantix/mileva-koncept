@@ -11,7 +11,9 @@ import type { LangCode } from "../i18n/translations";
 export type BlogBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
-  | { type: "quote"; text: string };
+  | { type: "quote"; text: string }
+  /** Gotov HTML iz backend CMS-a (Tiptap) — renderuje se kao celina. */
+  | { type: "html"; html: string };
 
 export type BlogLocale = {
   category: string;
@@ -31,7 +33,7 @@ export type Post = {
 export const POSTS: Post[] = [
   {
     slug: "vatra-i-drvo",
-    image: "/rest3.webp",
+    image: "/restoran/rest3.webp",
     date: "2026-06-20",
     readMinutes: 6,
     content: {
@@ -90,7 +92,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "bazen-slana-voda",
-    image: "/bazeni1.webp",
+    image: "/smestaj/bazeni1.webp",
     date: "2026-05-28",
     readMinutes: 5,
     content: {
@@ -146,7 +148,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "jesen-na-imanju",
-    image: "/drvo.webp",
+    image: "/dogadjaji/drvo.webp",
     date: "2026-05-06",
     readMinutes: 6,
     content: {
@@ -202,7 +204,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "znamenitosti-oko-grivca",
-    image: "/midhero.webp",
+    image: "/pocetna/midhero.webp",
     date: "2026-04-15",
     readMinutes: 7,
     content: {
@@ -258,7 +260,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "kako-organizovati-proslavu",
-    image: "/proslave1.webp",
+    image: "/smestaj/proslave1.webp",
     date: "2026-03-22",
     readMinutes: 6,
     content: {
@@ -314,7 +316,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "cetiri-jedinice-cetiri-price",
-    image: "/smestaj.webp",
+    image: "/smestaj/smestaj.webp",
     date: "2026-02-18",
     readMinutes: 5,
     content: {

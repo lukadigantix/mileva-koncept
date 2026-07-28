@@ -214,7 +214,7 @@ export default function Featured() {
                     }}
                     className="absolute inset-0 bg-no-repeat will-change-transform"
                     style={{
-                      backgroundImage: "url(/half.webp)",
+                      backgroundImage: "url(/pocetna/half.webp)",
                       backgroundSize: "calc(200% + var(--fgap)) auto",
                       backgroundPosition: panel.pos,
                     }}

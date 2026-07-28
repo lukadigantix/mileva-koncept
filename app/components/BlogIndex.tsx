@@ -7,35 +7,37 @@ import SplitText from "./SplitText";
 import MediaReveal from "./MediaReveal";
 import PostCard from "./PostCard";
 import { useLang } from "../i18n/LanguageProvider";
-import { POSTS, formatDate } from "../lib/blog";
+import { formatDate, type Post } from "../lib/blog";
 
 /**
  * Blog index - a large featured (newest) post at the top, then a category-
  * filtered grid of the rest. The active filter is stored by index so it stays
  * valid when the language switches (categories keep the same order per post).
  * Selecting a category hides the featured block and shows all posts in it.
+ * Posts arrive from the server page (backend CMS, or the static fallback) and
+ * are never empty.
  */
-export default function BlogIndex() {
+export default function BlogIndex({ posts }: { posts: Post[] }) {
   const { lang, t } = useLang();
   const [activeIndex, setActiveIndex] = useState(-1); // -1 = all
 
-  const [featured, ...rest] = POSTS;
+  const [featured, ...rest] = posts;
   const f = featured.content[lang];
 
   // Unique categories in post order - a stable index across languages.
   const categories = useMemo(() => {
     const seen: string[] = [];
-    for (const p of POSTS) {
+    for (const p of posts) {
       const c = p.content[lang].category;
       if (!seen.includes(c)) seen.push(c);
     }
     return seen;
-  }, [lang]);
+  }, [posts, lang]);
 
   const showFeatured = activeIndex === -1;
   const activeCategory = activeIndex === -1 ? null : categories[activeIndex];
   const gridPosts = activeCategory
-    ? POSTS.filter((p) => p.content[lang].category === activeCategory)
+    ? posts.filter((p) => p.content[lang].category === activeCategory)
     : rest;
 
   const chip = (i: number) =>
@@ -102,7 +104,7 @@ export default function BlogIndex() {
         <div className="mx-[var(--gutter)]">
           <div className="flex flex-col items-center text-center">
             <Image
-              src="/mileva-logo-icon.png"
+              src="/logo/mileva-logo-icon.png"
               alt=""
               width={1306}
               height={1453}

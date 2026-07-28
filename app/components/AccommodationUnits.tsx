@@ -34,7 +34,7 @@ export default function AccommodationUnits() {
         {/* Section header - icon + heading, matching the other sections. */}
         <div className="flex flex-col items-center text-center">
           <Image
-            src="/mileva-logo-icon.png"
+            src="/logo/mileva-logo-icon.png"
             alt=""
             width={1306}
             height={1453}

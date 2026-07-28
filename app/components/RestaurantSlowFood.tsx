@@ -19,7 +19,7 @@ export default function RestaurantSlowFood() {
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
         {/* Brand icon above the heading - same mark as the intro section. */}
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt=""
           width={1306}
           height={1453}

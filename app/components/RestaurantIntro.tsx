@@ -20,7 +20,7 @@ export default function RestaurantIntro() {
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
         {/* Brand icon above the heading - same mark used on the home page. */}
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt=""
           width={1306}
           height={1453}
@@ -48,7 +48,7 @@ export default function RestaurantIntro() {
         <div className="mx-auto mt-[clamp(3rem,6vw,6rem)] grid w-full max-w-5xl grid-cols-2 gap-[var(--space)]">
           <MediaReveal className="aspect-[3/4] rounded-[var(--radius2)]" parallax>
             <Image
-              src="/rest1.webp"
+              src="/restoran/rest1.webp"
               alt="Restoran Mileva"
               fill
               sizes="50vw"
@@ -61,7 +61,7 @@ export default function RestaurantIntro() {
             parallax
           >
             <Image
-              src="/rest2.webp"
+              src="/restoran/rest2.webp"
               alt="Restoran Mileva"
               fill
               sizes="50vw"

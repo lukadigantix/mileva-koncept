@@ -17,7 +17,7 @@ export default function History() {
       <div className="mx-[var(--gutter)]">
         <div className="mb-[clamp(3rem,6vw,6rem)] text-center">
           <Image
-            src="/mileva-logo-icon.png"
+            src="/logo/mileva-logo-icon.png"
             alt=""
             width={1306}
             height={1453}
@@ -37,7 +37,7 @@ export default function History() {
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-[var(--space)]">
           <MediaReveal className="aspect-[3/4] rounded-[var(--radius2)]" parallax>
             <Image
-              src="/s1.webp"
+              src="/smestaj/s1.webp"
               alt="Odmaralište Mileva"
               fill
               sizes="50vw"
@@ -50,7 +50,7 @@ export default function History() {
             parallax
           >
             <Image
-              src="/s3.webp"
+              src="/smestaj/s3.webp"
               alt="Odmaralište Mileva"
               fill
               sizes="50vw"

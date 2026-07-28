@@ -3,11 +3,45 @@ import { notFound } from "next/navigation";
 import Navigation from "../../components/Navigation";
 import BlogArticle from "../../components/BlogArticle";
 import Footer from "../../components/Footer";
-import { POSTS, getPost } from "../../lib/blog";
+import { getBlogPost, getBlogPosts, adaptBlogPost } from "../../lib/api";
+import { POSTS, getPost, type Post } from "../../lib/blog";
 
-/** Pre-render every post at build time. */
-export function generateStaticParams() {
-  return POSTS.map((post) => ({ slug: post.slug }));
+/** Pre-render known posts at build time; new CMS slugs render on demand. */
+export async function generateStaticParams() {
+  const apiPosts = await getBlogPosts();
+  const slugs = apiPosts?.length ? apiPosts.map((p) => p.slug) : POSTS.map((p) => p.slug);
+  return slugs.map((slug) => ({ slug }));
+}
+
+/** CMS post + its related trio, or the static fallback for the same slug. */
+async function resolvePost(
+  slug: string
+): Promise<{ post: Post; related: Post[]; meta: Metadata } | null> {
+  const apiPost = await getBlogPost(slug);
+  if (apiPost) {
+    const apiPosts = await getBlogPosts();
+    const related = (apiPosts ?? [])
+      .filter((p) => p.slug !== slug)
+      .slice(0, 3)
+      .map(adaptBlogPost);
+    return {
+      post: adaptBlogPost(apiPost),
+      related,
+      meta: {
+        title: `${apiPost.metaTitle ?? apiPost.title} - Милева концепт`,
+        description: apiPost.metaDescription ?? apiPost.excerpt ?? undefined,
+      },
+    };
+  }
+
+  const staticPost = getPost(slug);
+  if (!staticPost) return null;
+  const c = staticPost.content["sr-cyrl"];
+  return {
+    post: staticPost,
+    related: POSTS.filter((p) => p.slug !== slug).slice(0, 3),
+    meta: { title: `${c.title} - Милева концепт`, description: c.excerpt },
+  };
 }
 
 export async function generateMetadata({
@@ -16,14 +50,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
-  if (!post) return {};
-  // Default (Serbian Cyrillic) copy for metadata.
-  const c = post.content["sr-cyrl"];
-  return {
-    title: `${c.title} - Милева концепт`,
-    description: c.excerpt,
-  };
+  return (await resolvePost(slug))?.meta ?? {};
 }
 
 export default async function BlogPostPage({
@@ -32,13 +59,14 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (!getPost(slug)) notFound();
+  const resolved = await resolvePost(slug);
+  if (!resolved) notFound();
 
   return (
     <>
       <Navigation />
       <main>
-        <BlogArticle slug={slug} />
+        <BlogArticle post={resolved.post} related={resolved.related} />
       </main>
       <Footer />
     </>

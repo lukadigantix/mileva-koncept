@@ -186,7 +186,7 @@ export default function PageTransition() {
     >
       <div ref={markRef} className="will-change-transform">
         <Image
-          src="/mileva-logo.png"
+          src="/logo/mileva-logo.png"
           alt=""
           width={4000}
           height={3080}

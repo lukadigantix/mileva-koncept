@@ -17,7 +17,7 @@ export default function AccommodationLeisure() {
     <section className="bg-[var(--bg)] py-[clamp(6rem,13vw,13rem)]">
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt=""
           width={1306}
           height={1453}

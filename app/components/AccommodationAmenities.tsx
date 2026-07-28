@@ -14,7 +14,7 @@ import { useLang } from "../i18n/LanguageProvider";
  *
  * PHOTOS are placeholders - swap the three paths for real detail shots.
  */
-const PHOTOS = ["/s1.webp", "/smestaj.webp", "/s3.webp"];
+const PHOTOS = ["/smestaj/s1.webp", "/smestaj/smestaj.webp", "/smestaj/s3.webp"];
 
 export default function AccommodationAmenities() {
   const { t } = useLang();
@@ -26,7 +26,7 @@ export default function AccommodationAmenities() {
         {/* Header */}
         <div className="flex flex-col items-center text-center">
           <Image
-            src="/mileva-logo-icon.png"
+            src="/logo/mileva-logo-icon.png"
             alt=""
             width={1306}
             height={1453}

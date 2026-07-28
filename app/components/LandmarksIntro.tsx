@@ -18,7 +18,7 @@ export default function LandmarksIntro() {
     <section className="bg-[var(--bg)] pt-[clamp(9rem,17vw,13rem)] pb-[clamp(6rem,13vw,13rem)]">
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
         <Image
-          src="/mileva-logo.png"
+          src="/logo/mileva-logo.png"
           alt="Mileva"
           width={4000}
           height={3080}

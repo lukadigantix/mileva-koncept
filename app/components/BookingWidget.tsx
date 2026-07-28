@@ -92,7 +92,7 @@ export default function BookingWidget() {
       {/* Header - icon + heading (swaps to the confirmation title on success). */}
       <div className="mx-[var(--gutter)] flex flex-col items-center text-center">
         <Image
-          src="/mileva-logo-icon.png"
+          src="/logo/mileva-logo-icon.png"
           alt=""
           width={1306}
           height={1453}

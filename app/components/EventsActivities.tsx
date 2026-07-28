@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import SplitText from "./SplitText";
 import Modal from "./Modal";
 import { useLang } from "../i18n/LanguageProvider";
@@ -11,7 +12,8 @@ import { useLang } from "../i18n/LanguageProvider";
  * quads, picnics), in the same joined dark-cards treatment used across the site
  * (Restaurants / LeisureGallery / LandmarksFeatured): a grayscale image that
  * brightens + eases on hover, with the activity name centred over it. Each card
- * is a button that opens a modal with the full image + long-form text.
+ * is a button that opens a modal with the full image + long-form text - except
+ * the quads card, which navigates to the /kvadovi page (fleet + route map).
  *
  * Real activity photos, matched by content to the items order: horse riding,
  * panoramic routes (hills), quads, picnic & barbecue (the estate terrace).
@@ -22,6 +24,10 @@ const IMAGES = [
   "/dogadjaji/d2.webp",
   "/dogadjaji/d3.webp",
 ];
+
+/** Per-item page target - a card with a link navigates instead of opening the
+    modal. Order matches `activities.items` in the dictionary. */
+const PAGE_LINKS: (string | null)[] = [null, null, "/kvadovi", null];
 
 export default function EventsActivities() {
   const { t } = useLang();
@@ -50,47 +56,63 @@ export default function EventsActivities() {
         </p>
       </div>
 
-      {/* Joined cards - each opens the detail modal. */}
+      {/* Joined cards - each opens the detail modal, or navigates when the
+          activity has its own page (quads → /kvadovi). */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {a.items.map((item, i) => (
-          <button
-            key={item.name}
-            type="button"
-            onClick={() => setActive(i)}
-            aria-label={item.name}
-            className="group relative flex min-h-[50vh] cursor-pointer flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center lg:min-h-screen lg:border-r lg:last:border-r-0"
-          >
-            {/* Background image - dark, brightens on hover. */}
-            <div className="absolute inset-0">
-              <div className="relative h-full w-full scale-105 opacity-60 grayscale transition-all duration-700 ease-[var(--ease-expo-out)] group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
-                <Image
-                  src={IMAGES[i]}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover"
-                />
+        {a.items.map((item, i) => {
+          const cardClass =
+            "group relative flex min-h-[50vh] cursor-pointer flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center lg:min-h-screen lg:border-r lg:last:border-r-0";
+          const inner = (
+            <>
+              {/* Background image - dark, brightens on hover. */}
+              <div className="absolute inset-0">
+                <div className="relative h-full w-full scale-105 opacity-60 grayscale transition-all duration-700 ease-[var(--ease-expo-out)] group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
+                  <Image
+                    src={IMAGES[i]}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-black/40 transition-opacity duration-700 group-hover:opacity-20" />
               </div>
-              <div className="absolute inset-0 bg-black/40 transition-opacity duration-700 group-hover:opacity-20" />
-            </div>
 
-            {/* Mileva wordmark + activity name, centred over the photo - same
-                lockup as the restaurant concept cards. The whole card is a button
-                (pointer cursor), so no separate read-more label is shown. */}
-            <div className="relative z-10 flex flex-col items-center">
-              <Image
-                src="/mileva-logo-text.png"
-                alt=""
-                width={3266}
-                height={701}
-                className="mb-5 h-[clamp(30px,3.5vw,44px)] w-auto [filter:brightness(0)_invert(1)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
-              />
-              <h3 className="text-[22px] tracking-[0.15em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-                {item.name}
-              </h3>
-            </div>
-          </button>
-        ))}
+              {/* Mileva wordmark + activity name, centred over the photo - same
+                  lockup as the restaurant concept cards. The whole card is
+                  clickable (pointer cursor), so no separate read-more label. */}
+              <div className="relative z-10 flex flex-col items-center">
+                <Image
+                  src="/logo/mileva-logo-text.png"
+                  alt=""
+                  width={3266}
+                  height={701}
+                  className="mb-5 h-[clamp(30px,3.5vw,44px)] w-auto [filter:brightness(0)_invert(1)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
+                />
+                <h3 className="text-[22px] tracking-[0.15em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                  {item.name}
+                </h3>
+              </div>
+            </>
+          );
+
+          const href = PAGE_LINKS[i];
+          return href ? (
+            <Link key={item.name} href={href} aria-label={item.name} className={cardClass}>
+              {inner}
+            </Link>
+          ) : (
+            <button
+              key={item.name}
+              type="button"
+              onClick={() => setActive(i)}
+              aria-label={item.name}
+              className={cardClass}
+            >
+              {inner}
+            </button>
+          );
+        })}
       </div>
 
       {/* Detail modal - full image + long-form copy for the chosen activity. */}
