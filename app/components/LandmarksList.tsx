@@ -13,23 +13,23 @@ const PHOTOS = [
   "/znamenitosti/z7.webp",
 ];
 
-/** One row, backend or dictionary: the terracotta label is the distance
-    (dictionary) or the category (CMS - the API has no distances). */
-export type LandmarkRow = { name: string; desc: string; label: string };
+/** One row: the terracotta label is the distance from the estate. */
+type LandmarkRow = { name: string; desc: string; label: string };
 
 /**
  * Landmarks list - nearby nature spots and cultural sites, each a hairline-
  * divided row: name + short description on the left, distance/category in
  * terracotta on the right. Same centred header treatment as the other text
- * sections. Rows come from the backend CMS when provided (an empty array hides
- * the list but keeps the heading + photos); otherwise from the dictionary.
+ * sections. Rows come from the dictionary - the page is deliberately static.
  */
-export default function LandmarksList({ items: cmsItems }: { items?: LandmarkRow[] }) {
+export default function LandmarksList() {
   const { t } = useLang();
   const list = t.landmarks.list;
-  const rows: LandmarkRow[] =
-    cmsItems ??
-    list.items.map((it) => ({ name: it.name, desc: it.desc, label: it.distance }));
+  const rows: LandmarkRow[] = list.items.map((it) => ({
+    name: it.name,
+    desc: it.desc,
+    label: it.distance,
+  }));
 
   return (
     <section className="bg-[var(--light)] py-[clamp(6rem,13vw,13rem)]">

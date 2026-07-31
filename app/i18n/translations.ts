@@ -1,8 +1,7 @@
 /**
  * Site copy in the three supported languages.
  * Default is Serbian Cyrillic (`sr-cyrl`); the switcher order matches LANGUAGES.
- * Brand names (AKANEYA, PILAR/CARLOTA/MARIE) and the kanji marks are not
- * translated.
+ * Brand names and the kanji marks are not translated.
  */
 
 export const LANGUAGES = [
@@ -36,6 +35,7 @@ export type Dict = {
     landmarks: string;
     blog: string;
     accommodation: string;
+    pool: string;
     contact: string;
   };
   aria: {
@@ -47,6 +47,22 @@ export type Dict = {
     legal: string;
   };
   hero: { tagline: string; scroll: string };
+  /** Kalendar dostupnosti - deljen između rezervacije smeštaja i bazena. */
+  calendar: {
+    /** Tekst u polju dok datum nije izabran. */
+    placeholder: string;
+    /** Naziv mreže i dugmadi za čitače ekrana. */
+    grid: string;
+    prevMonth: string;
+    nextMonth: string;
+    /** Nastavak koji čitač ekrana izgovori na zauzetom danu. */
+    blocked: string;
+    /** Legenda ispod mreže. */
+    free: string;
+    taken: string;
+    clear: string;
+    done: string;
+  };
   blog: {
     hero: { eyebrow: string; title: string; lead: string };
     latest: string;
@@ -56,6 +72,8 @@ export type Dict = {
     minRead: string;
     backToBlog: string;
     related: string;
+    /** Prazna sekcija - dok u admin panelu još nema objavljenih tekstova. */
+    empty: { eyebrow: string; title: string; body: string; cta: string };
   };
   landmarks: {
     hero: { eyebrow: string; tagline: string };
@@ -63,7 +81,18 @@ export type Dict = {
     featured: {
       eyebrow: string;
       heading: string;
-      items: { name: string; desc: string; distance: string }[];
+      /** `label` je kategorija (Споменик природе, Језеро…), ne razdaljina —
+          znamenitosti iz Knića su sve u susedstvu, pa km ovde ništa ne govori. */
+      items: { name: string; desc: string; label: string }[];
+    };
+    stories: {
+      eyebrow: string;
+      heading: string;
+      body: string;
+      /** Autorstvo fotografija - stoje ispod priča, sitnim slogom. */
+      credit: string;
+      /** `place` je selo/mesto, ispisano kao sitna meta linija uz kategoriju. */
+      items: { name: string; label: string; place: string; body: string }[];
     };
     list: {
       heading: string;
@@ -132,6 +161,10 @@ export type Dict = {
       errorCapacity: string;
       errorUnavailable: string;
       errorInvalid: string;
+      /** Backend je odbio zbog previše zahteva sa iste IP adrese (429). */
+      errorRate: string;
+      /** API nije odgovorio - ništa nije upisano, vredi pokušati ponovo. */
+      errorNetwork: string;
     };
   };
   restaurant: {
@@ -202,6 +235,12 @@ export type Dict = {
       subjectPlaceholder: string;
       messagePlaceholder: string;
       send: string;
+      /** Natpis dugmeta dok Server Action šalje poruku. */
+      sending: string;
+      /** Poruka nije poslata - kvar veze ili backend nedostupan. */
+      errorBody: string;
+      /** Backend odbio zbog ograničenja (5 poruka na sat po IP adresi). */
+      errorRate: string;
       successTitle: string;
       successBody: string;
       mapLabel: string;
@@ -225,7 +264,12 @@ export type Dict = {
       items: { name: string; tag: string; desc: string; body: string }[];
     };
     /** Dated events from the backend CMS - only the section chrome is localised. */
-    upcoming: { eyebrow: string; heading: string };
+    upcoming: {
+      eyebrow: string;
+      heading: string;
+      /** Prazna sekcija - dok u admin panelu nema zakazanih termina. */
+      empty: { eyebrow: string; title: string; body: string; cta: string };
+    };
     cta: { eyebrow: string; heading: string; body: string; button: string };
   };
   /** Stranica rentiranja kvadova - sadržaj (kvadovi, rute) stiže iz backenda,
@@ -239,6 +283,18 @@ export type Dict = {
       body: string;
       difficulty: Record<"lako" | "srednje" | "tesko", string>;
     };
+    cta: { body: string; button: string };
+  };
+  /** Stranica bazena - statičan editorijalni sadržaj (bazen nema CMS modul). */
+  pool: {
+    hero: { eyebrow: string; tagline: string };
+    intro: { heading: string; body: string };
+    salt: { heading: string; body: string };
+    /** Natpisi na četiri spojene tamne kartice - redosled prati bazen1-4. */
+    gallery: { labels: string[] };
+    features: { eyebrow: string; heading: string; items: { name: string; desc: string }[] };
+    /** Zatvara stranicu - dnevne posete i zakupi idu preko kontakt forme, jer
+        bazen nije resurs koji javna ruta za rezervacije prima. */
     cta: { body: string; button: string };
   };
   footer: { links: string[]; copyright: string; explore: string; tagline: string };
@@ -255,6 +311,7 @@ export const dictionaries: Record<LangCode, Dict> = {
       landmarks: "Знаменитости",
       blog: "Блог",
       accommodation: "Смештај",
+      pool: "Базен",
       contact: "Контакт",
     },
     aria: {
@@ -270,6 +327,17 @@ export const dictionaries: Record<LangCode, Dict> = {
         "Где традиција сусреће луксуз, а гостопримство постаје уметност",
       scroll: "Скролуј",
     },
+    calendar: {
+      placeholder: "Изаберите датум",
+      grid: "Календар доступности",
+      prevMonth: "Претходни месец",
+      nextMonth: "Следећи месец",
+      blocked: "заузето",
+      free: "Слободно",
+      taken: "Заузето",
+      clear: "Обриши",
+      done: "Готово",
+    },
     blog: {
       hero: {
         eyebrow: "Приче са имања",
@@ -283,6 +351,12 @@ export const dictionaries: Record<LangCode, Dict> = {
       minRead: "мин читања",
       backToBlog: "Назад на блог",
       related: "Још са блога",
+      empty: {
+        eyebrow: "Ускоро",
+        title: "Прве приче стижу ускоро.",
+        body: "Још увек пишемо о храни с ватре, тишини Шумадије и данима на имању. Навратите ускоро - или нам се јавите ако вас нешто посебно занима.",
+        cta: "Јавите нам се",
+      },
     },
     landmarks: {
       hero: {
@@ -291,26 +365,70 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
       intro: {
         heading: "Шумадија око вас - брда, реке и векови приче.",
-        body: "Гривац и његова околина крију мирну шумадијску природу и богато културно наслеђе. Од језера и планинских видика до средњовековних манастира - све је надомак руке, а идеалан полазак управо је Милева.",
+        body: "Гривац и његова околина крију мирну шумадијску природу и богато културно наслеђе. Кнић и Гружа чувају вулкански гребен Борачког крша, „шумадијско море“ Гружанског језера, манастир из доба деспота Стефана и цркву чији помен потиче из 14. века - све је надомак руке, а идеалан полазак управо је Милева.",
       },
       featured: {
         eyebrow: "Издвојено",
         heading: "Најлепше на дохват руке.",
         items: [
           {
+            name: "Борачки крш",
+            desc: "Јединствен природни феномен - вулкански гребен изнад села Борач, чије су стене древне лаве извајале у фантастичне облике. На врховима су темељи средњовековног града Борча.",
+            label: "Споменик природе",
+          },
+          {
             name: "Гружанско језеро",
-            desc: "Мирно вештачко језеро у општини Кнић, настало преграђивањем реке Груже. Омиљено је одредиште за риболов, лагане шетње уз обалу и посматрање птица - станиште је за десетине врста. Опкољено благим брдима и салашима, савршено је за спор дан у природи, само десетак минута вожње од имања.",
-            distance: "~10 km",
+            desc: "„Шумадијско море“ - језеро од 900 хектара са четрдесет километара обале, настало преграђивањем реке Груже. Рај за риболовце, веслаче и посматраче птица.",
+            label: "Језеро",
           },
           {
-            name: "Шумарице, Крагујевац",
-            desc: "Спомен-парк у Крагујевцу, првој престоници модерне Србије, посвећен цивилима страдалим у октобру 1941. године. Кроз зеленило се простиру монументи, међу којима је најпознатији споменик „Прекинути лет“. То је место тихог сећања и шетње, али и живописан парк за одмор - удаљен око тридесет километара од Гривца.",
-            distance: "~30 km",
+            name: "Манастир Каменац",
+            desc: "Шест векова чувар традиције, у селу Честин подно Гледићких планина. Задужбина деспота Стефана Лазаревића у којој се чува „Стопа Светог Саве“.",
+            label: "Манастир",
+          },
+        ],
+      },
+      stories: {
+        eyebrow: "Шта посетити",
+        heading: "Шест разлога да останете дан дуже.",
+        body: "Најлепше од Кнића и Груже - природа, историја и духовно наслеђе, све у кругу од пола сата вожње.",
+        credit: "Фотографије: Туристичка организација општине Кнић",
+        items: [
+          {
+            name: "Борачки крш",
+            label: "Споменик природе",
+            place: "Борач",
+            body: "Вулкански гребен двадесетак километара од Крагујевца, чије су стене древне лаве извајале у фантастичне облике над стрмим литицама. На заравњеним врховима леже темељи и романички бедеми средњовековног града Борча - римског утврђења, а потом важног немањићког и деспотског града, који је под Стефаном Лазаревићем (1405) чувао Србију са севера и надгледао трговачки пут ка Дубровнику. Уредбом Владе Србије из 2019. заштићен је као споменик природе прве категорије, због геолошког, геоморфолошког и еколошког значаја.",
           },
           {
-            name: "Аеродром Морава",
-            desc: "Регионални аеродром код Краљева (Лађевци), који повезује централну Србију са неколико европских дестинација. Модеран путнички терминал отворен је последњих година и полако шири мрежу летова. За госте који долазе издалека, то је најближа ваздушна капија - на око тридесетак километара од Гривца.",
-            distance: "~34 km",
+            name: "Гружанско језеро",
+            label: "Језеро",
+            place: "Кнић",
+            body: "Настало је 1979. преграђивањем реке Груже. Захвата површину од 900 хектара, дугачко је око 10 километара, а обала му мери близу 40. Забележено је 87 врста птица, од којих се 25 гнезди на самом језеру - зато је одавно омиљено међу посматрачима птица и риболовцима. Језеро снабдева водом Крагујевац и околину, а на њему тренирају и такмиче се веслачки, кајакашки и једриличарски клубови из целе Србије.",
+          },
+          {
+            name: "Манастир Каменац",
+            label: "Манастир",
+            place: "Честин",
+            body: "У селу Честин, подно Гледићких планина а недалеко од Груже, подигнут је почетком 15. века као задужбина деспота Стефана Лазаревића. Обнављан је 1547. и 1700. године, а живопис и иконостас довршени су 1870. Предање каже да је грађен истовремено са Каленићем, од камена који је деспотов човек потајно скретао са градње на Борачком кршу - отуда и име Каменац. Од 1966. је женски манастир, а од 1969. под заштитом државе. У њему се чува „Стопа Светог Саве“, за коју се верује да лечи главобољу и враћа вид.",
+          },
+          {
+            name: "Црква у Борчу",
+            label: "Културно добро",
+            place: "Борач",
+            body: "Подно Борачког крша стоји црква чији су писани помени сачувани из 1346. и 1350. године - византијско-српски стил са остацима живописа из 16. века. Кроз векове је рушена и изнова подизана, увек рукама мештана којима је била духовно средиште. Око ње је средњовековно гробље са „капачарама“, украшеним каменим споменицима живих боја и мајсторске израде; ту их има највише те врсте на Балкану, а најстарији су из 16. века. Под заштитом државе је од 1971, а од 1983. носи статус културног добра од великог значаја.",
+          },
+          {
+            name: "Гледићке планине",
+            label: "Планина",
+            place: "Гледић",
+            body: "Пружају се од северозапада ка југоистоку у дужини од 35 километара и спадају међу највише и најдуже шумадијске планине; највиши врх је Самар, на 922 метра. Богате су шумом, изворима питке воде, печуркама, лековитим биљем и самониклим воћем, а по обронцима су аутентична стара српска села с кућама старијим од сто година. У њиховом окриљу су манастири из 15. и 16. века - Каменац, Каленић и Љубостиња. Сваке године планинарски клубови организују „Гледићку трансверзалу“.",
+          },
+          {
+            name: "Котленик",
+            label: "Планина",
+            place: "Котленик",
+            body: "Планина троугластог облика између Западне Мораве, реке Груже и Бресничке реке, дугачка око 21 километар. Вулканске стене изградиле су јаме, вртаче и котлине по којима је и добила име; највиши врхови су Велики врх и Ливада, на 748 метара. Средином планине влада шума којом газдују „Србијашуме“, а по падинама су се низала села. На Градини, на 599 метара, леже рушевине старог утврђења овалне основе око 100 × 50 метара, још увек неистражене. Поток Котлењача има водопад, а обележена стаза од 26,5 километара води од Лесковца преко Котленика до Кнића.",
           },
         ],
       },
@@ -318,24 +436,34 @@ export const dictionaries: Record<LangCode, Dict> = {
         heading: "Још у близини",
         items: [
           {
+            name: "Шумарице, Крагујевац",
+            desc: "Спомен-парк у првој престоници модерне Србије, посвећен цивилима страдалим у октобру 1941 - са чувеним спомеником „Прекинути лет“.",
+            distance: "~30 км",
+          },
+          {
+            name: "Аеродром Морава",
+            desc: "Регионални аеродром код Краљева (Лађевци) - најближа ваздушна капија за госте који долазе издалека.",
+            distance: "~34 км",
+          },
+          {
             name: "Планина Рудник",
-            desc: "Највиши врх Шумадије (Цвијићев врх, 1132 m) - планински ваздух, шуме и стазе, са бањским центром у подножју.",
-            distance: "~35 km",
+            desc: "Највиши врх Шумадије (Цвијићев врх, 1132 м) - планински ваздух, шуме и стазе, са бањским центром у подножју.",
+            distance: "~35 км",
           },
           {
             name: "Манастир Каленић",
             desc: "Бисер моравске школе на обронцима Гледићких планина, с почетка 15. века.",
-            distance: "~45 km",
+            distance: "~45 км",
           },
           {
             name: "Манастир Жича",
             desc: "Црвена задужбина из 13. века код Краљева - крунидбена црква српских краљева и седиште прве српске архиепископије.",
-            distance: "~48 km",
+            distance: "~48 км",
           },
           {
             name: "Опленац, Топола",
             desc: "Задужбина Карађорђа - петокуполна црква Светог Ђорђа са мозаицима и маузолеј династије Карађорђевић на брегу изнад Тополе.",
-            distance: "~50 km",
+            distance: "~50 км",
           },
         ],
       },
@@ -469,6 +597,8 @@ export const dictionaries: Record<LangCode, Dict> = {
         errorCapacity: "Изабрана јединица прима до {n} гостију.",
         errorUnavailable: "Нажалост, термин је управо заузет. Покушајте са другим датумима.",
         errorInvalid: "Молимо попуните сва обавезна поља.",
+        errorRate: "Примили смо више захтева са ове адресе. Сачекајте мало па покушајте поново.",
+        errorNetwork: "Тренутно не можемо да примимо захтев. Покушајте поново за који тренутак.",
       },
     },
     restaurant: {
@@ -668,6 +798,9 @@ export const dictionaries: Record<LangCode, Dict> = {
         subjectPlaceholder: "О чему се ради?",
         messagePlaceholder: "Ваша порука…",
         send: "Пошаљи поруку",
+        sending: "Шаље се…",
+        errorBody: "Порука тренутно не може да се пошаље. Покушајте поново или нам пишите директно на имејл.",
+        errorRate: "Послато је превише порука са ове адресе. Сачекајте сат времена или нам пишите директно на имејл.",
         successTitle: "Хвала вам!",
         successBody:
           "Ваша порука је послата. Јавићемо вам се у најкраћем могућем року.",
@@ -751,6 +884,12 @@ export const dictionaries: Record<LangCode, Dict> = {
       upcoming: {
         eyebrow: "Календар дешавања",
         heading: "Предстојећи догађаји",
+        empty: {
+          eyebrow: "Ускоро",
+          title: "Програм се управо припрема.",
+          body: "Тренутно нема заказаних термина. Јавите нам се да вас обавестимо чим објавимо нове датуме - или да заједно испланирамо вашу прославу.",
+          cta: "Јавите нам се",
+        },
       },
       cta: {
         eyebrow: "Планирате догађај?",
@@ -777,6 +916,39 @@ export const dictionaries: Record<LangCode, Dict> = {
         button: "Контактирајте нас",
       },
     },
+    pool: {
+      hero: {
+        eyebrow: "Базен",
+        tagline: "Дашак мора у срцу Шумадије - отворени базен са сланом водом.",
+      },
+      intro: {
+        heading: "Слана вода, отворено небо и мир брда.",
+        body: "У дворишту имања, окружено зеленилом и погледом на шумадијска брда, пружа се огледало слане воде - базен преливног типа чија се ивица губи у хоризонту. Овде дан тече споро: јутро припада првим круговима у тишини, поподне лежаљкама у хладу, а вече златном сату, када се вода умири и имање утоне у спокој.",
+      },
+      gallery: {
+        labels: ["Мирна јутра", "Ручак поред воде", "Летња поподнева", "Вечери уз фењере"],
+      },
+      salt: {
+        heading: "Зашто слана вода?",
+        body: "Со уместо хлора чини воду мекшом и природнијом: не суши кожу, не штипа очи и оставља осећај свежине који траје и после купања. За децу је нежнија, за одрасле пријатнија - а уз загревану воду сезона купања траје дуже од лета. Најближе мору што Шумадија уме да пружи.",
+      },
+      features: {
+        eyebrow: "Поред воде",
+        heading: "Шта вас чека на базену.",
+        items: [
+          { name: "Слана вода", desc: "Блажа за кожу и очи, без оштрине хлора - природан осећај мора." },
+          { name: "Загревана вода", desc: "Пријатна температура и када јутра захладе - купање од првих пролећних дана." },
+          { name: "Прелив са погледом", desc: "Ивица базена стапа се са линијом шумадијских брда." },
+          { name: "Плићак за најмлађе", desc: "Плићи део базена, на дохват руке одраслима." },
+          { name: "Лежаљке и сунцобрани", desc: "Хлад, пешкири и место за цео дан поред воде." },
+          { name: "Бар уз базен", desc: "Освежење, кафа или чаша вина - а ручак вас чека у ресторану." },
+        ],
+      },
+      cta: {
+        body: "Базен је отворен током сезоне купања. За термине, приватне закупе и прославе поред воде - јавите нам се.",
+        button: "Контактирајте нас",
+      },
+    },
     footer: {
       links: ["Политика колачића", "Политика приватности", "Правне напомене"],
       copyright: "© 2026 Милева концепт",
@@ -800,6 +972,7 @@ export const dictionaries: Record<LangCode, Dict> = {
       landmarks: "Znamenitosti",
       blog: "Blog",
       accommodation: "Smeštaj",
+      pool: "Bazen",
       contact: "Kontakt",
     },
     aria: {
@@ -815,6 +988,17 @@ export const dictionaries: Record<LangCode, Dict> = {
         "Gde tradicija susreće luksuz, a gostoprimstvo postaje umetnost",
       scroll: "Skroluj",
     },
+    calendar: {
+      placeholder: "Izaberite datum",
+      grid: "Kalendar dostupnosti",
+      prevMonth: "Prethodni mesec",
+      nextMonth: "Sledeći mesec",
+      blocked: "zauzeto",
+      free: "Slobodno",
+      taken: "Zauzeto",
+      clear: "Obriši",
+      done: "Gotovo",
+    },
     blog: {
       hero: {
         eyebrow: "Priče sa imanja",
@@ -828,6 +1012,12 @@ export const dictionaries: Record<LangCode, Dict> = {
       minRead: "min čitanja",
       backToBlog: "Nazad na blog",
       related: "Još sa bloga",
+      empty: {
+        eyebrow: "Uskoro",
+        title: "Prve priče stižu uskoro.",
+        body: "Još uvek pišemo o hrani s vatre, tišini Šumadije i danima na imanju. Navratite uskoro - ili nam se javite ako vas nešto posebno zanima.",
+        cta: "Javite nam se",
+      },
     },
     landmarks: {
       hero: {
@@ -836,32 +1026,86 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
       intro: {
         heading: "Šumadija oko vas - brda, reke i vekovi priče.",
-        body: "Grivac i njegova okolina kriju mirnu šumadijsku prirodu i bogato kulturno nasleđe. Od jezera i planinskih vidika do srednjovekovnih manastira - sve je nadomak ruke, a idealan polazak upravo je Mileva.",
+        body: "Grivac i njegova okolina kriju mirnu šumadijsku prirodu i bogato kulturno nasleđe. Knić i Gruža čuvaju vulkanski greben Boračkog krša, „šumadijsko more“ Gružanskog jezera, manastir iz doba despota Stefana i crkvu čiji pomen potiče iz 14. veka - sve je nadomak ruke, a idealan polazak upravo je Mileva.",
       },
       featured: {
         eyebrow: "Izdvojeno",
         heading: "Najlepše na dohvat ruke.",
         items: [
           {
+            name: "Borački krš",
+            desc: "Jedinstven prirodni fenomen - vulkanski greben iznad sela Borač, čije su stene drevne lave izvajale u fantastične oblike. Na vrhovima su temelji srednjovekovnog grada Borča.",
+            label: "Spomenik prirode",
+          },
+          {
             name: "Gružansko jezero",
-            desc: "Mirno veštačko jezero u opštini Knić, nastalo pregrađivanjem reke Gruže. Omiljeno je odredište za ribolov, lagane šetnje uz obalu i posmatranje ptica - stanište je za desetine vrsta. Opkoljeno blagim brdima i salašima, savršeno je za spor dan u prirodi, samo desetak minuta vožnje od imanja.",
-            distance: "~10 km",
+            desc: "„Šumadijsko more“ - jezero od 900 hektara sa četrdeset kilometara obale, nastalo pregrađivanjem reke Gruže. Raj za ribolovce, veslače i posmatrače ptica.",
+            label: "Jezero",
           },
           {
-            name: "Šumarice, Kragujevac",
-            desc: "Spomen-park u Kragujevcu, prvoj prestonici moderne Srbije, posvećen civilima stradalim u oktobru 1941. godine. Kroz zelenilo se prostiru monumenti, među kojima je najpoznatiji spomenik „Prekinuti let“. To je mesto tihog sećanja i šetnje, ali i živopisan park za odmor - udaljen oko trideset kilometara od Grivca.",
-            distance: "~30 km",
+            name: "Manastir Kamenac",
+            desc: "Šest vekova čuvar tradicije, u selu Čestin podno Gledićkih planina. Zadužbina despota Stefana Lazarevića u kojoj se čuva „Stopa Svetog Save“.",
+            label: "Manastir",
+          },
+        ],
+      },
+      stories: {
+        eyebrow: "Šta posetiti",
+        heading: "Šest razloga da ostanete dan duže.",
+        body: "Najlepše od Knića i Gruže - priroda, istorija i duhovno nasleđe, sve u krugu od pola sata vožnje.",
+        credit: "Fotografije: Turistička organizacija opštine Knić",
+        items: [
+          {
+            name: "Borački krš",
+            label: "Spomenik prirode",
+            place: "Borač",
+            body: "Vulkanski greben dvadesetak kilometara od Kragujevca, čije su stene drevne lave izvajale u fantastične oblike nad strmim liticama. Na zaravnjenim vrhovima leže temelji i romanički bedemi srednjovekovnog grada Borča - rimskog utvrđenja, a potom važnog nemanjićkog i despotskog grada, koji je pod Stefanom Lazarevićem (1405) čuvao Srbiju sa severa i nadgledao trgovački put ka Dubrovniku. Uredbom Vlade Srbije iz 2019. zaštićen je kao spomenik prirode prve kategorije, zbog geološkog, geomorfološkog i ekološkog značaja.",
           },
           {
-            name: "Aerodrom Morava",
-            desc: "Regionalni aerodrom kod Kraljeva (Lađevci), koji povezuje centralnu Srbiju sa nekoliko evropskih destinacija. Moderan putnički terminal otvoren je poslednjih godina i polako širi mrežu letova. Za goste koji dolaze izdaleka, to je najbliža vazdušna kapija - na oko tridesetak kilometara od Grivca.",
-            distance: "~34 km",
+            name: "Gružansko jezero",
+            label: "Jezero",
+            place: "Knić",
+            body: "Nastalo je 1979. pregrađivanjem reke Gruže. Zahvata površinu od 900 hektara, dugačko je oko 10 kilometara, a obala mu meri blizu 40. Zabeleženo je 87 vrsta ptica, od kojih se 25 gnezdi na samom jezeru - zato je odavno omiljeno među posmatračima ptica i ribolovcima. Jezero snabdeva vodom Kragujevac i okolinu, a na njemu treniraju i takmiče se veslački, kajakaški i jedriličarski klubovi iz cele Srbije.",
+          },
+          {
+            name: "Manastir Kamenac",
+            label: "Manastir",
+            place: "Čestin",
+            body: "U selu Čestin, podno Gledićkih planina a nedaleko od Gruže, podignut je početkom 15. veka kao zadužbina despota Stefana Lazarevića. Obnavljan je 1547. i 1700. godine, a živopis i ikonostas dovršeni su 1870. Predanje kaže da je građen istovremeno sa Kalenićem, od kamena koji je despotov čovek potajno skretao sa gradnje na Boračkom kršu - otuda i ime Kamenac. Od 1966. je ženski manastir, a od 1969. pod zaštitom države. U njemu se čuva „Stopa Svetog Save“, za koju se veruje da leči glavobolju i vraća vid.",
+          },
+          {
+            name: "Crkva u Borču",
+            label: "Kulturno dobro",
+            place: "Borač",
+            body: "Podno Boračkog krša stoji crkva čiji su pisani pomeni sačuvani iz 1346. i 1350. godine - vizantijsko-srpski stil sa ostacima živopisa iz 16. veka. Kroz vekove je rušena i iznova podizana, uvek rukama meštana kojima je bila duhovno središte. Oko nje je srednjovekovno groblje sa „kapačarama“, ukrašenim kamenim spomenicima živih boja i majstorske izrade; tu ih ima najviše te vrste na Balkanu, a najstariji su iz 16. veka. Pod zaštitom države je od 1971, a od 1983. nosi status kulturnog dobra od velikog značaja.",
+          },
+          {
+            name: "Gledićke planine",
+            label: "Planina",
+            place: "Gledić",
+            body: "Pružaju se od severozapada ka jugoistoku u dužini od 35 kilometara i spadaju među najviše i najduže šumadijske planine; najviši vrh je Samar, na 922 metra. Bogate su šumom, izvorima pitke vode, pečurkama, lekovitim biljem i samoniklim voćem, a po obroncima su autentična stara srpska sela s kućama starijim od sto godina. U njihovom okrilju su manastiri iz 15. i 16. veka - Kamenac, Kalenić i Ljubostinja. Svake godine planinarski klubovi organizuju „Gledićku transverzalu“.",
+          },
+          {
+            name: "Kotlenik",
+            label: "Planina",
+            place: "Kotlenik",
+            body: "Planina trouglastog oblika između Zapadne Morave, reke Gruže i Bresničke reke, dugačka oko 21 kilometar. Vulkanske stene izgradile su jame, vrtače i kotline po kojima je i dobila ime; najviši vrhovi su Veliki vrh i Livada, na 748 metara. Sredinom planine vlada šuma kojom gazduju „Srbijašume“, a po padinama su se nizala sela. Na Gradini, na 599 metara, leže ruševine starog utvrđenja ovalne osnove oko 100 × 50 metara, još uvek neistražene. Potok Kotlenjača ima vodopad, a obeležena staza od 26,5 kilometara vodi od Leskovca preko Kotlenika do Knića.",
           },
         ],
       },
       list: {
         heading: "Još u blizini",
         items: [
+          {
+            name: "Šumarice, Kragujevac",
+            desc: "Spomen-park u prvoj prestonici moderne Srbije, posvećen civilima stradalim u oktobru 1941 - sa čuvenim spomenikom „Prekinuti let“.",
+            distance: "~30 km",
+          },
+          {
+            name: "Aerodrom Morava",
+            desc: "Regionalni aerodrom kod Kraljeva (Lađevci) - najbliža vazdušna kapija za goste koji dolaze izdaleka.",
+            distance: "~34 km",
+          },
           {
             name: "Planina Rudnik",
             desc: "Najviši vrh Šumadije (Cvijićev vrh, 1132 m) - planinski vazduh, šume i staze, sa banjskim centrom u podnožju.",
@@ -1014,6 +1258,8 @@ export const dictionaries: Record<LangCode, Dict> = {
         errorCapacity: "Izabrana jedinica prima do {n} gostiju.",
         errorUnavailable: "Nažalost, termin je upravo zauzet. Pokušajte sa drugim datumima.",
         errorInvalid: "Molimo popunite sva obavezna polja.",
+        errorRate: "Primili smo više zahteva sa ove adrese. Sačekajte malo pa pokušajte ponovo.",
+        errorNetwork: "Trenutno ne možemo da primimo zahtev. Pokušajte ponovo za koji trenutak.",
       },
     },
     restaurant: {
@@ -1213,6 +1459,9 @@ export const dictionaries: Record<LangCode, Dict> = {
         subjectPlaceholder: "O čemu se radi?",
         messagePlaceholder: "Vaša poruka…",
         send: "Pošalji poruku",
+        sending: "Šalje se…",
+        errorBody: "Poruka trenutno ne može da se pošalje. Pokušajte ponovo ili nam pišite direktno na imejl.",
+        errorRate: "Poslato je previše poruka sa ove adrese. Sačekajte sat vremena ili nam pišite direktno na imejl.",
         successTitle: "Hvala vam!",
         successBody:
           "Vaša poruka je poslata. Javićemo vam se u najkraćem mogućem roku.",
@@ -1296,6 +1545,12 @@ export const dictionaries: Record<LangCode, Dict> = {
       upcoming: {
         eyebrow: "Kalendar dešavanja",
         heading: "Predstojeći događaji",
+        empty: {
+          eyebrow: "Uskoro",
+          title: "Program se upravo priprema.",
+          body: "Trenutno nema zakazanih termina. Javite nam se da vas obavestimo čim objavimo nove datume - ili da zajedno isplaniramo vašu proslavu.",
+          cta: "Javite nam se",
+        },
       },
       cta: {
         eyebrow: "Planirate događaj?",
@@ -1322,6 +1577,39 @@ export const dictionaries: Record<LangCode, Dict> = {
         button: "Kontaktirajte nas",
       },
     },
+    pool: {
+      hero: {
+        eyebrow: "Bazen",
+        tagline: "Dašak mora u srcu Šumadije - otvoreni bazen sa slanom vodom.",
+      },
+      intro: {
+        heading: "Slana voda, otvoreno nebo i mir brda.",
+        body: "U dvorištu imanja, okruženo zelenilom i pogledom na šumadijska brda, pruža se ogledalo slane vode - bazen prelivnog tipa čija se ivica gubi u horizontu. Ovde dan teče sporo: jutro pripada prvim krugovima u tišini, popodne ležaljkama u hladu, a veče zlatnom satu, kada se voda umiri i imanje utone u spokoj.",
+      },
+      gallery: {
+        labels: ["Mirna jutra", "Ručak pored vode", "Letnja popodneva", "Večeri uz fenjere"],
+      },
+      salt: {
+        heading: "Zašto slana voda?",
+        body: "So umesto hlora čini vodu mekšom i prirodnijom: ne suši kožu, ne štipa oči i ostavlja osećaj svežine koji traje i posle kupanja. Za decu je nežnija, za odrasle prijatnija - a uz zagrevanu vodu sezona kupanja traje duže od leta. Najbliže moru što Šumadija ume da pruži.",
+      },
+      features: {
+        eyebrow: "Pored vode",
+        heading: "Šta vas čeka na bazenu.",
+        items: [
+          { name: "Slana voda", desc: "Blaža za kožu i oči, bez oštrine hlora - prirodan osećaj mora." },
+          { name: "Zagrevana voda", desc: "Prijatna temperatura i kada jutra zahlade - kupanje od prvih prolećnih dana." },
+          { name: "Preliv sa pogledom", desc: "Ivica bazena stapa se sa linijom šumadijskih brda." },
+          { name: "Plićak za najmlađe", desc: "Plići deo bazena, na dohvat ruke odraslima." },
+          { name: "Ležaljke i suncobrani", desc: "Hlad, peškiri i mesto za ceo dan pored vode." },
+          { name: "Bar uz bazen", desc: "Osveženje, kafa ili čaša vina - a ručak vas čeka u restoranu." },
+        ],
+      },
+      cta: {
+        body: "Bazen je otvoren tokom sezone kupanja. Za termine, privatne zakupe i proslave pored vode - javite nam se.",
+        button: "Kontaktirajte nas",
+      },
+    },
     footer: {
       links: ["Politika kolačića", "Politika privatnosti", "Pravne napomene"],
       copyright: "© 2026 Mileva koncept",
@@ -1345,6 +1633,7 @@ export const dictionaries: Record<LangCode, Dict> = {
       landmarks: "Landmarks",
       blog: "Blog",
       accommodation: "Accommodation",
+      pool: "Pool",
       contact: "Contact",
     },
     aria: {
@@ -1359,6 +1648,17 @@ export const dictionaries: Record<LangCode, Dict> = {
       tagline: "Where tradition meets luxury, and hospitality becomes art",
       scroll: "Scroll",
     },
+    calendar: {
+      placeholder: "Select a date",
+      grid: "Availability calendar",
+      prevMonth: "Previous month",
+      nextMonth: "Next month",
+      blocked: "booked",
+      free: "Available",
+      taken: "Booked",
+      clear: "Clear",
+      done: "Done",
+    },
     blog: {
       hero: {
         eyebrow: "Stories from the estate",
@@ -1372,6 +1672,12 @@ export const dictionaries: Record<LangCode, Dict> = {
       minRead: "min read",
       backToBlog: "Back to the blog",
       related: "More from the blog",
+      empty: {
+        eyebrow: "Coming soon",
+        title: "The first stories are on their way.",
+        body: "We are still writing about food over fire, the quiet of Šumadija and days spent on the estate. Look in again soon - or get in touch if there is something you would like to read about.",
+        cta: "Get in touch",
+      },
     },
     landmarks: {
       hero: {
@@ -1380,32 +1686,86 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
       intro: {
         heading: "Šumadija around you - hills, rivers and centuries of story.",
-        body: "Grivac and its surroundings hold the quiet nature of Šumadija and a rich cultural heritage. From lakes and mountain vistas to medieval monasteries - everything is within reach, and Mileva is the ideal starting point.",
+        body: "Grivac and its surroundings hold the quiet nature of Šumadija and a rich cultural heritage. Knić and Gruža keep the volcanic ridge of Borački krš, the 'Šumadija sea' of Gruža Lake, a monastery from the days of Despot Stefan and a church first recorded in the 14th century - everything within reach, and Mileva is the ideal starting point.",
       },
       featured: {
         eyebrow: "Featured",
         heading: "The finest within easy reach.",
         items: [
           {
+            name: "Borački krš",
+            desc: "A singular natural phenomenon - a volcanic ridge above the village of Borač, its rock carved by ancient lava into fantastical shapes. The foundations of the medieval town of Borač crown its peaks.",
+            label: "Natural monument",
+          },
+          {
             name: "Gruža Lake",
-            desc: "A calm reservoir in the Knić municipality, formed by damming the Gruža river. It is a favourite spot for fishing, gentle walks along the shore and birdwatching - it is home to dozens of species. Ringed by soft hills and homesteads, it is perfect for a slow day in nature, just ten minutes' drive from the estate.",
-            distance: "~10 km",
+            desc: "The 'Šumadija sea' - a 900-hectare lake with forty kilometres of shoreline, formed by damming the Gruža river. A haven for anglers, rowers and birdwatchers.",
+            label: "Lake",
           },
           {
-            name: "Šumarice, Kragujevac",
-            desc: "A memorial park in Kragujevac, the first capital of modern Serbia, dedicated to the civilians who perished in October 1941. Monuments are scattered across the greenery, the best known being the 'Interrupted Flight'. It is a place of quiet remembrance and gentle walks, and a scenic park to rest in - about thirty kilometres from Grivac.",
-            distance: "~30 km",
+            name: "Kamenac Monastery",
+            desc: "Six centuries a guardian of tradition, in the village of Čestin below the Gledić mountains. An endowment of Despot Stefan Lazarević, home to the 'Footprint of Saint Sava'.",
+            label: "Monastery",
+          },
+        ],
+      },
+      stories: {
+        eyebrow: "What to visit",
+        heading: "Six reasons to stay a day longer.",
+        body: "The best of Knić and Gruža - nature, history and spiritual heritage, all within half an hour's drive.",
+        credit: "Photographs: Tourist Organisation of the Knić Municipality",
+        items: [
+          {
+            name: "Borački krš",
+            label: "Natural monument",
+            place: "Borač",
+            body: "A volcanic ridge some twenty kilometres from Kragujevac, its rock carved by ancient lava into fantastical shapes above steep cliffs. On the levelled summits lie the foundations and Romanesque ramparts of the medieval town of Borač - a Roman fortification, later an important Nemanjić and despotic town that under Stefan Lazarević (1405) guarded Serbia from the north and watched over the trade road to Dubrovnik. A 2019 decree of the Government of Serbia protected it as a first-category natural monument for its geological, geomorphological and ecological significance.",
           },
           {
-            name: "Morava Airport",
-            desc: "A regional airport near Kraljevo (Lađevci), connecting central Serbia with several European destinations. Its modern passenger terminal opened in recent years and is slowly expanding its network of flights. For guests arriving from afar, it is the nearest gateway by air - about thirty kilometres from Grivac.",
-            distance: "~34 km",
+            name: "Gruža Lake",
+            label: "Lake",
+            place: "Knić",
+            body: "Created in 1979 by damming the Gruža river. It covers 900 hectares, runs about 10 kilometres long, and its shoreline measures close to 40. Eighty-seven bird species have been recorded here, twenty-five of them nesting on the lake itself - which is why it has long been a favourite with birdwatchers and anglers. The lake supplies water to Kragujevac and its surroundings, and rowing, kayaking and sailing clubs from all over Serbia train and compete on it.",
+          },
+          {
+            name: "Kamenac Monastery",
+            label: "Monastery",
+            place: "Čestin",
+            body: "In the village of Čestin, below the Gledić mountains and not far from Gruža, it was raised in the early 15th century as an endowment of Despot Stefan Lazarević. It was restored in 1547 and 1700, and its frescoes and iconostasis were completed in 1870. Legend holds that it was built at the same time as Kalenić, from stone a despot's man quietly diverted from the works at Borački krš - hence the name Kamenac, 'little stone'. It has been a convent since 1966 and under state protection since 1969. It keeps the 'Footprint of Saint Sava', believed to cure headaches and restore sight.",
+          },
+          {
+            name: "Church at Borač",
+            label: "Cultural monument",
+            place: "Borač",
+            body: "Below Borački krš stands a church first recorded in writing in 1346 and 1350 - Byzantine-Serbian in style, with remnants of 16th-century frescoes. Through the centuries it was destroyed and raised again, always by the hands of locals for whom it was a spiritual centre. Around it lies a medieval graveyard of 'kapačare', ornate stone monuments in vivid colours and masterly craft; this is the largest concentration of their kind in the Balkans, the oldest dating to the 16th century. Under state protection since 1971, it has held the status of a cultural monument of great importance since 1983.",
+          },
+          {
+            name: "Gledić Mountains",
+            label: "Mountain",
+            place: "Gledić",
+            body: "They run northwest to southeast for 35 kilometres and rank among the highest and longest ranges in Šumadija; the highest peak is Samar, at 922 metres. They are rich in forest, springs of drinking water, mushrooms, medicinal herbs and wild fruit, and their slopes hold authentic old Serbian villages with houses more than a hundred years old. Sheltered among them are monasteries from the 15th and 16th centuries - Kamenac, Kalenić and Ljubostinja. Every year mountaineering clubs organise the 'Gledić traverse'.",
+          },
+          {
+            name: "Kotlenik",
+            label: "Mountain",
+            place: "Kotlenik",
+            body: "A triangular mountain between the Western Morava, the Gruža and the Bresnica rivers, roughly 21 kilometres long. Volcanic rock has shaped the pits, sinkholes and basins that gave it its name; the highest peaks are Veliki vrh and Livada, at 748 metres. Forest managed by 'Srbijašume' covers the centre of the range, while villages string along its slopes. On Gradina, at 599 metres, lie the ruins of an old fortification, oval in plan and roughly 100 × 50 metres, still unexcavated. The Kotlenjača stream has a waterfall, and a marked 26.5-kilometre trail leads from Leskovac over Kotlenik to Knić.",
           },
         ],
       },
       list: {
         heading: "More nearby",
         items: [
+          {
+            name: "Šumarice, Kragujevac",
+            desc: "A memorial park in the first capital of modern Serbia, dedicated to the civilians who perished in October 1941 - home to the famed 'Interrupted Flight' monument.",
+            distance: "~30 km",
+          },
+          {
+            name: "Morava Airport",
+            desc: "A regional airport near Kraljevo (Lađevci) - the nearest gateway by air for guests arriving from afar.",
+            distance: "~34 km",
+          },
           {
             name: "Mount Rudnik",
             desc: "The highest peak of Šumadija (Cvijić Peak, 1,132 m) - mountain air, forests and trails, with a spa resort at its foot.",
@@ -1558,6 +1918,8 @@ export const dictionaries: Record<LangCode, Dict> = {
         errorCapacity: "The selected unit sleeps up to {n} guests.",
         errorUnavailable: "Sorry, that period was just booked. Please try different dates.",
         errorInvalid: "Please fill in all required fields.",
+        errorRate: "We've had several requests from this address. Please wait a moment and try again.",
+        errorNetwork: "We can't take the request right now. Please try again in a moment.",
       },
     },
     restaurant: {
@@ -1757,6 +2119,9 @@ export const dictionaries: Record<LangCode, Dict> = {
         subjectPlaceholder: "What is it about?",
         messagePlaceholder: "Your message…",
         send: "Send message",
+        sending: "Sending…",
+        errorBody: "The message could not be sent right now. Please try again, or email us directly.",
+        errorRate: "Too many messages have been sent from this address. Please wait an hour, or email us directly.",
         successTitle: "Thank you!",
         successBody:
           "Your message has been sent. We'll get back to you as soon as possible.",
@@ -1840,6 +2205,12 @@ export const dictionaries: Record<LangCode, Dict> = {
       upcoming: {
         eyebrow: "What's on",
         heading: "Upcoming events",
+        empty: {
+          eyebrow: "Coming soon",
+          title: "The programme is being put together.",
+          body: "There are no scheduled dates at the moment. Get in touch and we will let you know as soon as new ones are announced - or we can plan your celebration together.",
+          cta: "Get in touch",
+        },
       },
       cta: {
         eyebrow: "Planning an event?",
@@ -1863,6 +2234,39 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
       cta: {
         body: "To book a time slot, gear or a guided tour - get in touch.",
+        button: "Contact us",
+      },
+    },
+    pool: {
+      hero: {
+        eyebrow: "The pool",
+        tagline: "A breath of the seaside in the heart of Šumadija - an open-air saltwater pool.",
+      },
+      intro: {
+        heading: "Salt water, open sky and the calm of the hills.",
+        body: "In the courtyard of the estate, wrapped in greenery and views of the Šumadija hills, lies a mirror of salt water - an infinity-edge pool that melts into the horizon. The day runs slow here: mornings belong to quiet first laps, afternoons to loungers in the shade, and evenings to the golden hour, when the water stills and the estate settles into calm.",
+      },
+      gallery: {
+        labels: ["Calm mornings", "Lunch by the water", "Summer afternoons", "Lantern-lit evenings"],
+      },
+      salt: {
+        heading: "Why salt water?",
+        body: "Salt instead of chlorine makes the water softer and more natural: it doesn't dry the skin or sting the eyes, and it leaves a freshness that lingers after the swim. Gentler for children, kinder for adults - and with heated water, the season stretches well beyond summer. The closest thing to the sea that Šumadija can offer.",
+      },
+      features: {
+        eyebrow: "By the water",
+        heading: "What awaits you at the pool.",
+        items: [
+          { name: "Salt water", desc: "Gentle on skin and eyes, without the bite of chlorine - a natural feel of the sea." },
+          { name: "Heated water", desc: "A pleasant temperature even on cooler mornings - swimming from the first days of spring." },
+          { name: "Infinity edge with a view", desc: "The pool's edge dissolves into the line of the Šumadija hills." },
+          { name: "Shallows for the little ones", desc: "A shallow end, within arm's reach of the grown-ups." },
+          { name: "Loungers & parasols", desc: "Shade, towels and a place to spend the whole day by the water." },
+          { name: "Poolside bar", desc: "A refreshment, a coffee or a glass of wine - with lunch waiting in the restaurant." },
+        ],
+      },
+      cta: {
+        body: "The pool is open throughout the swimming season. For times, private hire and celebrations by the water - get in touch.",
         button: "Contact us",
       },
     },

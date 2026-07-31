@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./LocaleLink";
 import SplitText from "./SplitText";
 import Modal from "./Modal";
 import { useLang } from "../i18n/LanguageProvider";
@@ -66,7 +66,7 @@ export default function EventsActivities() {
             <>
               {/* Background image - dark, brightens on hover. */}
               <div className="absolute inset-0">
-                <div className="relative h-full w-full scale-105 opacity-60 grayscale transition-all duration-700 ease-[var(--ease-expo-out)] group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
+                <div className="relative h-full w-full transition-all duration-700 ease-[var(--ease-expo-out)] can-hover:scale-105 can-hover:opacity-60 can-hover:grayscale group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
                   <Image
                     src={IMAGES[i]}
                     alt=""
@@ -75,7 +75,7 @@ export default function EventsActivities() {
                     className="object-cover"
                   />
                 </div>
-                <div className="absolute inset-0 bg-black/40 transition-opacity duration-700 group-hover:opacity-20" />
+                <div className="absolute inset-0 bg-black/20 transition-opacity duration-700 can-hover:bg-black/40 group-hover:opacity-20" />
               </div>
 
               {/* Mileva wordmark + activity name, centred over the photo - same

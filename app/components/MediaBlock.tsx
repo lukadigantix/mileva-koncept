@@ -15,7 +15,7 @@ export default function MediaBlock() {
           duration={1.4}
         >
           <Image
-            src="/pocetna/midhero.webp"
+            src="/pocetna/midhero@3x.webp"
             alt="Odmaralište Mileva"
             fill
             sizes="90vw"

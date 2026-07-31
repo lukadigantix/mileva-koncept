@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./LocaleLink";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
-import { useLang } from "../i18n/LanguageProvider";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import type { PublicQuadRoute } from "../lib/api";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+
+/** Ruta sa sajta, obogaćena GPX linkom (apsolutan URL gradi server stranica). */
+export type SiteQuadRoute = PublicQuadRoute & { gpxUrl: string };
 
 /** Isti bazni stil kao u admin panelu (Carto Positron, bez API ključa). */
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
@@ -24,8 +27,9 @@ const layerId = (id: string) => `route-${id}`;
  * or clicking its line highlights it and fits the view to it. Closes with the
  * contact CTA, since bookings go through the contact page for now.
  */
-export default function QuadRoutes({ routes }: { routes: PublicQuadRoute[] }) {
+export default function QuadRoutes({ routes }: { routes: SiteQuadRoute[] }) {
   const { t } = useLang();
+  const cms = useCms();
   const c = t.quads.routes;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -171,29 +175,39 @@ export default function QuadRoutes({ routes }: { routes: PublicQuadRoute[] }) {
                 const active = route.id === activeId;
                 return (
                   <li key={route.id} className="border-b border-[var(--border)]">
-                    <button
-                      type="button"
-                      onClick={() => setActiveId(active ? null : route.id)}
-                      className="block w-full cursor-pointer py-[clamp(1rem,2.2vw,1.5rem)] text-left"
-                    >
-                      <span className="flex items-baseline justify-between gap-6">
-                        <span
-                          className={`text-[clamp(16px,4vw,18px)] transition-colors duration-300 ${
-                            active ? "text-[var(--main)]" : "text-[var(--dark)]"
-                          }`}
-                        >
-                          {route.name}
+                    <div className="flex items-baseline gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setActiveId(active ? null : route.id)}
+                        className="block min-w-0 flex-1 cursor-pointer py-[clamp(1rem,2.2vw,1.5rem)] text-left"
+                      >
+                        <span className="flex items-baseline justify-between gap-6">
+                          <span
+                            className={`text-[clamp(16px,4vw,18px)] transition-colors duration-300 ${
+                              active ? "text-[var(--main)]" : "text-[var(--dark)]"
+                            }`}
+                          >
+                            {cms.text(route.name)}
+                          </span>
+                          <span className="shrink-0 text-[13px] uppercase tracking-[0.18em] text-[var(--main)]">
+                            {meta(route)}
+                          </span>
                         </span>
-                        <span className="shrink-0 text-[13px] uppercase tracking-[0.18em] text-[var(--main)]">
-                          {meta(route)}
-                        </span>
-                      </span>
-                      {route.description && (
-                        <span className="mt-1 block max-w-[52ch] text-[14px] leading-relaxed text-[var(--hint)]">
-                          {route.description}
-                        </span>
-                      )}
-                    </button>
+                        {route.description && (
+                          <span className="mt-1 block max-w-[52ch] text-[14px] leading-relaxed text-[var(--hint)]">
+                            {cms.text(route.description)}
+                          </span>
+                        )}
+                      </button>
+                      {/* GPX preuzimanje - za navigacije i telefon, direktno sa API-ja. */}
+                      <a
+                        href={route.gpxUrl}
+                        download
+                        className="link-underline shrink-0 text-[12px] uppercase tracking-[0.18em] text-[var(--main)]"
+                      >
+                        GPX
+                      </a>
+                    </div>
                   </li>
                 );
               })}

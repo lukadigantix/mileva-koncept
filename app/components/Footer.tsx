@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./LocaleLink";
 import Reveal from "./Reveal";
-import { useLang } from "../i18n/LanguageProvider";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import { useSiteSettings } from "../lib/siteSettings";
 
 /**
@@ -15,6 +15,7 @@ import { useSiteSettings } from "../lib/siteSettings";
  */
 export default function Footer() {
   const { t } = useLang();
+  const cms = useCms();
   const s = useSiteSettings();
 
   // Matches the main menu order: Restoran, Smeštaj, Znamenitosti, Blog,
@@ -25,6 +26,7 @@ export default function Footer() {
     { label: t.nav.home, href: "/" },
     { label: restaurant, href: "/restoran" },
     { label: accommodation, href: "/smestaj" },
+    { label: t.nav.pool, href: "/bazen" },
     { label: t.nav.landmarks, href: "/znamenitosti" },
     { label: t.nav.blog, href: "/blog" },
     { label: events, href: "/dogadjaji" },
@@ -50,7 +52,7 @@ export default function Footer() {
             </div>
 
             <div className="flex flex-col gap-1 text-[15.56px] leading-relaxed text-[var(--sand)] lg:text-right">
-              <span>{s.address ?? t.contact.address}</span>
+              <span>{s.address ? cms.text(s.address) : t.contact.address}</span>
               <a href={`tel:${s.phoneHref}`} className="link-underline w-fit lg:self-end">
                 {s.phoneLabel}
               </a>

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "./LocaleLink";
 import { useLang } from "../i18n/LanguageProvider";
 import { useSiteSettings } from "../lib/siteSettings";
 
@@ -26,6 +26,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     { label: t.nav.home, href: "/" },
     { label: restaurant, href: "/restoran" },
     { label: accommodation, href: "/smestaj" },
+    { label: t.nav.pool, href: "/bazen" },
     { label: t.nav.landmarks, href: "/znamenitosti" },
     { label: t.nav.blog, href: "/blog" },
     { label: events, href: "/dogadjaji" },

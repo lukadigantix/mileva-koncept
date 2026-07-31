@@ -1,19 +1,14 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { dictionaries, type Dict, type LangCode } from "./translations";
+import { switchLocale } from "./routing";
+import { toCyrillic, toCyrillicHtml } from "../lib/translit";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const STORAGE_KEY = "mileva-lang";
 
 type LanguageContextValue = {
   lang: LangCode;
@@ -24,32 +19,32 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 /**
- * Holds the active language and exposes the matching dictionary. Default is
- * Serbian Cyrillic. Switching is instant (client-side) and refreshes
- * ScrollTrigger so scroll positions stay correct after the copy reflows.
+ * Drži aktivni jezik i izlaže odgovarajući rečnik.
+ *
+ * Jezik više NIJE stanje klijenta — stiže iz `[lang]` segmenta putanje, pa ga
+ * server renderuje i Google indeksira. Prekidač jezika zato ne menja stanje
+ * nego vodi na istu stranicu pod drugim prefiksom (`/sr/smestaj` →
+ * `/en/smestaj`).
  */
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<LangCode>("sr-cyrl");
+export function LanguageProvider({
+  lang,
+  children,
+}: {
+  lang: LangCode;
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Restore the saved language after mount. Reading localStorage here (not in
-  // the initial state) keeps the server and first client render identical, so
-  // there's no hydration mismatch.
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && saved in dictionaries) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLangState(saved as LangCode);
-    }
-  }, []);
-
-  const setLang = useCallback((next: LangCode) => {
-    setLangState(next);
-    localStorage.setItem(STORAGE_KEY, next);
-  }, []);
+  const setLang = useCallback(
+    (next: LangCode) => {
+      if (next !== lang) router.push(switchLocale(next, pathname));
+    },
+    [lang, pathname, router]
+  );
 
   useEffect(() => {
-    document.documentElement.lang = lang === "en" ? "en" : "sr";
-    // Copy length changes section heights → recompute trigger positions.
+    // Dužina teksta menja visine sekcija → preračunaj okidače.
     ScrollTrigger.refresh();
   }, [lang]);
 
@@ -66,4 +61,28 @@ export function useLang() {
     throw new Error("useLang must be used within a LanguageProvider");
   }
   return ctx;
+}
+
+/**
+ * Sadržaj iz admin panela (meni, blog, događaji, znamenitosti, kvadovi) unosi se
+ * srpskom latinicom, pa se na ćiriličnoj verziji sajta preslovljava u ćirilicu.
+ * Na latinici i engleskom prolazi nepromenjen — engleski prevod CMS sadržaja
+ * čeka da backend dobije smer sr→en (`/api/translate` za sada radi samo en→sr).
+ *
+ * Koristiti SAMO za tekst iz backenda; rečnik u `translations.ts` je već
+ * preveden ručno.
+ */
+export function useCms() {
+  const { lang } = useLang();
+  return useMemo(() => {
+    const cyr = lang === "sr-cyrl";
+    return {
+      /** Običan tekst iz admina. */
+      text: (s: string | null | undefined): string =>
+        !s ? "" : cyr ? toCyrillic(s) : s,
+      /** HTML iz Tiptap editora — preslovljava tekst, ne dira tagove. */
+      html: (s: string | null | undefined): string =>
+        !s ? "" : cyr ? toCyrillicHtml(s) : s,
+    };
+  }, [lang]);
 }

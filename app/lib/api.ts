@@ -9,6 +9,12 @@ const API_URL = process.env.API_URL ?? "http://localhost:4000/api";
 /** Origin backend-a (bez /api) — za slike i statične fajlove (/uploads/…). */
 export const API_ORIGIN = API_URL.replace(/\/api\/?$/, "");
 
+/** Pun URL javne API rute — za linkove koji se otvaraju iz browsera (npr. GPX).
+    Samo za server komponente: na klijentu env nije dostupan. */
+export function apiUrl(path: string): string {
+  return `${API_URL}${path}`;
+}
+
 /** Pretvara relativnu putanju slike (/uploads/…) u pun URL ka backend-u. */
 export function mediaUrl(pathOrUrl: string | null | undefined): string {
   if (!pathOrUrl) return "";
@@ -30,6 +36,19 @@ interface ApiEnvelope<T> {
 async function get<T>(path: string, revalidate = 60): Promise<T | null> {
   try {
     const res = await fetch(`${API_URL}${path}`, { next: { revalidate } });
+    if (!res.ok) return null;
+    const body = (await res.json()) as ApiEnvelope<T>;
+    if (!body.success) return null;
+    return body.data as T;
+  } catch {
+    return null;
+  }
+}
+
+/** GET bez keša — za podatke koje ni minut zastarelosti ne sme da pokvari. */
+async function getFresh<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`, { cache: "no-store" });
     if (!res.ok) return null;
     const body = (await res.json()) as ApiEnvelope<T>;
     if (!body.success) return null;
@@ -160,21 +179,91 @@ export function getWorkingHours(): Promise<WorkingDay[] | null> {
   return get<WorkingDay[]>("/working-hours");
 }
 
-/* ------------------------------ Znamenitosti ------------------------------ */
+/* ------------------------------- Rezervacije ------------------------------
+   Javne rute (/reservations/public/*) — bez tokena i bez servisnog naloga.
+   Backend je jedini vlasnik dostupnosti: on vraća zauzete termine za kalendar
+   i on odbija preklapanje pri upisu, istom proverom koja važi i za admin panel.
+   -------------------------------------------------------------------------- */
 
-export interface PublicLandmark {
-  id: string;
-  title: string;
-  description: string | null;
-  lat: number;
-  lng: number;
-  category: string | null;
-  images: string[] | null;
+/** UUID smeštaja u adminu. Ruta /accommodations traži token, pa se ID podešava
+    kroz env; bez njega sajt pada na lokalnu (demo) dostupnost. */
+export const ACCOMMODATION_ID = process.env.ACCOMMODATION_ID ?? "";
+
+/** Zauzet termin, bez ijednog podatka o gostu. `endDate` je dan odlaska. */
+export interface BusyRange {
+  startDate: string; // ISO YYYY-MM-DD
+  endDate: string;
+  /** Zauzeto je sve što nije otkazano — i zahtevi koji čekaju potvrdu. */
+  status: "pending" | "confirmed";
 }
 
-export function getPublicLandmarks(): Promise<PublicLandmark[] | null> {
-  return get<PublicLandmark[]>("/landmarks/public");
+/**
+ * Zauzeti termini za jedan resurs. Nikad keširano: kalendar koji za minut
+ * kasni ume da ponudi termin koji je upravo otišao, pa gost dobije 409.
+ */
+export function getBusyRanges(
+  resourceId: string,
+  from: string,
+  to: string
+): Promise<BusyRange[] | null> {
+  if (!resourceId) return Promise.resolve(null);
+  const q = new URLSearchParams({ resourceId, from, to });
+  return getFresh<BusyRange[]>(`/reservations/public/zauzeti?${q}`);
 }
+
+export interface ReservationRequest {
+  type?: "accommodation" | "quad" | "other";
+  resourceId: string;
+  guestName: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  guests?: number;
+  startDate: string;
+  endDate: string;
+  note?: string;
+}
+
+export type ReservationResult =
+  | { ok: true; id: string }
+  /** conflict = termin je upravo otišao · rate = previše zahteva sa iste IP
+      adrese · invalid = backend je odbio podatke · offline = API nedostupan. */
+  | { ok: false; reason: "conflict" | "rate" | "invalid" | "offline" };
+
+/**
+ * Pošalji zahtev za rezervaciju. Ulazi kao `pending` i bez cene — potvrđuje ga
+ * admin. Preklapanje termina backend vraća kao 409, pa je to jedina provera
+ * dostupnosti koja se računa; ono što kalendar prikazuje je samo nagoveštaj.
+ */
+export async function submitReservation(
+  input: ReservationRequest
+): Promise<ReservationResult> {
+  try {
+    const res = await fetch(`${API_URL}/reservations/public`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // Mamac za botove mora da stigne prazan — forma ga ne prikazuje.
+      body: JSON.stringify({ type: "accommodation", website: "", ...input }),
+      cache: "no-store",
+    });
+    if (res.status === 409) return { ok: false, reason: "conflict" };
+    if (res.status === 429) return { ok: false, reason: "rate" };
+    const body = (await res.json().catch(() => null)) as ApiEnvelope<{
+      id: string;
+    }> | null;
+    if (!res.ok || !body?.success || !body.data) {
+      return { ok: false, reason: "invalid" };
+    }
+    return { ok: true, id: body.data.id };
+  } catch {
+    return { ok: false, reason: "offline" };
+  }
+}
+
+/* ------------------------------ Znamenitosti ------------------------------
+   Backend ima i /landmarks/public, ali sajt ga NE koristi: znamenitosti Knića
+   i Gruže se ne menjaju, pa /znamenitosti živi na statičnom sadržaju iz rečnika
+   i fotografijama u public/znamenitosti/.
+   -------------------------------------------------------------------------- */
 
 /* -------------------------------- Događaji -------------------------------- */
 
@@ -217,7 +306,7 @@ export function adaptBlogPost(p: PublicBlogPost): Post {
   };
   return {
     slug: p.slug,
-    image: mediaUrl(p.coverImage) || "/pocetna/midhero.webp",
+    image: mediaUrl(p.coverImage) || "/pocetna/midhero@3x.webp",
     date: p.publishedAt ?? p.createdAt,
     readMinutes: readMinutes(p.content ?? ""),
     content: { "sr-cyrl": locale, "sr-latn": locale, en: locale },

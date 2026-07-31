@@ -4,7 +4,7 @@ import Image from "next/image";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import MediaReveal from "./MediaReveal";
-import { useLang } from "../i18n/LanguageProvider";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 
 /** One quad from the backend, image URL already resolved. */
 export type QuadCard = {
@@ -23,6 +23,7 @@ export type QuadCard = {
  */
 export default function QuadsRental({ quads }: { quads: QuadCard[] }) {
   const { t } = useLang();
+  const cms = useCms();
   const c = t.quads.rental;
 
   return (
@@ -63,16 +64,16 @@ export default function QuadsRental({ quads }: { quads: QuadCard[] }) {
                 />
               </MediaReveal>
               <h3 className="mt-[clamp(1.25rem,2.5vw,1.75rem)] text-[clamp(1.2rem,2.6vw,1.5rem)] leading-[1.2] tracking-[-0.01em] text-[var(--dark)]">
-                {quad.name}
+                {cms.text(quad.name)}
               </h3>
               {quad.desc && (
                 <p className="mt-[clamp(0.6rem,1.2vw,0.9rem)] text-[15.5px] leading-[1.7] text-[var(--hint)]">
-                  {quad.desc}
+                  {cms.text(quad.desc)}
                 </p>
               )}
               {quad.price && (
                 <span className="mt-[clamp(0.85rem,1.6vw,1.15rem)] block text-[15.5px] tracking-[0.02em] text-[var(--main)]">
-                  {quad.price}
+                  {cms.text(quad.price)}
                 </span>
               )}
             </Reveal>

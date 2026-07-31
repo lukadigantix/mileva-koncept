@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import SplitText from "./SplitText";
-import { useLang } from "../i18n/LanguageProvider";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 
 export type BoardSection = {
   title: string;
@@ -31,6 +31,7 @@ type MenuBoardProps = {
  */
 export default function MenuBoard({ source, sections }: MenuBoardProps) {
   const { t } = useLang();
+  const cms = useCms();
   const menu = t.restaurant[source];
   const fromApi = Boolean(sections?.length);
   const courses: BoardSection[] = fromApi ? sections! : menu.sections;
@@ -69,7 +70,7 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
             <div key={section.title}>
               {/* Course title - serif small-caps with a terracotta hairline. */}
               <h3 className="mb-[clamp(1rem,2.5vw,2rem)] flex items-center gap-4 text-[clamp(1rem,3.6vw,1.3rem)] uppercase tracking-[0.14em]">
-                <span className="whitespace-nowrap">{section.title}</span>
+                <span className="whitespace-nowrap">{cms.text(section.title)}</span>
                 <span className="h-px flex-1 bg-[var(--main)]/40" />
               </h3>
 
@@ -78,7 +79,7 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
                   <li key={item.name}>
                     <div className="flex items-baseline gap-3">
                       <span className="text-[clamp(15px,4vw,17.78px)] leading-snug">
-                        {item.name}
+                        {cms.text(item.name)}
                       </span>
                       {/* Dotted leader bridging name → price. */}
                       <span
@@ -86,12 +87,12 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
                         className="min-w-6 flex-1 translate-y-[-0.28em] border-b border-dotted border-[var(--border)]"
                       />
                       <span className="whitespace-nowrap text-[clamp(15px,4vw,17.78px)] tabular-nums text-[var(--main)]">
-                        {fromApi ? item.price : `${item.price} ${menu.currency}`}
+                        {fromApi ? cms.text(item.price) : `${item.price} ${menu.currency}`}
                       </span>
                     </div>
                     {item.desc && (
                       <p className="mt-[0.3rem] max-w-[42ch] text-[clamp(12.5px,3.2vw,14px)] leading-relaxed text-[var(--hint)]">
-                        {item.desc}
+                        {cms.text(item.desc)}
                       </p>
                     )}
                   </li>

@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./LocaleLink";
 import SplitText from "./SplitText";
 import MediaReveal from "./MediaReveal";
 import PostCard from "./PostCard";
-import { useLang } from "../i18n/LanguageProvider";
+import EmptyState from "./EmptyState";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import { formatDate, type Post } from "../lib/blog";
 
 /**
@@ -14,15 +15,20 @@ import { formatDate, type Post } from "../lib/blog";
  * filtered grid of the rest. The active filter is stored by index so it stays
  * valid when the language switches (categories keep the same order per post).
  * Selecting a category hides the featured block and shows all posts in it.
- * Posts arrive from the server page (backend CMS, or the static fallback) and
- * are never empty.
+ *
+ * Posts come from the backend CMS. Dok ih tamo nema, na njihovo mesto ide
+ * `EmptyState` - sajt ide u produkciju sa praznim adminom, pa je prazan blog
+ * očekivano stanje, ne greška.
  */
 export default function BlogIndex({ posts }: { posts: Post[] }) {
   const { lang, t } = useLang();
+  const cms = useCms();
   const [activeIndex, setActiveIndex] = useState(-1); // -1 = all
 
+  // Kuke se pozivaju bezuslovno (pravilo hookova), pa se prazan slučaj
+  // proverava tek ispod njih.
   const [featured, ...rest] = posts;
-  const f = featured.content[lang];
+  const f = featured?.content[lang];
 
   // Unique categories in post order - a stable index across languages.
   const categories = useMemo(() => {
@@ -46,6 +52,14 @@ export default function BlogIndex({ posts }: { posts: Post[] }) {
         ? "text-[var(--main)]"
         : "text-[var(--hint)] hover:text-[var(--dark)]"
     }`;
+
+  // Nema objava - umesto istaknutog posta, filtera i mreže ide prazna sekcija.
+  if (!featured || !f) {
+    const e = t.blog.empty;
+    return (
+      <EmptyState eyebrow={e.eyebrow} title={e.title} body={e.body} ctaLabel={e.cta} />
+    );
+  }
 
   return (
     <>
@@ -73,15 +87,15 @@ export default function BlogIndex({ posts }: { posts: Post[] }) {
 
               <div>
                 <span className="text-[12px] uppercase tracking-[0.3em] text-[var(--main)]">
-                  {f.category}
+                  {cms.text(f.category)}
                 </span>
                 <SplitText
                   as="h2"
-                  text={f.title}
+                  text={cms.text(f.title)}
                   className="mt-[clamp(0.75rem,1.5vw,1.25rem)] max-w-[20ch] text-[clamp(1.6rem,4vw,2.4rem)] leading-[1.15] tracking-[-0.01em] text-[var(--dark)]"
                 />
                 <p className="mt-[clamp(1rem,2vw,1.5rem)] max-w-[46ch] text-[17.78px] leading-relaxed text-[var(--dark)]">
-                  {f.excerpt}
+                  {cms.text(f.excerpt)}
                 </p>
                 <span className="mt-[clamp(1rem,2vw,1.5rem)] block text-[13px] tracking-[0.02em] text-[var(--hint)]">
                   {formatDate(featured.date, lang)} · {featured.readMinutes} {t.blog.minRead}
@@ -122,9 +136,10 @@ export default function BlogIndex({ posts }: { posts: Post[] }) {
             <button type="button" onClick={() => setActiveIndex(-1)} className={chip(-1)}>
               {t.blog.all}
             </button>
+            {/* Filtriranje ide po izvornoj vrednosti; preslovljava se samo prikaz. */}
             {categories.map((cat, i) => (
               <button key={cat} type="button" onClick={() => setActiveIndex(i)} className={chip(i)}>
-                {cat}
+                {cms.text(cat)}
               </button>
             ))}
           </div>

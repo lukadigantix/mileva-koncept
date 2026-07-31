@@ -6,7 +6,8 @@ import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import MediaReveal from "./MediaReveal";
 import Modal from "./Modal";
-import { useLang } from "../i18n/LanguageProvider";
+import EmptyState from "./EmptyState";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import { formatDate } from "../lib/blog";
 
 /** One dated event from the backend CMS, image URL already resolved. */
@@ -26,21 +27,38 @@ export type UpcomingEvent = {
  * Upcoming events - the dated programme from the backend CMS, rendered below
  * the evergreen celebrations story. A centred header, then a three-up grid of
  * cards (image, date · time · location meta, title, teaser); "read more" opens
- * the shared Modal with the cover + the full Tiptap programme. The section is
- * only mounted when there is at least one upcoming event, so the page reads
- * the same as before when the calendar is empty. CMS copy is single-language;
- * only the section chrome and dates localise.
+ * the shared Modal with the cover + the full Tiptap programme.
+ *
+ * Dok u adminu nema zakazanih termina, na mesto mreže ide `EmptyState` — sajt
+ * ide u produkciju sa praznim kalendarom, pa je to očekivano stanje, a ne
+ * razlog da sekcija nestane sa stranice. CMS copy is single-language; only the
+ * section chrome and dates localise.
  */
 export default function EventsUpcoming({ events }: { events: UpcomingEvent[] }) {
   const { lang, t } = useLang();
+  const cms = useCms();
   const c = t.events.upcoming;
   const [active, setActive] = useState<number | null>(null);
   const activeEvent = active === null ? null : events[active];
 
   const meta = (ev: UpcomingEvent) =>
-    [formatDate(ev.startDate, lang), ev.startTime, ev.location]
+    [formatDate(ev.startDate, lang), ev.startTime, cms.text(ev.location)]
       .filter(Boolean)
       .join(" · ");
+
+  // Prazan kalendar - umesto zaglavlja i mreže ide prazna sekcija, na istoj
+  // --light podlozi da se ritam stranice ne promeni.
+  if (events.length === 0) {
+    return (
+      <EmptyState
+        eyebrow={c.empty.eyebrow}
+        title={c.empty.title}
+        body={c.empty.body}
+        ctaLabel={c.empty.cta}
+        tone="light"
+      />
+    );
+  }
 
   return (
     <section className="bg-[var(--light)] py-[clamp(5rem,11vw,11rem)]">
@@ -92,11 +110,11 @@ export default function EventsUpcoming({ events }: { events: UpcomingEvent[] }) 
                 {meta(ev)}
               </span>
               <h3 className="mt-[clamp(0.5rem,1vw,0.85rem)] text-[clamp(1.2rem,2.6vw,1.5rem)] leading-[1.2] tracking-[-0.01em] text-[var(--dark)]">
-                {ev.title}
+                {cms.text(ev.title)}
               </h3>
               {ev.excerpt && (
                 <p className="mt-[clamp(0.85rem,1.8vw,1.25rem)] text-[15.5px] leading-[1.7] text-[var(--dark)]">
-                  {ev.excerpt}
+                  {cms.text(ev.excerpt)}
                 </p>
               )}
               {ev.descriptionHtml && (
@@ -142,16 +160,16 @@ export default function EventsUpcoming({ events }: { events: UpcomingEvent[] }) 
                 id="event-modal-title"
                 className="mt-[clamp(0.6rem,1.2vw,1rem)] text-[clamp(1.25rem,5.2vw,2.1rem)] leading-[1.2] tracking-[-0.01em] text-[var(--dark)]"
               >
-                {activeEvent.title}
+                {cms.text(activeEvent.title)}
               </h3>
               {activeEvent.descriptionHtml ? (
                 <div
                   className="article-html mt-[clamp(1rem,2.2vw,1.6rem)] text-[clamp(13.5px,3.4vw,17px)]"
-                  dangerouslySetInnerHTML={{ __html: activeEvent.descriptionHtml }}
+                  dangerouslySetInnerHTML={{ __html: cms.html(activeEvent.descriptionHtml) }}
                 />
               ) : (
                 <p className="mt-[clamp(1rem,2.2vw,1.6rem)] text-[clamp(13.5px,3.4vw,17px)] leading-[1.75] text-[var(--dark)]">
-                  {activeEvent.excerpt}
+                  {cms.text(activeEvent.excerpt)}
                 </p>
               )}
             </div>

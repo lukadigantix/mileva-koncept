@@ -1,4 +1,8 @@
+"use client";
+
 import type { MouseEventHandler, ReactNode } from "react";
+import { useLang } from "../i18n/LanguageProvider";
+import { localePath } from "../i18n/routing";
 
 type CtaLinkProps = {
   href: string;
@@ -16,9 +20,10 @@ type CtaLinkProps = {
  * link looks and behaves identically.
  */
 export default function CtaLink({ href, children, className, onClick }: CtaLinkProps) {
+  const { lang } = useLang();
   return (
     <a
-      href={href}
+      href={localePath(lang, href)}
       onClick={onClick}
       className={`group relative inline-flex items-center justify-center leading-none tracking-[-0.01em] ${className ?? ""}`}
     >

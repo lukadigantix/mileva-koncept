@@ -1,13 +1,16 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import SplitText from "./SplitText";
+import { DateRangeField } from "./DateFields";
+import type { DayStatus } from "./Calendar";
 import { useLang } from "../i18n/LanguageProvider";
-import { UNITS } from "../lib/units";
-import { nightsBetween } from "../lib/dates";
-import { book, quote } from "../smestaj/actions";
-import type { BookState, Quote } from "../smestaj/actions";
+import { LOCALE_TAGS } from "../i18n/routing";
+import { UNITS, BOOKING_HORIZON_DAYS } from "../lib/units";
+import { addDays, eachNight, nightsBetween, todayISO } from "../lib/dates";
+import { availability, book, quote } from "../actions/booking";
+import type { BookState, Quote } from "../actions/booking";
 
 /**
  * Booking widget - the real reservation flow on /smestaj (anchored #rezervacija,
@@ -28,7 +31,7 @@ const UNIT = 0;
 const SHOWCASE_IMAGE = "/smestaj/sm1.webp";
 
 export default function BookingWidget() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const r = t.accommodation.reservation;
   const apartment = t.accommodation.units.items[0];
 
@@ -42,9 +45,28 @@ export default function BookingWidget() {
     status: "idle",
   });
 
-  // Minimum selectable date - today. Lazy init runs once; the date inputs
-  // suppress hydration warnings in case server/client cross midnight.
-  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  // Earliest selectable day - today in the guest's own calendar. Lazy init runs
+  // once, so the value cannot drift mid-session.
+  const [today] = useState(todayISO);
+
+  // Nights already taken, read once when the section mounts so the calendar can
+  // grey them out before the guest picks anything. An empty set until it lands -
+  // the server re-checks on submit either way, so nothing is oversold.
+  const [blocked, setBlocked] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    let active = true;
+    availability(UNIT).then((a) => {
+      if (active) setBlocked(new Set(a.blocked));
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const dayStatus = useMemo(
+    () => (iso: string): DayStatus => (blocked.has(iso) ? "blocked" : "free"),
+    [blocked]
+  );
 
   const capacity = UNITS[UNIT].capacity;
   const price = UNITS[UNIT].pricePerNight;
@@ -69,20 +91,21 @@ export default function BookingWidget() {
   const withN = (s: string, n: number) => s.replace("{n}", String(n));
 
   const quoted = validSelection && q?.ok === true ? q : null;
-  const soldOut = quoted !== null && !quoted.available;
+  // Availability comes from the same set the calendar paints with, so the badge
+  // and the grid can never contradict each other.
+  const soldOut = validSelection && eachNight(checkin, checkout).some((n) => blocked.has(n));
   const overCapacity = guests > capacity;
-  const canBook = quoted !== null && quoted.available && !overCapacity && !pending;
+  const canBook = quoted !== null && !soldOut && !overCapacity && !pending;
 
-  const errorText =
-    state.status === "error"
-      ? state.reason === "capacity"
-        ? withN(r.errorCapacity, state.capacity ?? guests)
-        : state.reason === "dates"
-          ? r.errorDates
-          : state.reason === "unavailable"
-            ? r.errorUnavailable
-            : r.errorInvalid
-      : null;
+  const ERRORS: Record<string, string> = {
+    capacity: withN(r.errorCapacity, state.status === "error" ? state.capacity ?? guests : guests),
+    dates: r.errorDates,
+    unavailable: r.errorUnavailable,
+    rate: r.errorRate,
+    network: r.errorNetwork,
+    invalid: r.errorInvalid,
+  };
+  const errorText = state.status === "error" ? ERRORS[state.reason] : null;
 
   return (
     <section
@@ -173,38 +196,28 @@ export default function BookingWidget() {
             <form action={formAction} className="flex flex-col gap-[clamp(1.1rem,2.2vw,1.6rem)]">
               <input type="hidden" name="unit" value={UNIT} />
 
-              {/* Trip - dates + guests. */}
+              {/* Trip - dates + guests. The pair of dates shares one calendar,
+                  so it spans two of the three columns. */}
               <div className="grid grid-cols-1 gap-[clamp(1.1rem,2.5vw,1.75rem)] sm:grid-cols-3">
-                <div>
-                  <label htmlFor="checkin" className={LABEL}>
-                    {r.checkin}
-                  </label>
-                  <input
-                    id="checkin"
-                    name="checkin"
-                    type="date"
-                    required
-                    min={today || undefined}
-                    value={checkin}
-                    onChange={(e) => setCheckin(e.target.value)}
-                    className={FIELD}
-                    suppressHydrationWarning
-                  />
-                </div>
-                <div>
-                  <label htmlFor="checkout" className={LABEL}>
-                    {r.checkout}
-                  </label>
-                  <input
-                    id="checkout"
-                    name="checkout"
-                    type="date"
-                    required
-                    min={checkin || today || undefined}
-                    value={checkout}
-                    onChange={(e) => setCheckout(e.target.value)}
-                    className={FIELD}
-                    suppressHydrationWarning
+                <div className="sm:col-span-2">
+                  <DateRangeField
+                    checkin={checkin}
+                    checkout={checkout}
+                    onChange={(a, b) => {
+                      setCheckin(a);
+                      setCheckout(b);
+                    }}
+                    checkinLabel={r.checkin}
+                    checkoutLabel={r.checkout}
+                    gapClassName="gap-[clamp(1.1rem,2.5vw,1.75rem)]"
+                    min={today}
+                    max={addDays(today, BOOKING_HORIZON_DAYS)}
+                    today={today}
+                    status={dayStatus}
+                    locale={LOCALE_TAGS[lang]}
+                    labels={{ ...t.calendar }}
+                    // Keep the panel inside the form's half of the band.
+                    panelClassName="lg:w-[min(37rem,calc(50vw-5rem))]"
                   />
                 </div>
                 <div>

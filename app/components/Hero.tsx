@@ -22,7 +22,8 @@ type HeroProps = {
     | "smestaj"
     | "znamenitosti"
     | "kontakt"
-    | "dogadjaji";
+    | "dogadjaji"
+    | "bazen";
 };
 
 /**
@@ -40,10 +41,11 @@ export default function Hero({ variant = "home" }: HeroProps) {
   const isZnamenitosti = variant === "znamenitosti";
   const isKontakt = variant === "kontakt";
   const isDogadjaji = variant === "dogadjaji";
+  const isBazen = variant === "bazen";
   // Every non-home variant uses the centred stack with an eyebrow above the
   // tagline; only home uses the split logo/tagline layout.
   const isStacked =
-    isRestaurant || isSmestaj || isZnamenitosti || isKontakt || isDogadjaji;
+    isRestaurant || isSmestaj || isZnamenitosti || isKontakt || isDogadjaji || isBazen;
   const copy = isRestaurant
     ? t.restaurant.hero
     : isSmestaj
@@ -54,7 +56,9 @@ export default function Hero({ variant = "home" }: HeroProps) {
           ? { eyebrow: t.contact.address, tagline: t.contact.page.tagline }
           : isDogadjaji
             ? t.events.hero
-            : null;
+            : isBazen
+              ? t.pool.hero
+              : null;
   const tagline = copy ? copy.tagline : t.hero.tagline;
   const eyebrow = copy ? copy.eyebrow : null;
 
@@ -87,7 +91,9 @@ export default function Hero({ variant = "home" }: HeroProps) {
       ? "/dogadjaji/snimak_21s.mp4"
       : isSmestaj
         ? "/smestaj/smestaj.mp4"
-        : "/pocetna/mileva1.mp4";
+        : isBazen
+          ? "/bazen/bazen.mp4"
+          : "/pocetna/mileva1.mp4";
   // First frame of each clip, extracted to /posters - paints instantly while
   // the video streams in, so the hero never flashes empty.
   const posterSrc = videoSrc.replace(/^.*\//, "/posters/").replace(".mp4", ".jpg");

@@ -204,7 +204,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "znamenitosti-oko-grivca",
-    image: "/pocetna/midhero.webp",
+    image: "/pocetna/midhero@3x.webp",
     date: "2026-04-15",
     readMinutes: 7,
     content: {

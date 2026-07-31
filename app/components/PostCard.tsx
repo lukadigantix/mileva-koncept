@@ -1,16 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useLang } from "../i18n/LanguageProvider";
+import Link from "./LocaleLink";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import { formatDate, type Post } from "../lib/blog";
 
 /**
  * Blog post card - image (zooms on hover), category eyebrow, serif title, and a
- * date · reading-time meta line. Used in the blog index grid.
+ * date · reading-time meta line. Used in the blog index grid. Posts from the
+ * CMS are single-language Latin, so their copy goes through `cms.text` (a no-op
+ * for the static, already-translated set).
  */
 export default function PostCard({ post }: { post: Post }) {
   const { lang, t } = useLang();
+  const cms = useCms();
   const c = post.content[lang];
 
   return (
@@ -26,13 +29,13 @@ export default function PostCard({ post }: { post: Post }) {
       </div>
 
       <span className="mt-[clamp(1.25rem,2.5vw,1.75rem)] text-[12px] uppercase tracking-[0.3em] text-[var(--main)]">
-        {c.category}
+        {cms.text(c.category)}
       </span>
       <h3 className="mt-[clamp(0.5rem,1vw,0.85rem)] text-[clamp(1.15rem,2.4vw,1.4rem)] leading-[1.25] tracking-[-0.01em] text-[var(--dark)]">
-        {c.title}
+        {cms.text(c.title)}
       </h3>
       <p className="mt-[clamp(0.6rem,1.2vw,0.9rem)] line-clamp-2 text-[15.5px] leading-relaxed text-[var(--hint)]">
-        {c.excerpt}
+        {cms.text(c.excerpt)}
       </p>
       <span className="mt-[clamp(0.85rem,1.6vw,1.15rem)] text-[13px] tracking-[0.02em] text-[var(--hint)]">
         {formatDate(post.date, lang)} · {post.readMinutes} {t.blog.minRead}

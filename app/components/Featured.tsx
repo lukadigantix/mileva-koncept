@@ -10,10 +10,7 @@ import { useLang } from "../i18n/LanguageProvider";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Featured - the reference's `.component--featured` two-panel section
- * (Reservations / Gift / Menus). Every value below is transcribed verbatim from
- * the live Akaneya bundle (wp-content/themes/akaneya/js/app.min.js) and its CSS;
- * nothing here is approximated.
+ * Featured - the two-panel section (Reservations / Gift / Menus).
  *
  * Two SEPARATE portrait photos, one per column - not one split image. The two
  * columns are staggered and drift in OPPOSITE directions, so they scissor past
@@ -70,6 +67,7 @@ const px = (n: number) => (n / 2400) * window.innerWidth;
 export default function Featured() {
   const { t } = useLang();
   const ctaLinks: { label: string; href: string }[] = [
+    { label: t.nav.pool, href: "/bazen" },
     { label: t.nav.blog, href: "/blog" },
     { label: t.nav.landmarks, href: "/znamenitosti" },
   ];

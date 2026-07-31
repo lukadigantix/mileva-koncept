@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./LocaleLink";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import PostCard from "./PostCard";
-import { useLang } from "../i18n/LanguageProvider";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import { formatDate, type Post } from "../lib/blog";
 
 /**
@@ -20,6 +20,7 @@ import { formatDate, type Post } from "../lib/blog";
  */
 export default function BlogArticle({ post, related }: { post: Post; related: Post[] }) {
   const { lang, t } = useLang();
+  const cms = useCms();
 
   const c = post.content[lang];
   // The first paragraph is the lede - it gets the larger type + dropped initial.
@@ -30,15 +31,15 @@ export default function BlogArticle({ post, related }: { post: Post; related: Po
       {/* Title block - light, centred, clears the fixed nav via top padding. */}
       <header className="mx-auto max-w-3xl px-[var(--gutter)] pt-[clamp(9rem,17vw,13rem)] pb-[clamp(2.5rem,5vw,4rem)] text-center">
         <span className="text-[clamp(11px,2.6vw,13px)] uppercase tracking-[0.3em] text-[var(--main)]">
-          {c.category}
+          {cms.text(c.category)}
         </span>
         <SplitText
           as="h1"
-          text={c.title}
+          text={cms.text(c.title)}
           className="mt-[clamp(1rem,2vw,1.75rem)] text-[clamp(1.9rem,5.5vw,3.25rem)] leading-[1.1] tracking-[-0.015em] text-[var(--dark)]"
         />
         <p className="mx-auto mt-[clamp(1rem,2.5vw,1.75rem)] max-w-[54ch] text-[clamp(1.1rem,2.4vw,1.35rem)] leading-relaxed text-[var(--hint)]">
-          {c.excerpt}
+          {cms.text(c.excerpt)}
         </p>
         <p className="mt-[clamp(1.25rem,2.5vw,1.75rem)] text-[13px] uppercase tracking-[0.18em] text-[var(--hint)]">
           {formatDate(post.date, lang)} · {post.readMinutes} {t.blog.minRead}
@@ -68,7 +69,7 @@ export default function BlogArticle({ post, related }: { post: Post; related: Po
             return (
               <Reveal key={i} className="mt-[clamp(2.75rem,5.5vw,4rem)] first:mt-0">
                 <h2 className="text-[clamp(1.5rem,3.6vw,2rem)] leading-[1.25] tracking-[-0.01em] text-[var(--dark)]">
-                  {block.text}
+                  {cms.text(block.text)}
                 </h2>
               </Reveal>
             );
@@ -77,7 +78,7 @@ export default function BlogArticle({ post, related }: { post: Post; related: Po
             return (
               <Reveal key={i} className="my-[clamp(2.75rem,5.5vw,4rem)]">
                 <blockquote className="border-l-2 border-[var(--main)] pl-[clamp(1.5rem,3vw,2.25rem)] text-[clamp(1.4rem,3.4vw,1.9rem)] italic leading-[1.35] tracking-[-0.01em] text-[var(--dark)]">
-                  {block.text}
+                  {cms.text(block.text)}
                 </blockquote>
               </Reveal>
             );
@@ -89,7 +90,7 @@ export default function BlogArticle({ post, related }: { post: Post; related: Po
               <Reveal key={i}>
                 <div
                   className="article-html article-html--lede"
-                  dangerouslySetInnerHTML={{ __html: block.html }}
+                  dangerouslySetInnerHTML={{ __html: cms.html(block.html) }}
                 />
               </Reveal>
             );
@@ -104,7 +105,7 @@ export default function BlogArticle({ post, related }: { post: Post; related: Po
                     : "text-[clamp(17px,1.4vw,19px)] leading-[1.85] text-[var(--dark)]"
                 }
               >
-                {block.text}
+                {cms.text(block.text)}
               </p>
             </Reveal>
           );

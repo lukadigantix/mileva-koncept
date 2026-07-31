@@ -11,7 +11,7 @@ import { useLang } from "../i18n/LanguageProvider";
  *
  * IMAGE is a placeholder from the existing set - swap for a real editorial shot.
  */
-const IMAGE = "/pocetna/midhero.webp";
+const IMAGE = "/pocetna/midhero@3x.webp";
 
 export default function BlogHero() {
   const { t } = useLang();

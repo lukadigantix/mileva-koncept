@@ -10,12 +10,8 @@ import { useLang } from "../i18n/LanguageProvider";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Menus - the reference's `.component--menus` three-column section
- * (AKANEYA / MATSUSAKA / MATSUSAKA-ITO RANCH menus). Every value below is
- * transcribed verbatim from the live Akaneya bundle (Marie Akaneya, Paris -
- * wp-content/themes/akaneya, GSAP 3.15 + Lenis 1.2) and its CSS; nothing here
- * is approximated. It is the three-column sibling of `Featured` and reuses the
- * exact same reveal recipe.
+ * Menus - the three-column menu section. It is the three-column sibling of
+ * `Featured` and reuses the exact same reveal recipe.
  *
  * Three SEPARATE portrait cards. The columns are staggered vertically and the
  * OUTER two drift in opposite directions while the MIDDLE one holds still, so

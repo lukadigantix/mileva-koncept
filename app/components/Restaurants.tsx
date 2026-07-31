@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./LocaleLink";
 import { useLang } from "../i18n/LanguageProvider";
 
 // Order matches t.restaurants.categories: Restoran, Smeštaj, Događaji.
@@ -32,7 +32,7 @@ export default function Restaurants() {
           >
             {/* Background image - dark, brightens on hover */}
             <div className="absolute inset-0">
-              <div className="relative h-full w-full scale-105 opacity-60 grayscale transition-all duration-700 ease-[var(--ease-expo-out)] group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
+              <div className="relative h-full w-full transition-all duration-700 ease-[var(--ease-expo-out)] can-hover:scale-105 can-hover:opacity-60 can-hover:grayscale group-hover:scale-100 group-hover:opacity-90 group-hover:grayscale-0">
                 <Image
                   src={loc.image}
                   alt=""
@@ -41,7 +41,7 @@ export default function Restaurants() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute inset-0 bg-black/40 transition-opacity duration-700 group-hover:opacity-20" />
+              <div className="absolute inset-0 bg-black/20 transition-opacity duration-700 can-hover:bg-black/40 group-hover:opacity-20" />
             </div>
 
             <div className="relative z-10 flex flex-col items-center">

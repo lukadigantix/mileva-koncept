@@ -10,6 +10,12 @@
  */
 export type Unit = { pricePerNight: number; capacity: number };
 
+/**
+ * How far ahead a stay can be booked. Bounds both the calendar the guest
+ * navigates and the availability window the server answers with.
+ */
+export const BOOKING_HORIZON_DAYS = 400;
+
 export const UNITS: Unit[] = [
   { pricePerNight: 135, capacity: 4 }, // 0 - Apartman Mileva (ceo objekat)
 ];

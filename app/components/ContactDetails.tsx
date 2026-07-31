@@ -1,20 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import Image from "next/image";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
-import { useLang } from "../i18n/LanguageProvider";
+import { useCms, useLang } from "../i18n/LanguageProvider";
 import { useSiteSettings } from "../lib/siteSettings";
+import { sendMessage, type ContactState } from "../actions/contact";
 import type { WorkingDay } from "../lib/api";
 
 /**
  * Contact body - one centred editorial column on the page background (no
  * separate coloured panels): an invitation header, the estate's details as
  * hairline rows, then a message form, all in the same rhythm as the rest of the
- * site. Reuses the field/label idiom (see BookingWidget). The form is front-end
- * only: submitting swaps it for a thank-you note. A full-bleed location band
- * closes the page.
+ * site. Reuses the field/label idiom (see BookingWidget). Submitting posts to
+ * the backend's public contact route through a Server Action, then swaps the
+ * form for a thank-you note. A full-bleed location band closes the page.
  */
 
 const FIELD =
@@ -56,12 +57,22 @@ function hoursLines(hours: WorkingDay[], days: string[], closed: string): string
 
 export default function ContactDetails() {
   const { t } = useLang();
+  const cms = useCms();
   const s = useSiteSettings();
   const c = t.contact.page;
-  const [sent, setSent] = useState(false);
+  const [state, formAction, pending] = useActionState<ContactState, FormData>(sendMessage, {
+    status: "idle",
+  });
+  const sent = state.status === "success";
+  const error =
+    state.status === "error"
+      ? state.reason === "rate"
+        ? c.errorRate
+        : c.errorBody
+      : null;
 
   const details = [
-    { label: c.addressLabel, value: s.address ?? t.contact.address, href: MAP_HREF },
+    { label: c.addressLabel, value: s.address ? cms.text(s.address) : t.contact.address, href: MAP_HREF },
     { label: c.phoneLabel, value: s.phoneLabel, href: `tel:${s.phoneHref}` },
     { label: c.emailLabel, value: s.email, href: `mailto:${s.email}` },
   ];
@@ -171,12 +182,19 @@ export default function ContactDetails() {
               </p>
             ) : (
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSent(true);
-                }}
+                action={formAction}
                 className="mx-auto mt-[clamp(2rem,4vw,3rem)] flex max-w-xl flex-col gap-[clamp(1.5rem,3vw,2rem)]"
               >
+                {/* Mamac za botove - sakriven od ljudi i čitača ekrana; backend
+                    tiho odbaci poruku ako stigne popunjen. */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden
+                  className="pointer-events-none absolute h-0 w-0 opacity-0"
+                />
                 <div>
                   <label htmlFor="c-name" className={LABEL}>
                     {c.name}
@@ -229,12 +247,22 @@ export default function ContactDetails() {
                   />
                 </div>
 
+                {error && (
+                  <p
+                    role="alert"
+                    className="text-center text-[14px] leading-relaxed text-[var(--main)]"
+                  >
+                    {error}
+                  </p>
+                )}
+
                 <div className="mt-[clamp(0.5rem,1vw,1rem)] flex justify-center">
                   <button
                     type="submit"
-                    className="group relative inline-flex items-center justify-center text-[clamp(1rem,1.3vw,1.2rem)] leading-none tracking-[-0.01em] text-[var(--dark)]"
+                    disabled={pending}
+                    className="group relative inline-flex items-center justify-center text-[clamp(1rem,1.3vw,1.2rem)] leading-none tracking-[-0.01em] text-[var(--dark)] transition-opacity duration-300 disabled:cursor-default disabled:opacity-50"
                   >
-                    {c.send}
+                    {pending ? c.sending : c.send}
                     <span
                       aria-hidden
                       className="pointer-events-none absolute left-1/2 bottom-[-0.9rem] h-px w-1/2 -translate-x-1/2 bg-current transition-[width] duration-[400ms] ease-[var(--ease-expo-out)] group-hover:w-full"

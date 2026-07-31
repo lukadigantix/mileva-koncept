@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
+/* Varijanta za uređaje koji zaista imaju hover (miš/trackpad). Kartice sa
+   "sivo dok ne pređeš mišem" efektom koriste je za početno stanje - na touch
+   uređajima (telefoni, tableti) hover ne postoji, pa su odmah u punoj boji. */
+@custom-variant can-hover (@media (hover: hover));
+
 /* ------------------------------------------------------------------ *
- *  Akaneya design tokens
- *  Replicated from akaneya-technical-analysis.md §1–2
+ *  Mileva design tokens
  * ------------------------------------------------------------------ */
 :root {
   /* Colors */

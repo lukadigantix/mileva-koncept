@@ -1,9 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import Link from "./LocaleLink";
 import { useLang } from "../i18n/LanguageProvider";
 import { LANGUAGES } from "../i18n/translations";
+import { switchLocale } from "../i18n/routing";
 
 type HeaderProps = {
   open: boolean;
@@ -12,16 +15,17 @@ type HeaderProps = {
 };
 
 /**
- * Fixed top bar (analysis §0). Left: hamburger + language switcher
- * (Српски ћирилица / latinica / English). Center: AKANEYA wordmark. Right:
- * Reservations / Gift / Menus. Text colour inverts as the page scrolls between
- * dark and light sections.
+ * Fixed top bar. Left: hamburger + language switcher (Српски ћирилица /
+ * latinica / English). Center: the Mileva wordmark. Right: the primary nav.
+ * Text colour inverts as the page scrolls between dark and light sections.
  */
 export default function Header({ open, overDark, onToggle }: HeaderProps) {
-  const { lang, setLang, t } = useLang();
+  const { lang, t } = useLang();
+  const pathname = usePathname();
   const tone = overDark ? "text-[var(--bg)]" : "text-[var(--dark)]";
   const navLinks: { label: string; href: string }[] = [
     { label: t.nav.accommodation, href: "/smestaj" },
+    { label: t.nav.pool, href: "/bazen" },
     { label: t.nav.landmarks, href: "/znamenitosti" },
     { label: t.nav.blog, href: "/blog" },
     { label: t.nav.contact, href: "/kontakt" },
@@ -57,18 +61,20 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
             aria-label={t.aria.language}
             className="hidden items-center gap-3 md:flex"
           >
+            {/* Prave veze, ne dugmad - tako Google može da otpuza sve tri
+                jezičke verzije iz same navigacije, a ne samo iz hreflang oznaka. */}
             {LANGUAGES.map(({ code, label }) => (
-              <button
+              <NextLink
                 key={code}
-                type="button"
-                onClick={() => setLang(code)}
+                href={switchLocale(code, pathname)}
+                hrefLang={code}
                 aria-current={lang === code}
                 className={`cursor-pointer text-[15.56px] tracking-[-0.01em] transition-opacity ${
                   lang === code ? "opacity-100" : "opacity-50 hover:opacity-100"
                 }`}
               >
                 {label}
-              </button>
+              </NextLink>
             ))}
           </nav>
         </div>
