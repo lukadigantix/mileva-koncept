@@ -23,7 +23,11 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
   const { lang, t } = useLang();
   const pathname = usePathname();
   const tone = overDark ? "text-[var(--bg)]" : "text-[var(--dark)]";
+  // Naziv restorana se čita iz `restaurants.categories`, isto kao u futeru i
+  // bočnom meniju - da tri navigacije ne bi imale tri različita naziva.
+  const [restaurant] = t.restaurants.categories;
   const navLinks: { label: string; href: string }[] = [
+    { label: restaurant, href: "/restoran" },
     { label: t.nav.accommodation, href: "/smestaj" },
     { label: t.nav.pool, href: "/bazen" },
     { label: t.nav.landmarks, href: "/znamenitosti" },

@@ -20,7 +20,9 @@ export type PageKey =
   | "kvadovi"
   | "znamenitosti"
   | "blog"
-  | "kontakt";
+  | "kontakt"
+  | "privatnost"
+  | "kolacici";
 
 type PageSeo = { title: string; description: string };
 
@@ -103,6 +105,16 @@ export const SEO: Record<LangCode, SeoDict> = {
         description:
           "Контакт Милева концепта у Гривцу код Кнића - адреса, телефон, имејл и радно време. Пишите нам за резервацију стола, смештаја или прославе у срцу Шумадије.",
       },
+      privatnost: {
+        title: "Политика приватности",
+        description:
+          "Које податке о личности прикупљамо преко сајта, зашто, колико их чувамо и која права имате - по Закону о заштити података о личности Републике Србије.",
+      },
+      kolacici: {
+        title: "Политика колачића",
+        description:
+          "Овај сајт не користи колачиће за аналитику, профилисање ни оглашавање - зато нема ни траке за пристанак. Шта се ипак може појавити у прегледачу и како тиме управљате.",
+      },
     },
   },
 
@@ -174,6 +186,16 @@ export const SEO: Record<LangCode, SeoDict> = {
         description:
           "Kontakt Mileva koncepta u Grivcu kod Knića - adresa, telefon, imejl i radno vreme. Pišite nam za rezervaciju stola, smeštaja ili proslave u srcu Šumadije.",
       },
+      privatnost: {
+        title: "Politika privatnosti",
+        description:
+          "Koje podatke o ličnosti prikupljamo preko sajta, zašto, koliko ih čuvamo i koja prava imate - po Zakonu o zaštiti podataka o ličnosti Republike Srbije.",
+      },
+      kolacici: {
+        title: "Politika kolačića",
+        description:
+          "Ovaj sajt ne koristi kolačiće za analitiku, profilisanje ni oglašavanje - zato nema ni trake za pristanak. Šta se ipak može pojaviti u pregledaču i kako time upravljate.",
+      },
     },
   },
 
@@ -242,6 +264,16 @@ export const SEO: Record<LangCode, SeoDict> = {
         title: "Contact & Reservations - Grivac, Knić",
         description:
           "Contact Mileva Koncept in Grivac near Knić - address, phone, email and opening hours. Write to us to book a table, a stay or a celebration in the heart of Šumadija.",
+      },
+      privatnost: {
+        title: "Privacy policy",
+        description:
+          "What personal data we collect through this site, why, how long we keep it and what rights you have - under the Serbian Personal Data Protection Act.",
+      },
+      kolacici: {
+        title: "Cookies policy",
+        description:
+          "This site sets no cookies for analytics, profiling or advertising - which is why there is no consent banner. What may still appear in your browser, and how to control it.",
       },
     },
   },

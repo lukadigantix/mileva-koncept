@@ -60,7 +60,13 @@ async function getFresh<T>(path: string): Promise<T | null> {
 
 /* ---------------------------- Digitalni meni ------------------------------ */
 
-export type MenuType = "regular" | "weekend";
+/**
+ * Tipovi menija koje vodi admin panel:
+ *   summer / winter — redovni jelovnik po sezoni (meseci se podešavaju u adminu)
+ *   weekend         — vikend jelovnik, subotom i nedeljom
+ *   drinks          — karta pića, ista tokom cele godine
+ */
+export type MenuType = "summer" | "winter" | "weekend" | "drinks";
 
 export interface PublicMenuItem {
   id: string;
@@ -82,11 +88,18 @@ export interface PublicMenuCategory {
 }
 
 export interface PublicMenu {
+  /** Koji je jelovnik backend izabrao za ovaj trenutak. */
   menuType: MenuType;
+  /** Jelovnik: vikend ili sezonski, već prema danu i mesecu. */
   categories: PublicMenuCategory[];
+  /** Karta pića — vraća se uvek, nezavisno od izabranog jelovnika. */
+  drinks: PublicMenuCategory[];
 }
 
-/** Aktuelni meni — backend sam bira vikend ili redovni prema danu u nedelji. */
+/**
+ * Aktuelni meni. Backend sam bira jelovnik prema danu u nedelji (vikend) i
+ * mesecu (letnji/zimski), pa sajt ne mora da zna ni koji je dan ni koja sezona.
+ */
 export function getPublicMenu(): Promise<PublicMenu | null> {
   return get<PublicMenu>("/menu/public");
 }
@@ -185,9 +198,38 @@ export function getWorkingHours(): Promise<WorkingDay[] | null> {
    i on odbija preklapanje pri upisu, istom proverom koja važi i za admin panel.
    -------------------------------------------------------------------------- */
 
-/** UUID smeštaja u adminu. Ruta /accommodations traži token, pa se ID podešava
-    kroz env; bez njega sajt pada na lokalnu (demo) dostupnost. */
-export const ACCOMMODATION_ID = process.env.ACCOMMODATION_ID ?? "";
+/**
+ * Cena jednog noćenja za tačan broj osoba, u evrima — uređuje se u adminu.
+ * Vikend je subota i nedelja; videti `lib/pricing.ts`.
+ */
+export interface RateRow {
+  guests: number;
+  weekday: number;
+  weekend: number;
+}
+
+/** Objavljena smeštajna jedinica iz admin panela. */
+export interface PublicAccommodation {
+  id: string;
+  title: string;
+  description: string | null;
+  rooms: number;
+  capacity: number;
+  images: string[] | null;
+  /** Cenovnik; prazan niz znači da cena za ovu jedinicu nije uneta. */
+  rates: RateRow[] | null;
+}
+
+/**
+ * Javna lista objavljenog smeštaja (`/accommodations/public`).
+ *
+ * Sajt odavde sam saznaje koje jedinice postoje i u koju da upiše rezervaciju —
+ * ranije se jedan UUID ručno upisivao u `ACCOMMODATION_ID`, pa je zaboravljen
+ * env obarao ceo tok rezervacije na lokalni demo.
+ */
+export function getPublicAccommodations(): Promise<PublicAccommodation[] | null> {
+  return getFresh<PublicAccommodation[]>("/accommodations/public");
+}
 
 /** Zauzet termin, bez ijednog podatka o gostu. `endDate` je dan odlaska. */
 export interface BusyRange {

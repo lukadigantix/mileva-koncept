@@ -8,6 +8,8 @@ import type { DayStatus } from "./Calendar";
 import { useLang } from "../i18n/LanguageProvider";
 import { LOCALE_TAGS } from "../i18n/routing";
 import { UNITS, BOOKING_HORIZON_DAYS } from "../lib/units";
+import { rateFor } from "../lib/pricing";
+import type { RateRow } from "../lib/api";
 import { addDays, eachNight, nightsBetween, todayISO } from "../lib/dates";
 import { availability, book, quote } from "../actions/booking";
 import type { BookState, Quote } from "../actions/booking";
@@ -17,20 +19,32 @@ import type { BookState, Quote } from "../actions/booking";
  * the target of the hero CTA). A full-bleed band: the left half is an image
  * showcase that sells the stay (guest rating, apartment name, facts and the
  * price over the photo), the right half is a compact form. The property is a
- * single apartment, so there is no unit picker. Dates drive the `quote` Server
- * Action for a live price; submitting calls `book`, which re-checks availability
- * server-side and returns a booking code.
+ * guest never picks a unit - `book` files the request against the best-fitting
+ * published unit on its own - so the form asks only for dates, party size and
+ * contact details. Dates drive the `quote` Server Action for a live price;
+ * submitting calls `book`, which returns a booking code.
+ *
+ * `maxGuests` comes from the published units (see /smestaj/page.tsx); without it
+ * the form falls back to the single apartment in `lib/units.ts`.
  */
 
 const FIELD =
   "w-full bg-transparent border-b border-[var(--border)] py-3 text-[17px] text-[var(--dark)] placeholder-[var(--hint)] outline-none transition-colors duration-300 focus:border-[var(--main)]";
 const LABEL = "mb-1 block text-[12px] uppercase tracking-[0.2em] text-[var(--main)]";
 
-// Single bookable apartment - fixed unit index into UNITS.
+// Rezervna jedinica iz koda: koristi se samo kada cenovnik iz admina nije
+// dostupan. Gost jedinicu ne bira - `book` je sam dodeljuje.
 const UNIT = 0;
 const SHOWCASE_IMAGE = "/smestaj/sm1.webp";
 
-export default function BookingWidget() {
+export default function BookingWidget({
+  maxGuests,
+  rates,
+}: {
+  maxGuests?: number;
+  /** Cenovnik iz admina - cena na slici prati broj gostiju i izabrane datume. */
+  rates?: RateRow[];
+}) {
   const { lang, t } = useLang();
   const r = t.accommodation.reservation;
   const apartment = t.accommodation.units.items[0];
@@ -55,7 +69,7 @@ export default function BookingWidget() {
   const [blocked, setBlocked] = useState<Set<string>>(new Set());
   useEffect(() => {
     let active = true;
-    availability(UNIT).then((a) => {
+    availability().then((a) => {
       if (active) setBlocked(new Set(a.blocked));
     });
     return () => {
@@ -68,8 +82,7 @@ export default function BookingWidget() {
     [blocked]
   );
 
-  const capacity = UNITS[UNIT].capacity;
-  const price = UNITS[UNIT].pricePerNight;
+  const capacity = maxGuests && maxGuests > 0 ? maxGuests : UNITS[UNIT].capacity;
   const nights = nightsBetween(checkin, checkout);
   const validSelection = nights > 0;
 
@@ -79,18 +92,34 @@ export default function BookingWidget() {
     if (!validSelection) return;
     let active = true;
     startQuote(async () => {
-      const res = await quote(UNIT, checkin, checkout);
+      const res = await quote(guests, checkin, checkout);
       if (active) setQ(res);
     });
     return () => {
       active = false;
     };
-  }, [checkin, checkout, validSelection]);
+    // Cena zavisi i od broja osoba, ne samo od datuma - videti lib/pricing.ts.
+  }, [checkin, checkout, guests, validSelection]);
 
   const money = (n: number) => `${n} ${r.currency}`;
   const withN = (s: string, n: number) => s.replace("{n}", String(n));
 
   const quoted = validSelection && q?.ok === true ? q : null;
+
+  /**
+   * Cena preko fotografije. Bez datuma prikazuje najnižu cenu noćenja za
+   * izabrano društvo („od 80 € / po noći“); čim se izaberu datumi prelazi na
+   * ukupan iznos za taj boravak („280 € / 3 noći“), jer je to broj koji gosta
+   * zapravo zanima. Cenovnik stiže iz admina, ništa nije upisano u kod.
+   */
+  const rate = useMemo(() => rateFor(rates ?? [], guests), [rates, guests]);
+  const showcase = quoted
+    ? { amount: quoted.total, suffix: `${quoted.nights} ${r.nights}`, from: false }
+    : {
+        amount: rate ? Math.min(rate.weekday, rate.weekend) : UNITS[UNIT].pricePerNight,
+        suffix: r.perNight,
+        from: true,
+      };
   // Availability comes from the same set the calendar paints with, so the badge
   // and the grid can never contradict each other.
   const soldOut = validSelection && eachNight(checkin, checkout).some((n) => blocked.has(n));
@@ -177,16 +206,18 @@ export default function BookingWidget() {
                 ))}
               </ul>
               <div className="mt-[clamp(0.85rem,2vw,1.4rem)] flex items-baseline gap-2">
-                <span className="text-[13px] uppercase tracking-[0.18em] text-white/70">
-                  {r.fromLabel}
-                </span>
+                {showcase.from && (
+                  <span className="text-[13px] uppercase tracking-[0.18em] text-white/70">
+                    {r.fromLabel}
+                  </span>
+                )}
                 <span className="text-[clamp(2.2rem,5vw,3rem)] leading-none tracking-[-0.02em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
-                  {price}
+                  {showcase.amount}
                 </span>
                 <span className="text-[clamp(1.2rem,2.5vw,1.5rem)] text-[var(--main)]">
                   {r.currency}
                 </span>
-                <span className="text-[14px] text-white/70">/ {r.perNight}</span>
+                <span className="text-[14px] text-white/70">/ {showcase.suffix}</span>
               </div>
             </div>
           </div>

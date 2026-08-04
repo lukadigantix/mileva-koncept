@@ -2,78 +2,110 @@
 
 import { UNITS, BOOKING_HORIZON_DAYS } from "../lib/units";
 import { addDays, isISODate, nightsBetween, todayISO } from "../lib/dates";
-import {
-  isAvailable,
-  bookedNights,
-  createBooking,
-  nextBookingCode,
-  nightsFromBusyRanges,
-} from "../lib/bookings";
-import { ACCOMMODATION_ID, getBusyRanges, submitReservation } from "../lib/api";
+import { createBooking, nextBookingCode } from "../lib/bookings";
+import { getPublicAccommodations, submitReservation } from "../lib/api";
+import type { PublicAccommodation } from "../lib/api";
+import { stayPrice } from "../lib/pricing";
 
 /**
  * Booking Server Actions for /smestaj. `quote` is a live price lookup called as
- * the guest picks dates; `book` sends the request to the backend, which owns
- * availability and rejects an overlap with 409.
+ * the guest picks dates; `book` sends the request to the backend.
  *
- * The backend is the single source of truth once `ACCOMMODATION_ID` is set. It
- * is not something the site can discover on its own - `/accommodations` needs an
- * admin token - so without it both actions fall back to the local demo store,
- * which keeps /smestaj usable but books nothing anyone else can see.
+ * Two deliberate choices here:
+ *
+ *  · The guest never picks an apartment. `book` reads the published units from
+ *    `/accommodations/public` and files the request against the best fit on its
+ *    own - which unit it lands in is the host's business, not the guest's. That
+ *    also retired `ACCOMMODATION_ID`: the site no longer needs a UUID pasted
+ *    into an env file to be able to book.
+ *
+ *  · The calendar never closes a date. Every request comes in as `pending` and
+ *    is confirmed by phone anyway, so greying out days would turn away guests
+ *    the host might still be able to place in another unit.
  */
 
 export type Availability = {
   /** Window the answer covers - the calendar clamps navigation to it. */
   from: string;
   to: string;
-  /** Nights already taken inside the window (the date each night starts on). */
+  /** Always empty: no date is ever closed to a request. See the note below. */
   blocked: string[];
 };
 
 /**
- * Occupied nights for the calendar, from the backend's public busy-ranges
- * route. Read as soon as the booking section mounts, so a guest sees what is
- * free before touching a field rather than discovering it on submit. It is a
- * hint, not a guarantee - `book` is what actually decides.
+ * The bookable window for the calendar.
+ *
+ * Nothing is ever marked as taken. The estate has several units and every
+ * request arrives as `pending` for the host to confirm by phone, so a date that
+ * looks full in one unit may well be free in another - greying it out would
+ * turn away a guest the host could still accommodate. `book` decides.
  */
-export async function availability(unitIndex: number): Promise<Availability> {
+export async function availability(): Promise<Availability> {
   const from = todayISO();
-  const to = addDays(from, BOOKING_HORIZON_DAYS);
-  if (!UNITS[unitIndex]) return { from, to, blocked: [] };
-
-  const ranges = await getBusyRanges(ACCOMMODATION_ID, from, to);
-  // A null answer means unconfigured or unreachable - fall back rather than
-  // show a wide-open year the backend would then refuse.
-  const blocked = ranges
-    ? nightsFromBusyRanges(ranges, from, to)
-    : bookedNights(unitIndex, from, to);
-  return { from, to, blocked };
+  return { from, to: addDays(from, BOOKING_HORIZON_DAYS), blocked: [] };
 }
 
 /**
- * Price only. Availability is deliberately not answered here: the client
- * already holds the occupied nights from `availability` and can tell instantly,
- * and asking twice would only invite the two answers to disagree. The one check
- * that binds is the backend's, at `book`.
+ * Cena boravka. Računa se po noćima iz cenovnika koji stoji uz jedinicu
+ * (`rates`), jer se cena razlikuje po broju osoba i po tome da li noć pada u
+ * vikend - videti lib/pricing.ts. Dostupnost se ovde namerno ne proverava:
+ * datumi se više ne zatvaraju, a jedina provera koja obavezuje je u `book`.
  */
 export type Quote =
   | { ok: false }
-  | { ok: true; nights: number; pricePerNight: number; total: number; capacity: number };
+  | {
+      ok: true;
+      nights: number;
+      /** Najniža cena noćenja u ovom boravku - za natpis "od …". */
+      pricePerNight: number;
+      total: number;
+      capacity: number;
+      /** Podela noći, da forma može da objasni odakle je izašao zbir. */
+      weekdayNights: number;
+      weekendNights: number;
+    };
+
+/** Cenovnik jedinice u koju bi ovakav boravak najverovatnije otišao. */
+function pricingUnit(
+  units: PublicAccommodation[] | null,
+  guests: number
+): PublicAccommodation | null {
+  if (!units?.length) return null;
+  const withRates = units.filter((u) => u.rates?.length);
+  if (!withRates.length) return null;
+  // Isti redosled kao pri upisu u `book`: prvo one u koje društvo staje.
+  return (
+    withRates.filter((u) => u.capacity >= guests).sort((a, b) => a.capacity - b.capacity)[0] ??
+    withRates.sort((a, b) => b.capacity - a.capacity)[0]
+  );
+}
 
 export async function quote(
-  unitIndex: number,
+  guests: number,
   checkin: string,
   checkout: string
 ): Promise<Quote> {
-  const unit = UNITS[unitIndex];
   const nights = nightsBetween(checkin, checkout);
-  if (!unit || nights <= 0) return { ok: false };
+  if (nights <= 0) return { ok: false };
+
+  const units = await getPublicAccommodations();
+  const unit = pricingUnit(units, guests);
+  const capacity = units?.length
+    ? Math.max(...units.map((u) => u.capacity))
+    : UNITS[0].capacity;
+
+  const price = unit?.rates ? stayPrice(unit.rates, checkin, checkout, guests) : null;
+  // Bez cenovnika u adminu sajt ne izmišlja cenu - forma je onda samo upit.
+  if (!price) return { ok: false };
+
   return {
     ok: true,
-    nights,
-    pricePerNight: unit.pricePerNight,
-    total: nights * unit.pricePerNight,
-    capacity: unit.capacity,
+    nights: price.nights,
+    pricePerNight: price.fromPerNight,
+    total: price.total,
+    capacity,
+    weekdayNights: price.weekdayNights,
+    weekendNights: price.weekendNights,
   };
 }
 
@@ -107,43 +139,72 @@ export async function book(_prev: BookState, formData: FormData): Promise<BookSt
   // past are all "dates" errors - the calendar prevents them, a raw POST cannot.
   if (!isISODate(checkin) || !isISODate(checkout)) return { status: "error", reason: "dates" };
   if (nights <= 0 || checkin < todayISO()) return { status: "error", reason: "dates" };
-  if (guests > unit.capacity) {
-    return { status: "error", reason: "capacity", capacity: unit.capacity };
+
+  const units = await getPublicAccommodations();
+
+  // Gornja granica je najveća objavljena jedinica, ne jedna fiksna - inače kuća
+  // za osmoro sa sajta nikada ne bi mogla da se zatraži.
+  const maxGuests = units?.length
+    ? Math.max(...units.map((u) => u.capacity))
+    : unit.capacity;
+  if (guests > maxGuests) {
+    return { status: "error", reason: "capacity", capacity: maxGuests };
   }
-  const total = nights * unit.pricePerNight;
+
   const message = String(formData.get("message") ?? "").trim();
   // Short reference the guest can quote on the phone; the backend's own id is a
   // UUID, so this rides along in the note for the admin to search by.
   const code = nextBookingCode();
   const note = [`Kod sa sajta: ${code}`, message].filter(Boolean).join(" · ");
 
-  if (ACCOMMODATION_ID) {
-    // The backend decides. It runs the same overlap check as the admin panel
-    // and answers 409 if the dates went in the meantime, so there is no window
-    // between what the calendar showed and what gets written.
-    const sent = await submitReservation({
-      type: "accommodation",
-      resourceId: ACCOMMODATION_ID,
-      guestName: name,
-      guestEmail: email,
-      guestPhone: phone || undefined,
-      guests,
-      startDate: checkin,
-      endDate: checkout,
-      note,
+  if (units?.length) {
+    // Gost ne bira jedinicu - biramo je ovde, po najboljem poklapanju: prvo one
+    // u koje društvo staje, počev od najmanje takve, da par ne zauzme kuću za
+    // osmoro. Jedinice u koje ne staju idu na kraj reda umesto da otpadnu, jer
+    // je bolje da zahtev stigne domaćinu nego da gost dobije odbijenicu.
+    const ordered = [...units].sort((a, b) => {
+      const fitsA = a.capacity >= guests;
+      const fitsB = b.capacity >= guests;
+      if (fitsA !== fitsB) return fitsA ? -1 : 1;
+      return fitsA ? a.capacity - b.capacity : b.capacity - a.capacity;
     });
-    if (!sent.ok) {
-      if (sent.reason === "conflict") return { status: "error", reason: "unavailable" };
-      if (sent.reason === "rate") return { status: "error", reason: "rate" };
-      return { status: "error", reason: "network" };
+
+    // Backend odbija preklapanje sa 409, pa redom pokušavamo dok neka jedinica
+    // ne primi termin. Tek ako su sve zauzete, gost dobija "nema slobodno".
+    let lastReason: "conflict" | "rate" | "invalid" | "offline" = "conflict";
+    for (const unitOption of ordered) {
+      // Cena se računa po cenovniku jedinice koja termin zaista primi.
+      const price = unitOption.rates
+        ? stayPrice(unitOption.rates, checkin, checkout, guests)
+        : null;
+      const sent = await submitReservation({
+        type: "accommodation",
+        resourceId: unitOption.id,
+        guestName: name,
+        guestEmail: email,
+        guestPhone: phone || undefined,
+        guests,
+        startDate: checkin,
+        endDate: checkout,
+        note: `${note} · ${unitOption.title}`,
+      });
+      if (sent.ok) {
+        return { status: "success", code, nights, total: price?.total ?? 0 };
+      }
+
+      lastReason = sent.reason;
+      // Ograničenje broja zahteva i pad veze važe za sve jedinice - nema svrhe
+      // pokušavati dalje.
+      if (sent.reason === "rate" || sent.reason === "offline") break;
     }
-    return { status: "success", code, nights, total };
+
+    if (lastReason === "rate") return { status: "error", reason: "rate" };
+    if (lastReason === "conflict") return { status: "error", reason: "unavailable" };
+    return { status: "error", reason: "network" };
   }
 
-  // Bez podešenog ID-ja smeštaja: lokalni (demo) tok, vidljiv samo ovom procesu.
-  if (!isAvailable(unitIndex, checkin, checkout)) {
-    return { status: "error", reason: "unavailable" };
-  }
+  // Backend nedostupan ili nijedna jedinica nije objavljena: lokalni (demo) tok,
+  // vidljiv samo ovom procesu - gost svejedno ne vidi grešku.
   createBooking({ unit: unitIndex, checkin, checkout, guests, name, email, phone }, code);
-  return { status: "success", code, nights, total };
+  return { status: "success", code, nights, total: nights * unit.pricePerNight };
 }

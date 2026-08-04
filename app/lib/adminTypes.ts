@@ -9,11 +9,6 @@ export interface SpecItem {
   value: string;
 }
 
-export interface PriceItem {
-  label: string;
-  price: string;
-}
-
 export interface Accommodation {
   id: string;
   title: string;
@@ -24,5 +19,4 @@ export interface Accommodation {
   images: string[] | null;
   specifications: SpecItem[] | null;
   amenities: string[] | null;
-  priceItems: PriceItem[] | null;
 }

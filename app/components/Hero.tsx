@@ -5,7 +5,7 @@ import type { MouseEvent } from "react";
 import SplitText from "./SplitText";
 import Parallax from "./Parallax";
 import CtaLink from "./CtaLink";
-import { useLenis } from "./SmoothScroll";
+import { anchorOffset, useLenis } from "./SmoothScroll";
 import { useLang } from "../i18n/LanguageProvider";
 
 type HeroProps = {
@@ -70,7 +70,9 @@ export default function Hero({ variant = "home" }: HeroProps) {
     if (!target) return;
     if (lenis?.current) {
       lenis.current.scrollTo(target, {
-        offset: -20,
+        // Isti razmak koji poštuje i sidro iz adrese - iz `scroll-mt` sekcije,
+        // da naslov table ne završi ispod fiksnog zaglavlja.
+        offset: anchorOffset(target),
         // Longer glide + eased curve (fast-out, soft settle) so the jump to the
         // board feels gentle rather than abrupt.
         duration: 1.9,

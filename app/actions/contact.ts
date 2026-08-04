@@ -32,8 +32,10 @@ export async function sendMessage(
   const subject = String(formData.get("subject") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
   // Mamac za botove - polje je sakriveno CSS-om, pa ga popune samo skripte.
-  // Prosleđuje se backendu, koji takvu poruku tiho odbaci.
-  const website = String(formData.get("website") ?? "");
+  // Prosleđuje se backendu, koji takvu poruku tiho odbaci. U formi se zove
+  // `mk_hp` (vidi ContactDetails) da ga autofill ne bi popunio pravom gostu;
+  // ka backendu ide pod starim imenom, pa API ugovor ostaje netaknut.
+  const website = String(formData.get("mk_hp") ?? "");
 
   if (!isFilled(name, email, message)) return { status: "error", reason: "invalid" };
 

@@ -4,6 +4,8 @@
  * Brand names and the kanji marks are not translated.
  */
 
+import type { PhoneKey, VenueKey } from "../lib/site";
+
 export const LANGUAGES = [
   { code: "sr-cyrl", label: "СР" }, // Српски - ћирилица (default)
   { code: "sr-latn", label: "SR" }, // Srpski - latinica
@@ -97,6 +99,14 @@ export type Dict = {
     list: {
       heading: string;
       items: { name: string; desc: string; distance: string }[];
+    };
+    /** Vinarije u okolini; `desc` je prazan tamo gde nemamo šta pouzdano da
+        kažemo osim mesta i razdaljine. */
+    wineries: {
+      eyebrow: string;
+      heading: string;
+      body: string;
+      items: { name: string; place: string; distance: string; desc: string }[];
     };
   };
   accommodation: {
@@ -208,6 +218,10 @@ export type Dict = {
     title: string;
     address: string;
     follow: string;
+    /** Čemu služi koji broj telefona - ključevi prate PHONES u lib/site.ts. */
+    phones: Record<PhoneKey, string>;
+    /** Nazivi objekata uz radno vreme - ključevi prate OPENING_HOURS. */
+    venues: Record<VenueKey, string>;
     page: {
       eyebrow: string;
       tagline: string;
@@ -218,9 +232,8 @@ export type Dict = {
       phoneLabel: string;
       emailLabel: string;
       hoursLabel: string;
-      hours: string[];
-      /** Nazivi dana (ponedeljak prvi) + oznaka za neradni dan - za radno
-          vreme iz backenda; statični `hours` tekst je fallback. */
+      /** Nazivi dana (ponedeljak prvi) + oznaka za neradni dan - iz njih se
+          sklapaju linije radnog vremena (OPENING_HOURS, odnosno backend). */
       days: string[];
       closed: string;
       followLabel: string;
@@ -261,7 +274,22 @@ export type Dict = {
       eyebrow: string;
       heading: string;
       body: string;
-      items: { name: string; tag: string; desc: string; body: string }[];
+      /** Oznaka na kartici aktivnosti koja još nije u ponudi (kvadovi). */
+      soon: string;
+      /** Natpisi uz kontakt za jahanje u modalu (vidi RIDING u lib/site.ts). */
+      bookLabel: string;
+      moreLabel: string;
+      items: {
+        name: string;
+        tag: string;
+        desc: string;
+        body: string;
+        /** Kratka napomena ispod naziva na kartici - uslov koji gost mora
+            odmah da vidi, bez otvaranja modala. */
+        note?: string;
+        /** Isti uslov, razrađen, istaknut u modalu iznad kontakta. */
+        requirement?: string;
+      }[];
     };
     /** Dated events from the backend CMS - only the section chrome is localised. */
     upcoming: {
@@ -297,7 +325,13 @@ export type Dict = {
         bazen nije resurs koji javna ruta za rezervacije prima. */
     cta: { body: string; button: string };
   };
-  footer: { links: string[]; copyright: string; explore: string; tagline: string };
+  footer: {
+    /** Pravni linkovi u dnu; `href` je putanja bez jezika, "#" = strana još ne postoji. */
+    links: { label: string; href: string }[];
+    copyright: string;
+    explore: string;
+    tagline: string;
+  };
   notFound: { eyebrow: string; title: string; body: string; home: string };
 };
 
@@ -465,6 +499,40 @@ export const dictionaries: Record<LangCode, Dict> = {
             desc: "Задужбина Карађорђа - петокуполна црква Светог Ђорђа са мозаицима и маузолеј династије Карађорђевић на брегу изнад Тополе.",
             distance: "~50 км",
           },
+        ],
+      },
+      wineries: {
+        eyebrow: "Вински пут",
+        heading: "Винарије Шумадије, надомак имања.",
+        body: "Крај око Милеве је винородни. У кругу од пола сата вожње нижу се винарије, од малих породичних подрума до најпознатијих у Србији.",
+        items: [
+          {
+            name: "Винарија Рујевица",
+            place: "Драча",
+            distance: "~9 км",
+            desc: "Дегустациона сала, домаћа храна и смештај. Долазак се најављује унапред.",
+          },
+          {
+            name: "Винарија Катанић",
+            place: "Каменица",
+            distance: "~10 км",
+            desc: "Организује дегустације, уз обавезну претходну најаву.",
+          },
+          {
+            name: "Art Wine",
+            place: "Грошница",
+            distance: "~15 км",
+            desc: "Мала породична винарија са сопственим виноградима.",
+          },
+          { name: "Винарија ILLE–VIVI", place: "Глумац", distance: "~17 км", desc: "" },
+          { name: "Винарија 27", place: "Овсиште", distance: "~19 км", desc: "" },
+          {
+            name: "Винарија Александровић",
+            place: "Винча код Тополе",
+            distance: "~25 км",
+            desc: "Једна од најпознатијих и туристички најуређенијих винарија у овом крају.",
+          },
+          { name: "Винарија Краљева", place: "Топола", distance: "~26 км", desc: "" },
         ],
       },
     },
@@ -750,15 +818,15 @@ export const dictionaries: Record<LangCode, Dict> = {
     },
     history: {
       heading: "Добродошли",
-      body: "Смештено у мирном и живописном селу Гривац, у општини Кнић, одмаралиште Милева концепт представља праву оазу спокоја и уживања. Ово ексклузивно место, пажљиво осмишљено и грађено с љубављу према детаљима, идеално је за све који траже бег од свакодневице и додир с природом, без одрицања од комфора.",
+      body: "Смештено у мирном и живописном селу Гривац, у општини Кнић, одмаралиште Милева концепт представља праву оазу спокоја и уживања. Ово необично место, пажљиво осмишљено и грађено с љубављу према детаљима, идеално је за све који траже бег од свакодневице и додир с природом, без одрицања од комфора.",
     },
     profile: {
       name: "Милева концепт",
-      bio: "Милева концепт обједињује врхунски ресторан, четири топло уређене смештајне јединице и отворени базен са сланом водом који купачима дочарава осећај мора - у самом срцу Шумадије. Очувана архитектура традиционалног села, ненаметљиво спојена са савременим материјалима, даје му посебну драж. Топлина дрвета и камена, звуци природе и пажљиво бирани детаљи чине сваки боравак изузетним - било да тражите романтичан викенд, породични одмор или простор за приватне прославе и догађаје.",
+      bio: "Милева концепт обједињује врхунски ресторан, три топло уређене смештајне јединице и отворени базен са сланом водом који купачима дочарава осећај мора у самом срцу Шумадије. Очувана архитектура традиционалног села, ненаметљиво спојена са савременим материјалима, даје му посебну драж. Топлина дрвета и камена, звуци природе и пажљиво бирани детаљи чине сваки боравак изузетним - било да тражите романтичан викенд, породични одмор или простор за приватне прославе и догађаје.",
     },
     featured: {
       paragraph:
-        "Чулни предах у којем се време раствара између мирне воде и мириса шуме. Базени са сланом водом, топлина дрвета и отворено небо - мир мора, у срцу Шумадије.",
+        "Чулни предах у којем се време раствара између мирне воде и мириса шуме. Базен са сланом водом, топлина дрвета и отворено небо мир мора, у срцу Шумадије.",
     },
     sidebar: {
       restaurantsLabel: "Ресторани - Сумибијаки",
@@ -769,12 +837,18 @@ export const dictionaries: Record<LangCode, Dict> = {
     restaurants: { categories: ["Ресторан", "Смештај", "Догађаји"] },
     contact: {
       title: "Контакт",
-      address: "Гривац бб, 34240 Кнић, Србија",
+      address: "Васе Пелагића 18, 34205, Гривац, Србија",
       follow: "Пратите нас",
+      phones: {
+        main: "Ресторан и апартмани",
+        pool: "Базен",
+        events: "Прославе и догађаји",
+      },
+      venues: { restaurant: "Ресторан", pool: "Базен" },
       page: {
         eyebrow: "Јавите нам се",
         tagline:
-          "Ту смо за свако питање - резервације, прославе и мирне дане у срцу Шумадије.",
+          "Ту смо за свако питање резервације, прославе и мирне дане у срцу Шумадије.",
         introHeading: "Разговарајмо о вашем боравку",
         introBody:
           "Планирате викенд поред воде, породичну прославу или дужи одмор? Пишите нам или позовите - помоћи ћемо вам да све испланирате и одговорити у најкраћем року.",
@@ -783,7 +857,6 @@ export const dictionaries: Record<LangCode, Dict> = {
         phoneLabel: "Телефон",
         emailLabel: "Имејл",
         hoursLabel: "Радно време",
-        hours: ["Понедељак - Петак  ·  09-21", "Субота - Недеља  ·  09-23"],
         days: ["Понедељак", "Уторак", "Среда", "Четвртак", "Петак", "Субота", "Недеља"],
         closed: "затворено",
         followLabel: "Пратите нас",
@@ -854,12 +927,18 @@ export const dictionaries: Record<LangCode, Dict> = {
         eyebrow: "Доживљаји",
         heading: "Авантура на прагу Шумадије.",
         body: "Испуните дан у седлу, на точковима или пешке кроз брда - сами, у пару или са екипом.",
+        soon: "Ускоро",
+        bookLabel: "Заказивање и провера доступности",
+        moreLabel: "Више о јахању и инструктору",
         items: [
           {
             name: "Јахање коња",
             tag: "у седлу",
-            desc: "Мирне јахачке стазе кроз ливаде и шуму, уз пратњу водича, за почетнике и искусне.",
-            body: "Јахање на имању почиње кратким упознавањем са коњима и основама у седлу, па тек онда крећемо у мирну шетњу ливадама и шумским стазама. Водич је уз вас целим путем, темпо прилагођавамо групи, а руте бирамо према искуству - од лаганих кругова за прве покушаје до дужих излета за оне који већ седе сигурно. Опрема и заштитне кациге су обезбеђене, а јахање организујемо и за децу уз посебан надзор. После стазе најлепше је вратити се на терасу и одморити уз поглед на брда.",
+            note: "Са одређеним јахачким искуством",
+            desc: "Теренско јахање кроз ливаде и шуму, за јахаче са искуством.",
+            requirement:
+              "Јахање је намењено искусним јахачима. Неопходно је искуство у теренском јахању и потпуна контрола над коњем у ходу, касу, кентеру и галопу.",
+            body: "Јахање води кроз ливаде и шумске стазе око имања, у пратњи водича, а руте се бирају према саставу групе. Опрема и заштитне кациге су обезбеђене. Термини се заказују унапред, уз претходну проверу доступности телефоном. После стазе најлепше је вратити се на терасу и одморити уз поглед на брда.",
           },
           {
             name: "Панорамске руте",
@@ -950,7 +1029,10 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
     },
     footer: {
-      links: ["Политика колачића", "Политика приватности", "Правне напомене"],
+      links: [
+        { label: "Политика приватности", href: "/politika-privatnosti" },
+        { label: "Политика колачића", href: "/politika-kolacica" },
+      ],
       copyright: "© 2026 Милева концепт",
       explore: "Навигација",
       tagline: "Где традиција сусреће луксуз, а гостопримство постаје уметност.",
@@ -1126,6 +1208,40 @@ export const dictionaries: Record<LangCode, Dict> = {
             desc: "Zadužbina Karađorđa - petokupolna crkva Svetog Đorđa sa mozaicima i mauzolej dinastije Karađorđević na bregu iznad Topole.",
             distance: "~50 km",
           },
+        ],
+      },
+      wineries: {
+        eyebrow: "Vinski put",
+        heading: "Vinarije Šumadije, nadomak imanja.",
+        body: "Kraj oko Mileve je vinorodni. U krugu od pola sata vožnje nižu se vinarije, od malih porodičnih podruma do najpoznatijih u Srbiji.",
+        items: [
+          {
+            name: "Vinarija Rujevica",
+            place: "Drača",
+            distance: "~9 km",
+            desc: "Degustaciona sala, domaća hrana i smeštaj. Dolazak se najavljuje unapred.",
+          },
+          {
+            name: "Vinarija Katanić",
+            place: "Kamenica",
+            distance: "~10 km",
+            desc: "Organizuje degustacije, uz obaveznu prethodnu najavu.",
+          },
+          {
+            name: "Art Wine",
+            place: "Grošnica",
+            distance: "~15 km",
+            desc: "Mala porodična vinarija sa sopstvenim vinogradima.",
+          },
+          { name: "Vinarija ILLE–VIVI", place: "Glumac", distance: "~17 km", desc: "" },
+          { name: "Vinarija 27", place: "Ovsište", distance: "~19 km", desc: "" },
+          {
+            name: "Vinarija Aleksandrović",
+            place: "Vinča kod Topole",
+            distance: "~25 km",
+            desc: "Jedna od najpoznatijih i turistički najuređenijih vinarija u ovom kraju.",
+          },
+          { name: "Vinarija Kraljeva", place: "Topola", distance: "~26 km", desc: "" },
         ],
       },
     },
@@ -1411,15 +1527,15 @@ export const dictionaries: Record<LangCode, Dict> = {
     },
     history: {
       heading: "Dobrodošli",
-      body: "Smešteno u mirnom i živopisnom selu Grivac, u opštini Knić, odmaralište Mileva koncept predstavlja pravu oazu spokoja i uživanja. Ovo ekskluzivno mesto, pažljivo osmišljeno i građeno s ljubavlju prema detaljima, idealno je za sve koji traže beg od svakodnevice i dodir s prirodom, bez odricanja od komfora.",
+      body: "Smešteno u mirnom i živopisnom selu Grivac, u opštini Knić, odmaralište Mileva koncept predstavlja pravu oazu spokoja i uživanja. Ovo neobično mesto, pažljivo osmišljeno i građeno s ljubavlju prema detaljima, idealno je za sve koji traže beg od svakodnevice i dodir s prirodom, bez odricanja od komfora.",
     },
     profile: {
       name: "Mileva koncept",
-      bio: "Mileva koncept objedinjuje vrhunski restoran, četiri toplo uređene smeštajne jedinice i otvoreni bazen sa slanom vodom koji kupačima dočarava osećaj mora - u samom srcu Šumadije. Očuvana arhitektura tradicionalnog sela, nenametljivo spojena sa savremenim materijalima, daje mu posebnu draž. Toplina drveta i kamena, zvuci prirode i pažljivo birani detalji čine svaki boravak izuzetnim - bilo da tražite romantičan vikend, porodični odmor ili prostor za privatne proslave i događaje.",
+      bio: "Mileva koncept objedinjuje vrhunski restoran, tri toplo uređene smeštajne jedinice i otvoreni bazen sa slanom vodom koji kupačima dočarava osećaj mora u samom srcu Šumadije. Očuvana arhitektura tradicionalnog sela, nenametljivo spojena sa savremenim materijalima, daje mu posebnu draž. Toplina drveta i kamena, zvuci prirode i pažljivo birani detalji čine svaki boravak izuzetnim - bilo da tražite romantičan vikend, porodični odmor ili prostor za privatne proslave i događaje.",
     },
     featured: {
       paragraph:
-        "Čulni predah u kojem se vreme rastvara između mirne vode i mirisa šume. Bazeni sa slanom vodom, toplina drveta i otvoreno nebo - mir mora, u srcu Šumadije.",
+        "Čulni predah u kojem se vreme rastvara između mirne vode i mirisa šume. Bazen sa slanom vodom, toplina drveta i otvoreno nebo - mir mora, u srcu Šumadije.",
     },
     sidebar: {
       restaurantsLabel: "Restorani - Sumibijaki",
@@ -1430,8 +1546,14 @@ export const dictionaries: Record<LangCode, Dict> = {
     restaurants: { categories: ["Restoran", "Smeštaj", "Događaji"] },
     contact: {
       title: "Kontakt",
-      address: "Grivac bb, 34240 Knić, Srbija",
+      address: "Vase Pelagića 18, 34205, Grivac, Srbija",
       follow: "Pratite nas",
+      phones: {
+        main: "Restoran i apartmani",
+        pool: "Bazen",
+        events: "Proslave i događaji",
+      },
+      venues: { restaurant: "Restoran", pool: "Bazen" },
       page: {
         eyebrow: "Javite nam se",
         tagline:
@@ -1444,7 +1566,6 @@ export const dictionaries: Record<LangCode, Dict> = {
         phoneLabel: "Telefon",
         emailLabel: "Imejl",
         hoursLabel: "Radno vreme",
-        hours: ["Ponedeljak - Petak  ·  09-21", "Subota - Nedelja  ·  09-23"],
         days: ["Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota", "Nedelja"],
         closed: "zatvoreno",
         followLabel: "Pratite nas",
@@ -1515,12 +1636,18 @@ export const dictionaries: Record<LangCode, Dict> = {
         eyebrow: "Doživljaji",
         heading: "Avantura na pragu Šumadije.",
         body: "Ispunite dan u sedlu, na točkovima ili peške kroz brda - sami, u paru ili sa ekipom.",
+        soon: "Uskoro",
+        bookLabel: "Zakazivanje i provera dostupnosti",
+        moreLabel: "Više o jahanju i instruktoru",
         items: [
           {
             name: "Jahanje konja",
             tag: "u sedlu",
-            desc: "Mirne jahačke staze kroz livade i šumu, uz pratnju vodiča, za početnike i iskusne.",
-            body: "Jahanje na imanju počinje kratkim upoznavanjem sa konjima i osnovama u sedlu, pa tek onda krećemo u mirnu šetnju livadama i šumskim stazama. Vodič je uz vas celim putem, tempo prilagođavamo grupi, a rute biramo prema iskustvu - od laganih krugova za prve pokušaje do dužih izleta za one koji već sede sigurno. Oprema i zaštitne kacige su obezbeđene, a jahanje organizujemo i za decu uz poseban nadzor. Posle staze najlepše je vratiti se na terasu i odmoriti uz pogled na brda.",
+            note: "Sa određenim jahačkim iskustvom",
+            desc: "Terensko jahanje kroz livade i šumu, za jahače sa iskustvom.",
+            requirement:
+              "Jahanje je namenjeno iskusnim jahačima. Neophodno je iskustvo u terenskom jahanju i potpuna kontrola nad konjem u hodu, kasu, kenteru i galopu.",
+            body: "Jahanje vodi kroz livade i šumske staze oko imanja, uz pratnju vodiča, a rute se biraju prema sastavu grupe. Oprema i zaštitne kacige su obezbeđene. Termini se zakazuju unapred, uz prethodnu proveru dostupnosti telefonom. Posle staze najlepše je vratiti se na terasu i odmoriti uz pogled na brda.",
           },
           {
             name: "Panoramske rute",
@@ -1611,7 +1738,10 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
     },
     footer: {
-      links: ["Politika kolačića", "Politika privatnosti", "Pravne napomene"],
+      links: [
+        { label: "Politika privatnosti", href: "/politika-privatnosti" },
+        { label: "Politika kolačića", href: "/politika-kolacica" },
+      ],
       copyright: "© 2026 Mileva koncept",
       explore: "Navigacija",
       tagline: "Gde tradicija susreće luksuz, a gostoprimstvo postaje umetnost.",
@@ -1786,6 +1916,40 @@ export const dictionaries: Record<LangCode, Dict> = {
             desc: "Karađorđe's endowment - the five-domed Church of St. George with its mosaics and the mausoleum of the Karađorđević dynasty on the hill above Topola.",
             distance: "~50 km",
           },
+        ],
+      },
+      wineries: {
+        eyebrow: "Wine route",
+        heading: "The wineries of Šumadija, close at hand.",
+        body: "This is wine country. Within half an hour's drive of Mileva the wineries follow one another, from small family cellars to some of the best known in Serbia.",
+        items: [
+          {
+            name: "Rujevica Winery",
+            place: "Drača",
+            distance: "~9 km",
+            desc: "A tasting room, home cooking and rooms to stay. Call ahead before visiting.",
+          },
+          {
+            name: "Katanić Winery",
+            place: "Kamenica",
+            distance: "~10 km",
+            desc: "Runs tastings; booking in advance is required.",
+          },
+          {
+            name: "Art Wine",
+            place: "Grošnica",
+            distance: "~15 km",
+            desc: "A small family winery working its own vineyards.",
+          },
+          { name: "ILLE–VIVI Winery", place: "Glumac", distance: "~17 km", desc: "" },
+          { name: "Winery 27", place: "Ovsište", distance: "~19 km", desc: "" },
+          {
+            name: "Aleksandrović Winery",
+            place: "Vinča near Topola",
+            distance: "~25 km",
+            desc: "One of the best known wineries in this part of Serbia, and the most set up for visitors.",
+          },
+          { name: "Kraljeva Winery", place: "Topola", distance: "~26 km", desc: "" },
         ],
       },
     },
@@ -2071,15 +2235,15 @@ export const dictionaries: Record<LangCode, Dict> = {
     },
     history: {
       heading: "Welcome",
-      body: "Nestled in the peaceful and picturesque village of Grivac, in the municipality of Knić, the Mileva Koncept resort is a true oasis of calm and enjoyment. This exclusive place, thoughtfully designed and built with a love for detail, is ideal for anyone seeking an escape from everyday life and a touch of nature - without giving up comfort.",
+      body: "Nestled in the peaceful and picturesque village of Grivac, in the municipality of Knić, the Mileva Koncept resort is a true oasis of calm and enjoyment. This singular place, thoughtfully designed and built with a love for detail, is ideal for anyone seeking an escape from everyday life and a touch of nature - without giving up comfort.",
     },
     profile: {
       name: "Mileva Koncept",
-      bio: "Mileva Koncept brings together a fine restaurant, four warmly furnished accommodation units, and an outdoor pool with salt-enriched water that gives bathers the feeling of the seaside - in the very heart of Šumadija. The preserved architecture of a traditional village, subtly blended with modern materials, lends it a special charm. The warmth of wood and stone, the sounds of nature, and carefully chosen details make every stay exceptional - whether you seek a romantic weekend, a family holiday, or a space for private celebrations and events.",
+      bio: "Mileva Koncept brings together a fine restaurant, three warmly furnished accommodation units, and an outdoor pool with salt-enriched water that gives bathers the feeling of the seaside in the very heart of Šumadija. The preserved architecture of a traditional village, subtly blended with modern materials, lends it a special charm. The warmth of wood and stone, the sounds of nature, and carefully chosen details make every stay exceptional - whether you seek a romantic weekend, a family holiday, or a space for private celebrations and events.",
     },
     featured: {
       paragraph:
-        "A sensory escape where time dissolves between still water and the scent of the forest. Salt-water pools, warm wood and open sky - the calm of the sea, in the heart of Šumadija.",
+        "A sensory escape where time dissolves between still water and the scent of the forest. A salt-water pool, warm wood and open sky - the calm of the sea, in the heart of Šumadija.",
     },
     sidebar: {
       restaurantsLabel: "Restaurants - Sumibiyaki",
@@ -2090,12 +2254,18 @@ export const dictionaries: Record<LangCode, Dict> = {
     restaurants: { categories: ["Restaurant", "Accommodation", "Events"] },
     contact: {
       title: "Contact",
-      address: "Grivac bb, 34240 Knić, Serbia",
+      address: "Vase Pelagića 18, 34205, Grivac, Serbia",
       follow: "Follow us",
+      phones: {
+        main: "Restaurant & apartments",
+        pool: "Pool",
+        events: "Celebrations & events",
+      },
+      venues: { restaurant: "Restaurant", pool: "Pool" },
       page: {
         eyebrow: "Get in touch",
         tagline:
-          "We're here for every question - reservations, celebrations and quiet days in the heart of Šumadija.",
+          "We're here for every question reservations, celebrations and quiet days in the heart of Šumadija.",
         introHeading: "Let's talk about your stay",
         introBody:
           "Planning a weekend by the water, a family celebration or a longer retreat? Write or call us - we'll help you plan every detail and reply as soon as we can.",
@@ -2104,7 +2274,6 @@ export const dictionaries: Record<LangCode, Dict> = {
         phoneLabel: "Phone",
         emailLabel: "Email",
         hoursLabel: "Opening hours",
-        hours: ["Monday - Friday  ·  09-21", "Saturday - Sunday  ·  09-23"],
         days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         closed: "closed",
         followLabel: "Follow us",
@@ -2175,12 +2344,18 @@ export const dictionaries: Record<LangCode, Dict> = {
         eyebrow: "Experiences",
         heading: "Adventure on the edge of Šumadija.",
         body: "Fill the day in the saddle, on wheels or on foot through the hills - solo, as a pair or with a crew.",
+        soon: "Coming soon",
+        bookLabel: "Booking and availability",
+        moreLabel: "More about the riding and the instructor",
         items: [
           {
             name: "Horse riding",
             tag: "in the saddle",
-            desc: "Gentle riding trails through meadows and forest, with a guide, for beginners and the experienced.",
-            body: "Riding on the estate starts with a short introduction to the horses and the basics in the saddle, and only then do we set off on a gentle walk through meadows and forest trails. A guide stays with you the whole way, we match the pace to the group, and we choose routes by experience - from easy loops for first attempts to longer outings for those who already sit securely. Gear and safety helmets are provided, and we arrange riding for children under special supervision too. After the trail, there's nothing better than returning to the terrace to rest with a view of the hills.",
+            note: "Riding experience required",
+            desc: "Trail riding through meadows and forest, for experienced riders.",
+            requirement:
+              "Riding is for experienced riders only. You need trail riding experience and full control of the horse at walk, trot, canter and gallop.",
+            body: "The ride takes you through the meadows and forest trails around the estate with a guide, and routes are chosen to suit the group. Gear and safety helmets are provided. Rides are booked in advance, after checking availability by phone. After the trail, there's nothing better than returning to the terrace to rest with a view of the hills.",
           },
           {
             name: "Panoramic routes",
@@ -2271,7 +2446,10 @@ export const dictionaries: Record<LangCode, Dict> = {
       },
     },
     footer: {
-      links: ["Cookies policy", "Privacy policy", "Legal notice"],
+      links: [
+        { label: "Privacy policy", href: "/politika-privatnosti" },
+        { label: "Cookies policy", href: "/politika-kolacica" },
+      ],
       copyright: "© 2026 Mileva Koncept",
       explore: "Navigation",
       tagline: "Where tradition meets luxury, and hospitality becomes art.",

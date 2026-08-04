@@ -6,6 +6,7 @@ import LandmarksIntro from "../../components/LandmarksIntro";
 import LandmarksFeatured from "../../components/LandmarksFeatured";
 import LandmarksStories from "../../components/LandmarksStories";
 import LandmarksList from "../../components/LandmarksList";
+import LandmarksWineries from "../../components/LandmarksWineries";
 import Footer from "../../components/Footer";
 
 export async function generateMetadata({
@@ -39,6 +40,7 @@ export default function ZnamenitostiPage() {
         <LandmarksFeatured />
         <LandmarksStories />
         <LandmarksList />
+        <LandmarksWineries />
       </main>
       <Footer />
     </>

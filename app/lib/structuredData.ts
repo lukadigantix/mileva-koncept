@@ -10,7 +10,8 @@
  * već poznaje — to je jedan od jačih signala da je reč o istom entitetu.
  */
 
-import { BUSINESS, SOCIALS } from "./site";
+import { BUSINESS, MAP_URL, SOCIALS, type PhoneKey } from "./site";
+import type { SitePhone } from "./siteSettings";
 import { OG_IMAGE, SITE_NAME, SITE_URL } from "./seo";
 import { SEO } from "../i18n/seoContent";
 import { LOCALE_TAGS, localePath } from "../i18n/routing";
@@ -43,6 +44,13 @@ const geo = {
   longitude: BUSINESS.longitude,
 };
 
+/** `contactType` za svaki od tri broja — Google očekuje engleske oznake. */
+const CONTACT_TYPES: Record<PhoneKey, string> = {
+  main: "reservations",
+  pool: "pool",
+  events: "events",
+};
+
 /** Radno vreme iz admina u schema.org oblik; zatvoreni dani se izostavljaju. */
 function openingHours(hours: WorkingDay[] | null) {
   if (!hours?.length) return undefined;
@@ -63,12 +71,13 @@ function openingHours(hours: WorkingDay[] | null) {
 export function siteStructuredData({
   lang,
   hours,
-  phone,
+  phones,
   email,
 }: {
   lang: LangCode;
   hours: WorkingDay[] | null;
-  phone: string;
+  /** Svi brojevi; prvi je glavni i ide u `telephone`, svi u `contactPoint`. */
+  phones: SitePhone[];
   email: string;
 }) {
   const businessId = `${SITE_URL}/#business`;
@@ -86,12 +95,19 @@ export function siteStructuredData({
         alternateName: "Mileva Koncept",
         description: SEO[lang].siteDescription,
         url: homeUrl,
-        telephone: phone,
+        telephone: phones[0].href,
+        contactPoint: phones.map((p) => ({
+          "@type": "ContactPoint",
+          telephone: p.href,
+          contactType: CONTACT_TYPES[p.key],
+          availableLanguage: ["sr", "en"],
+        })),
         email,
         image,
         logo: image,
         address,
         geo,
+        hasMap: MAP_URL,
         sameAs,
         priceRange: BUSINESS.priceRange,
         servesCuisine: ["Српска", "Домаћа", "Шумадијска"],

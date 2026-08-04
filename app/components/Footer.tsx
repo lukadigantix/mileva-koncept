@@ -5,6 +5,7 @@ import Link from "./LocaleLink";
 import Reveal from "./Reveal";
 import { useCms, useLang } from "../i18n/LanguageProvider";
 import { useSiteSettings } from "../lib/siteSettings";
+import { CREDIT } from "../lib/site";
 
 /**
  * Footer - editorial and restrained. An oversized e-mail "invitation" anchors
@@ -53,9 +54,15 @@ export default function Footer() {
 
             <div className="flex flex-col gap-1 text-[15.56px] leading-relaxed text-[var(--sand)] lg:text-right">
               <span>{s.address ? cms.text(s.address) : t.contact.address}</span>
-              <a href={`tel:${s.phoneHref}`} className="link-underline w-fit lg:self-end">
-                {s.phoneLabel}
-              </a>
+              {/* Tri broja po nameni - svaki se javlja zasebno. */}
+              {s.phones.map((p) => (
+                <span key={p.key} className="lg:self-end">
+                  <span className="opacity-60">{t.contact.phones[p.key]}</span>{" "}
+                  <a href={`tel:${p.href}`} className="link-underline">
+                    {p.label}
+                  </a>
+                </span>
+              ))}
             </div>
           </div>
         </Reveal>
@@ -92,7 +99,7 @@ export default function Footer() {
 
         {/* Bottom bar - brand mark + copyright + legal */}
         <div className="flex flex-col items-start justify-between gap-4 pt-[clamp(1.75rem,3vw,2.5rem)] text-[11px] uppercase tracking-[0.12em] sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <Image
               src="/logo/mileva-logo-icon.png"
               alt="Mileva"
@@ -101,21 +108,45 @@ export default function Footer() {
               className="h-7 w-auto [filter:brightness(0)_invert(1)]"
             />
             <span className="opacity-50">{t.footer.copyright}</span>
+            {/* Potpis autora sajta. */}
+            <span className="flex items-center gap-[0.4em]">
+              <span className="opacity-50">{CREDIT.prefix}</span>
+              <a
+                href={CREDIT.href}
+                target="_blank"
+                rel="noreferrer"
+                className="link-underline opacity-70 hover:opacity-100"
+              >
+                {CREDIT.name}
+              </a>
+            </span>
           </div>
 
           <nav
             aria-label={t.aria.legal}
             className="flex flex-wrap items-center gap-[var(--space)]"
           >
-            {t.footer.links.map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="link-underline opacity-70 hover:opacity-100"
-              >
-                {link}
-              </a>
-            ))}
+            {/* Stranice koje postoje idu kroz LocaleLink (jezik u putanji);
+                "#" ostaje običan anchor dok se strana ne napravi. */}
+            {t.footer.links.map((link) =>
+              link.href === "#" ? (
+                <a
+                  key={link.label}
+                  href="#"
+                  className="link-underline opacity-70 hover:opacity-100"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="link-underline opacity-70 hover:opacity-100"
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </nav>
         </div>
       </div>

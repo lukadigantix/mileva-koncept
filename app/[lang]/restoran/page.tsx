@@ -20,13 +20,6 @@ export async function generateMetadata({
   return pageMetadata(langFromSegment(lang), "restoran", "/restoran");
 }
 
-/** Kategorije čije ime sadrži "pić" idu na kartu pića, ostale u jelovnik —
-    backend vodi JEDAN digitalni meni, a sajt ga prikazuje kao dva borda. */
-function isDrinkCategory(name: string): boolean {
-  const n = name.toLowerCase();
-  return n.includes("pić") || n.includes("пић");
-}
-
 function toBoardSections(categories: PublicMenuCategory[]): BoardSection[] {
   return categories
     .map((c) => ({
@@ -49,10 +42,11 @@ function toBoardSections(categories: PublicMenuCategory[]): BoardSection[] {
  * boards fall back to the static dictionary content.
  */
 export default async function RestoranPage() {
+  // Backend vraća jelovnik i kartu pića razdvojeno: koji je jelovnik na redu
+  // (vikend / letnji / zimski) odlučuje on, prema danu i mesecu.
   const menu = await getPublicMenu();
-  const categories = menu?.categories ?? [];
-  const foodSections = toBoardSections(categories.filter((c) => !isDrinkCategory(c.name)));
-  const drinkSections = toBoardSections(categories.filter((c) => isDrinkCategory(c.name)));
+  const foodSections = toBoardSections(menu?.categories ?? []);
+  const drinkSections = toBoardSections(menu?.drinks ?? []);
 
   return (
     <>

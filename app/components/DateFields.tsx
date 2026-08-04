@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import Calendar from "./Calendar";
 import type { CalendarLabels, DayStatus } from "./Calendar";
-import { shortDate } from "../lib/dates";
+import { addDays, shortDate } from "../lib/dates";
 
 /**
  * The booking forms' date inputs: a trigger styled like the other underlined
@@ -78,14 +78,32 @@ function usePopover(open: boolean, setOpen: (open: boolean) => void) {
 const PANEL =
   "absolute left-0 top-full z-30 mt-3 rounded-[var(--radius2)] border border-[var(--border)] bg-[var(--bg)] p-[clamp(1rem,2vw,1.4rem)] shadow-[var(--shadow)]";
 
+/**
+ * Ima li u dozvoljenom opsegu ijedan zatvoren dan. Za smeštaj se datumi više ne
+ * zatvaraju (videti actions/booking.ts), pa bi stalna legenda „zauzeto“
+ * objašnjavala stanje koje gost nikada ne vidi.
+ */
+function useHasBlocked({ min, max, status }: SharedProps): boolean {
+  return useMemo(() => {
+    if (!min || !max) return false;
+    for (let d = min; d <= max; d = addDays(d, 1)) {
+      if (status(d) === "blocked") return true;
+    }
+    return false;
+  }, [min, max, status]);
+}
+
 function Panel({
   labels,
+  hasBlocked,
   onClear,
   onDone,
   className,
   children,
 }: {
   labels: FieldLabels;
+  /** Bez zatvorenih dana legenda ne pominje „zauzeto“. */
+  hasBlocked: boolean;
   onClear: () => void;
   onDone: () => void;
   className?: string;
@@ -99,16 +117,21 @@ function Panel({
       <div className="@container">{children}</div>
 
       <div className="mt-[clamp(0.9rem,2vw,1.25rem)] flex flex-wrap items-center justify-between gap-x-5 gap-y-3 border-t border-[var(--border)] pt-[clamp(0.75rem,1.6vw,1rem)]">
-        {/* Legend - what the two states in the grid mean. */}
+        {/* Legenda. „Zauzeto" se prikazuje samo ako u prikazu zaista postoji
+            zatvoren dan - za smeštaj se datumi više ne zatvaraju (videti
+            actions/booking.ts), pa bi stalna oznaka objašnjavala stanje koje
+            gost nikada ne vidi. */}
         <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.12em] text-[var(--hint)]">
           <span className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-[var(--main)]" />
             {labels.free}
           </span>
-          <span className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full border border-[var(--border)]" />
-            <span className="line-through">{labels.taken}</span>
-          </span>
+          {hasBlocked && (
+            <span className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full border border-[var(--border)]" />
+              <span className="line-through">{labels.taken}</span>
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
@@ -219,6 +242,7 @@ export function DateRangeField({
 }) {
   const [open, setOpen] = useState(false);
   const { ref, close, openWith } = usePopover(open, setOpen);
+  const hasBlocked = useHasBlocked(shared);
 
   /**
    * Opening from either trigger drops the departure, so the calendar is always
@@ -260,6 +284,7 @@ export function DateRangeField({
       {open && (
         <Panel
           labels={shared.labels}
+          hasBlocked={hasBlocked}
           className={shared.panelClassName}
           onClear={() => onChange("", "")}
           onDone={close}
@@ -297,6 +322,7 @@ export function DateField({
 }) {
   const [open, setOpen] = useState(false);
   const { ref, close, openWith } = usePopover(open, setOpen);
+  const hasBlocked = useHasBlocked(shared);
 
   return (
     <div ref={ref} className="relative">
@@ -315,6 +341,7 @@ export function DateField({
       {open && (
         <Panel
           labels={shared.labels}
+          hasBlocked={hasBlocked}
           className={shared.panelClassName}
           onClear={() => onChange("")}
           onDone={close}

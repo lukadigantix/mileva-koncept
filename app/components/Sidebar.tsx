@@ -116,9 +116,17 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             <a href={`mailto:${settings.email}`} className="link-underline text-[18px] lg:text-[22px]">
               {settings.email}
             </a>
-            <a href={`tel:${settings.phoneHref}`} className="link-underline text-[18px] lg:text-[22px]">
-              {settings.phoneLabel}
-            </a>
+            {/* Tri broja po nameni - svaki se javlja zasebno. */}
+            {settings.phones.map((p) => (
+              <span key={p.key} className="flex flex-col lg:items-end">
+                <span className="text-[11px] uppercase tracking-[0.18em] opacity-60">
+                  {t.contact.phones[p.key]}
+                </span>
+                <a href={`tel:${p.href}`} className="link-underline text-[18px] lg:text-[22px]">
+                  {p.label}
+                </a>
+              </span>
+            ))}
           </div>
 
           <div className="flex flex-col gap-2 lg:items-end">

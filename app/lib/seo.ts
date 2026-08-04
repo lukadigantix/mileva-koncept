@@ -41,6 +41,8 @@ export const ROUTES: { path: string; key: PageKey }[] = [
   { path: "/znamenitosti", key: "znamenitosti" },
   { path: "/blog", key: "blog" },
   { path: "/kontakt", key: "kontakt" },
+  { path: "/politika-privatnosti", key: "privatnost" },
+  { path: "/politika-kolacica", key: "kolacici" },
 ];
 
 /**

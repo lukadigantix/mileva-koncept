@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "./LocaleLink";
 import SplitText from "./SplitText";
 import Modal from "./Modal";
 import { useLang } from "../i18n/LanguageProvider";
+import { RIDING } from "../lib/site";
 
 /**
  * Activities - the outdoor experiences around the estate (horse riding, routes,
@@ -13,7 +13,9 @@ import { useLang } from "../i18n/LanguageProvider";
  * (Restaurants / LeisureGallery / LandmarksFeatured): a grayscale image that
  * brightens + eases on hover, with the activity name centred over it. Each card
  * is a button that opens a modal with the full image + long-form text - except
- * the quads card, which navigates to the /kvadovi page (fleet + route map).
+ * the quads card, which is not in the offer yet (see SOON_INDEX). Riding carries
+ * a condition riders must know before coming, so it shows on the card itself and
+ * again in the modal, above its own booking number (RIDING_INDEX).
  *
  * Real activity photos, matched by content to the items order: horse riding,
  * panoramic routes (hills), quads, picnic & barbecue (the estate terrace).
@@ -25,9 +27,13 @@ const IMAGES = [
   "/dogadjaji/d3.webp",
 ];
 
-/** Per-item page target - a card with a link navigates instead of opening the
-    modal. Order matches `activities.items` in the dictionary. */
-const PAGE_LINKS: (string | null)[] = [null, null, "/kvadovi", null];
+/** Aktivnost koja još nije u ponudi - kartica nosi oznaku "Uskoro" i nije
+    klikabilna (ranije je vodila na /kvadovi). Index prati `activities.items`. */
+const SOON_INDEX = 2;
+
+/** Jahanje - jedina aktivnost sa sopstvenim kontaktom, jer je vodi partner
+    (videti RIDING u lib/site.ts). Index prati `activities.items`. */
+const RIDING_INDEX = 0;
 
 export default function EventsActivities() {
   const { t } = useLang();
@@ -56,12 +62,14 @@ export default function EventsActivities() {
         </p>
       </div>
 
-      {/* Joined cards - each opens the detail modal, or navigates when the
-          activity has its own page (quads → /kvadovi). */}
+      {/* Joined cards - each opens the detail modal, except the "Uskoro" one,
+          which is a plain, non-clickable card. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {a.items.map((item, i) => {
-          const cardClass =
-            "group relative flex min-h-[50vh] cursor-pointer flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center lg:min-h-screen lg:border-r lg:last:border-r-0";
+          const isSoon = i === SOON_INDEX;
+          const cardClass = `group relative flex min-h-[50vh] flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center lg:min-h-screen lg:border-r lg:last:border-r-0 ${
+            isSoon ? "cursor-default" : "cursor-pointer"
+          }`;
           const inner = (
             <>
               {/* Background image - dark, brightens on hover. */}
@@ -92,15 +100,31 @@ export default function EventsActivities() {
                 <h3 className="text-[22px] tracking-[0.15em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
                   {item.name}
                 </h3>
+                {/* Uslov koji gost mora da vidi pre nego što otvori karticu -
+                    isti okvir kao oznaka "Uskoro", samo prelomljen u dva reda.
+
+                    Širina je u rem-ima, ne u `ch`: razmaknuta velika slova su
+                    znatno šira od `ch` jedinice, pa bi `max-w-[Nch]` prelamao
+                    na tri reda. `text-balance` prepušta pregledaču da dva reda
+                    izjednači, umesto da prvi natrpa a drugom ostavi jednu reč. */}
+                {item.note && (
+                  <p className="mt-[clamp(0.9rem,1.5vw,1.25rem)] max-w-[17rem] text-balance border border-[var(--bg)]/45 px-[1.1em] py-[0.7em] text-[13px] uppercase leading-[1.6] tracking-[0.16em] text-[var(--bg)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                    {item.note}
+                  </p>
+                )}
+                {isSoon && (
+                  <span className="mt-[clamp(1rem,1.6vw,1.4rem)] border border-[var(--bg)]/45 px-[1.1em] py-[0.6em] text-[11px] uppercase leading-none tracking-[0.3em] text-[var(--bg)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                    {a.soon}
+                  </span>
+                )}
               </div>
             </>
           );
 
-          const href = PAGE_LINKS[i];
-          return href ? (
-            <Link key={item.name} href={href} aria-label={item.name} className={cardClass}>
+          return isSoon ? (
+            <div key={item.name} className={cardClass}>
               {inner}
-            </Link>
+            </div>
           ) : (
             <button
               key={item.name}
@@ -145,6 +169,38 @@ export default function EventsActivities() {
               <p className="mt-[clamp(1rem,2.2vw,1.6rem)] text-[clamp(13.5px,3.4vw,17px)] leading-[1.75] text-[var(--dark)]">
                 {activeItem.body}
               </p>
+
+              {/* Uslov za dolazak - istaknut, da se ne izgubi u tekstu. */}
+              {activeItem.requirement && (
+                <p className="mt-[clamp(1rem,2.2vw,1.6rem)] border-l-2 border-[var(--main)] pl-[clamp(0.9rem,2vw,1.25rem)] text-[clamp(13.5px,3.4vw,16px)] leading-[1.7] text-[var(--dark)]">
+                  {activeItem.requirement}
+                </p>
+              )}
+
+              {/* Jahanje vodi partner, pa ima svoj broj i svoj sajt. */}
+              {active === RIDING_INDEX && (
+                <div className="mt-[clamp(1.5rem,3vw,2.25rem)] flex flex-col gap-[clamp(0.9rem,2vw,1.25rem)] border-t border-[var(--border)] pt-[clamp(1.25rem,2.5vw,1.75rem)]">
+                  <span className="flex flex-col">
+                    <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--main)]">
+                      {a.bookLabel}
+                    </span>
+                    <a
+                      href={`tel:${RIDING.phoneHref}`}
+                      className="link-underline mt-[0.4rem] w-fit text-[clamp(1.05rem,2.6vw,1.35rem)] leading-none tracking-[-0.01em] text-[var(--dark)]"
+                    >
+                      {RIDING.phoneLabel}
+                    </a>
+                  </span>
+                  <a
+                    href={RIDING.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="link-underline w-fit text-[clamp(13.5px,3.4vw,16px)] text-[var(--main)]"
+                  >
+                    {a.moreLabel}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </Modal>

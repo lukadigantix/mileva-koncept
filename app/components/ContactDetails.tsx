@@ -6,6 +6,7 @@ import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import { useCms, useLang } from "../i18n/LanguageProvider";
 import { useSiteSettings } from "../lib/siteSettings";
+import { MAP_URL, OPENING_HOURS } from "../lib/site";
 import { sendMessage, type ContactState } from "../actions/contact";
 import type { WorkingDay } from "../lib/api";
 
@@ -22,10 +23,8 @@ const FIELD =
   "w-full bg-transparent border-b border-[var(--border)] py-3 text-[17px] text-[var(--dark)] placeholder-[var(--hint)] outline-none transition-colors duration-300 focus:border-[var(--main)]";
 const LABEL = "mb-1 block text-[12px] uppercase tracking-[0.2em] text-[var(--main)]";
 
-// Google Maps deep-link to the village (address is a placeholder - refine when
-// the exact coordinates are known).
-const MAP_HREF =
-  "https://www.google.com/maps/search/?api=1&query=Grivac%2C%2034240%20Kni%C4%87";
+// Google Maps link na imanje - i za red sa adresom i za "Локација" baner.
+const MAP_HREF = MAP_URL;
 
 /** "08:00" → "08"; keeps non-zero minutes ("08:30") - matches the site's style. */
 const fmtTime = (time: string) => time.replace(/:00$/, "");
@@ -56,8 +55,11 @@ function hoursLines(hours: WorkingDay[], days: string[], closed: string): string
 }
 
 export default function ContactDetails() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const cms = useCms();
+  // Ćirilica ima duže gornje i donje produžetke (Ш, Ђ, р, ј) od latinice, pa se
+  // u pretesnom proredu naslova sudaraju - na ćirilici ga malo olabavimo.
+  const headingLeading = lang === "sr-cyrl" ? "leading-[1.25]" : "leading-[1.1]";
   const s = useSiteSettings();
   const c = t.contact.page;
   const [state, formAction, pending] = useActionState<ContactState, FormData>(sendMessage, {
@@ -71,14 +73,38 @@ export default function ContactDetails() {
         : c.errorBody
       : null;
 
-  const details = [
-    { label: c.addressLabel, value: s.address ? cms.text(s.address) : t.contact.address, href: MAP_HREF },
-    { label: c.phoneLabel, value: s.phoneLabel, href: `tel:${s.phoneHref}` },
-    { label: c.emailLabel, value: s.email, href: `mailto:${s.email}` },
+  // Svaki red nosi listu vrednosti - telefon ih ima tri, svaki sa oznakom čemu
+  // služi (restoran/apartmani, bazen, proslave).
+  const details: {
+    label: string;
+    items: { text: string; href: string; note?: string }[];
+  }[] = [
+    {
+      label: c.addressLabel,
+      items: [
+        { text: s.address ? cms.text(s.address) : t.contact.address, href: MAP_HREF },
+      ],
+    },
+    {
+      label: c.phoneLabel,
+      items: s.phones.map((p) => ({
+        text: p.label,
+        href: `tel:${p.href}`,
+        note: t.contact.phones[p.key],
+      })),
+    },
+    { label: c.emailLabel, items: [{ text: s.email, href: `mailto:${s.email}` }] },
   ];
 
-  // Radno vreme iz admina kada postoji, inače statični tekst iz rečnika.
-  const hours = s.hours ? hoursLines(s.hours, c.days, c.closed) : c.hours;
+  // Radno vreme po objektu. Restoran i bazen rade različito, pa se prikazuju
+  // odvojeno; admin panel ima samo jedan raspored i njime prepisuje restoran.
+  const venueHours = OPENING_HOURS.map((v) => ({
+    key: v.key,
+    lines:
+      v.key === "restaurant" && s.hours
+        ? hoursLines(s.hours, c.days, c.closed)
+        : [`${c.days[v.from]} - ${c.days[v.to]}  ·  ${fmtTime(v.open)}-${fmtTime(v.close)}`],
+  }));
 
   return (
     <>
@@ -119,16 +145,25 @@ export default function ContactDetails() {
                   <dt className="text-[12px] uppercase tracking-[0.2em] text-[var(--main)]">
                     {d.label}
                   </dt>
-                  <dd>
-                    <a
-                      href={d.href}
-                      className="link-underline text-[17px] text-[var(--dark)]"
-                      {...(d.href.startsWith("http")
-                        ? { target: "_blank", rel: "noreferrer" }
-                        : {})}
-                    >
-                      {d.value}
-                    </a>
+                  <dd className="flex flex-col gap-[0.6rem] sm:items-end">
+                    {d.items.map((item) => (
+                      <span key={item.href} className="flex flex-col sm:items-end">
+                        {item.note && (
+                          <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--hint)]">
+                            {item.note}
+                          </span>
+                        )}
+                        <a
+                          href={item.href}
+                          className="link-underline w-fit text-[17px] text-[var(--dark)]"
+                          {...(item.href.startsWith("http")
+                            ? { target: "_blank", rel: "noreferrer" }
+                            : {})}
+                        >
+                          {item.text}
+                        </a>
+                      </span>
+                    ))}
                   </dd>
                 </div>
               ))}
@@ -138,9 +173,16 @@ export default function ContactDetails() {
                 <dt className="text-[12px] uppercase tracking-[0.2em] text-[var(--main)]">
                   {c.hoursLabel}
                 </dt>
-                <dd className="flex flex-col text-[17px] text-[var(--dark)] sm:text-right">
-                  {hours.map((h) => (
-                    <span key={h}>{h}</span>
+                <dd className="flex flex-col gap-[0.6rem] text-[17px] text-[var(--dark)] sm:items-end sm:text-right">
+                  {venueHours.map((v) => (
+                    <span key={v.key} className="flex flex-col sm:items-end">
+                      <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--hint)]">
+                        {t.contact.venues[v.key]}
+                      </span>
+                      {v.lines.map((h) => (
+                        <span key={h}>{h}</span>
+                      ))}
+                    </span>
                   ))}
                 </dd>
               </div>
@@ -186,12 +228,21 @@ export default function ContactDetails() {
                 className="mx-auto mt-[clamp(2rem,4vw,3rem)] flex max-w-xl flex-col gap-[clamp(1.5rem,3vw,2rem)]"
               >
                 {/* Mamac za botove - sakriven od ljudi i čitača ekrana; backend
-                    tiho odbaci poruku ako stigne popunjen. */}
+                    tiho odbaci poruku ako stigne popunjen.
+
+                    Polje se NE sme zvati `website`, `url`, `company` i slično:
+                    menadžeri lozinki i Chrome autofill takva imena prepoznaju i
+                    popune ih i kad su nevidljiva. Tada zamka opali na pravom
+                    gostu - on vidi zahvalnicu, a poruka se tiho baci. Otud
+                    besmisleno ime, na koje nijedna heuristika ne reaguje. */}
                 <input
                   type="text"
-                  name="website"
+                  name="mk_hp"
                   tabIndex={-1}
                   autoComplete="off"
+                  data-1p-ignore
+                  data-lpignore="true"
+                  data-form-type="other"
                   aria-hidden
                   className="pointer-events-none absolute h-0 w-0 opacity-0"
                 />
@@ -292,10 +343,12 @@ export default function ContactDetails() {
         />
         <div className="pointer-events-none absolute inset-0 bg-black/45" />
         <div className="relative z-10 mx-[var(--gutter)] pb-[clamp(2.5rem,6vw,5rem)] text-[var(--bg)]">
-          <span className="text-[12px] uppercase tracking-[0.3em] text-[var(--main)]">
+          <span className="text-[12px] uppercase tracking-[0.3em] text-[var(--bg)]">
             {c.mapLabel}
           </span>
-          <p className="mt-[clamp(0.6rem,1.5vw,1rem)] max-w-[22ch] text-[clamp(1.6rem,4vw,2.6rem)] leading-[1.1] tracking-[-0.01em]">
+          <p
+            className={`mt-[clamp(0.6rem,1.5vw,1rem)] max-w-[22ch] text-[clamp(1.6rem,4vw,2.6rem)] tracking-[-0.01em] ${headingLeading}`}
+          >
             {c.mapHeading}
           </p>
           <span className="relative mt-[clamp(1.25rem,2.5vw,1.75rem)] inline-flex items-center leading-none text-[clamp(1rem,1.3vw,1.15rem)]">

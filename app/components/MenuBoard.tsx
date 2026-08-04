@@ -29,6 +29,18 @@ type MenuBoardProps = {
  * heading, note) always comes from the dictionary by `source`; the courses come
  * from the backend when `sections` is provided, otherwise from the dictionary.
  */
+/**
+ * Spaja broj i jedinicu mere neprelomljivim razmakom: „100 g“ ostaje u istom
+ * redu umesto da „g“ padne samo u sledeći. Radi i za ćirilične oznake, jer se
+ * primenjuje POSLE preslovljavanja.
+ */
+function keepUnits(text: string): string {
+  return text.replace(
+    /(\d)\s+(kg|g|dl|ml|l|kom(?:ad)?\.?|кг|г|дл|мл|л|ком(?:ад)?\.?)(?=\s|$|[,./)])/gi,
+    "$1\u00A0$2"
+  );
+}
+
 export default function MenuBoard({ source, sections }: MenuBoardProps) {
   const { t } = useLang();
   const cms = useCms();
@@ -64,10 +76,23 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
           </p>
         </div>
 
-        {/* Courses - two columns on desktop, one on mobile. */}
-        <div className="mx-auto mt-[clamp(2.5rem,6vw,6rem)] grid max-w-4xl grid-cols-1 gap-x-[clamp(2.5rem,5vw,5rem)] gap-y-[clamp(2.5rem,5vw,4rem)] md:grid-cols-2">
-          {courses.map((section) => (
-            <div key={section.title}>
+        {/* Kategorije u dve kolone na desktopu, jedna na telefonu.
+
+            Namerno CSS kolone, a ne grid: u gridu je visina reda jednaka
+            najvišoj kategoriji u njemu, pa kratka kategorija (npr. Čorbaluk sa
+            jednom stavkom) ostavlja ogromnu rupu do sledećeg reda. Kolone
+            slažu kategorije jednu ispod druge i same ih raspoređuju.
+            `break-inside-avoid` čuva da se kategorija ne prelomi na pola. */}
+        <div className="mx-auto mt-[clamp(2.5rem,6vw,6rem)] max-w-4xl md:columns-2 md:gap-x-[clamp(2.5rem,5vw,5rem)]">
+          {/* Ključ je indeks, ne naziv: jelovnik ume da ima dva jela istog imena
+              koja se razlikuju samo po sastavu (npr. dva „Kačamak od crvenog
+              kukuruznog brašna“). Sa nazivom kao ključem React bi jedno od njih
+              izostavio. Redosled dolazi iz admina i ne preuređuje se ovde. */}
+          {courses.map((section, si) => (
+            <div
+              key={si}
+              className="mb-[clamp(2.5rem,5vw,4rem)] break-inside-avoid last:mb-0"
+            >
               {/* Course title - serif small-caps with a terracotta hairline. */}
               <h3 className="mb-[clamp(1rem,2.5vw,2rem)] flex items-center gap-4 text-[clamp(1rem,3.6vw,1.3rem)] uppercase tracking-[0.14em]">
                 <span className="whitespace-nowrap">{cms.text(section.title)}</span>
@@ -75,11 +100,11 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
               </h3>
 
               <ul className="flex flex-col gap-[clamp(1rem,2vw,1.6rem)]">
-                {section.items.map((item) => (
-                  <li key={item.name}>
+                {section.items.map((item, ii) => (
+                  <li key={ii}>
                     <div className="flex items-baseline gap-3">
                       <span className="text-[clamp(15px,4vw,17.78px)] leading-snug">
-                        {cms.text(item.name)}
+                        {keepUnits(cms.text(item.name))}
                       </span>
                       {/* Dotted leader bridging name → price. */}
                       <span
@@ -92,7 +117,7 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
                     </div>
                     {item.desc && (
                       <p className="mt-[0.3rem] max-w-[42ch] text-[clamp(12.5px,3.2vw,14px)] leading-relaxed text-[var(--hint)]">
-                        {cms.text(item.desc)}
+                        {keepUnits(cms.text(item.desc))}
                       </p>
                     )}
                   </li>

@@ -5,7 +5,7 @@ import SmoothScroll from "../components/SmoothScroll";
 import PageTransition from "../components/PageTransition";
 import { LanguageProvider } from "../i18n/LanguageProvider";
 import { getFooterSettings, getWorkingHours } from "../lib/api";
-import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "../lib/site";
+import { EMAIL, PHONES, RESTAURANT_WORKING_DAYS, SOCIALS } from "../lib/site";
 import { pageMetadata, SITE_NAME, SITE_URL } from "../lib/seo";
 import { SEO } from "../i18n/seoContent";
 import { LOCALE_TAGS, SEGMENTS, langFromSegment } from "../i18n/routing";
@@ -67,10 +67,19 @@ async function buildSiteSettings(): Promise<SiteSettings> {
     { label: "TikTok", href: footer?.tiktokUrl ?? "" },
   ].filter((s) => s.href);
 
+  // Admin ima jedno polje za telefon, pa njime može da prepiše samo glavni
+  // broj; brojevi za bazen i proslave su statični (lib/site.ts).
+  const phones = PHONES.map((p) =>
+    p.key === "main" && footer?.phone
+      ? { ...p, label: footer.phone, href: footer.phone.replace(/[^+\d]/g, "") }
+      : { ...p },
+  );
+
   return {
     email: footer?.email || EMAIL,
-    phoneLabel: footer?.phone || PHONE_LABEL,
-    phoneHref: footer?.phone ? footer.phone.replace(/[^+\d]/g, "") : PHONE_HREF,
+    phones,
+    phoneLabel: phones[0].label,
+    phoneHref: phones[0].href,
     address: footer?.street && footer.city ? `${footer.street}, ${footer.city}` : null,
     socials: socials.length ? socials : SOCIALS,
     hours: hours?.length ? hours : null,
@@ -91,8 +100,9 @@ export default async function RootLayout({
   const settings = await buildSiteSettings();
   const jsonLd = siteStructuredData({
     lang,
-    hours: settings.hours,
-    phone: settings.phoneHref,
+    // Bez radnog vremena iz admina, u JSON-LD ide statični raspored restorana.
+    hours: settings.hours ?? RESTAURANT_WORKING_DAYS,
+    phones: settings.phones,
     email: settings.email,
   });
 

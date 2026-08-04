@@ -7,11 +7,16 @@
 // placeholderi iz lib/site.ts, tako da sajt izgleda isto i bez backenda.
 
 import { createContext, useContext, type ReactNode } from "react";
-import { EMAIL, PHONE_HREF, PHONE_LABEL, SOCIALS } from "./site";
+import { EMAIL, PHONE_HREF, PHONE_LABEL, PHONES, SOCIALS, type PhoneKey } from "./site";
 import type { WorkingDay } from "./api";
+
+export type SitePhone = { key: PhoneKey; label: string; href: string };
 
 export type SiteSettings = {
   email: string;
+  /** Svi brojevi po nameni; natpisi su u rečniku (`contact.phones`). */
+  phones: SitePhone[];
+  /** Glavni broj — prečica za `phones[0]` (strukturirani podaci, JSON-LD). */
   phoneLabel: string;
   phoneHref: string;
   /** "Ulica, Grad" iz admina; null → lokalizovana adresa iz rečnika. */
@@ -23,6 +28,7 @@ export type SiteSettings = {
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   email: EMAIL,
+  phones: PHONES.map((p) => ({ ...p })),
   phoneLabel: PHONE_LABEL,
   phoneHref: PHONE_HREF,
   address: null,

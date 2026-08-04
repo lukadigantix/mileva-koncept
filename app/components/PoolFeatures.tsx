@@ -5,17 +5,21 @@ import Link from "./LocaleLink";
 import SplitText from "./SplitText";
 import Reveal from "./Reveal";
 import { useLang } from "../i18n/LanguageProvider";
+import { useSiteSettings } from "../lib/siteSettings";
 
 /**
  * What awaits at the pool - the amenities as a numbered editorial grid (three
  * columns from lg, two from sm): a terracotta index over a hairline, the name
  * in serif, a muted description beneath - the celebrations-grid numbering
- * married to the site's hairline idiom. Closes with the contact CTA, since
- * pool times and private hire go through the contact page.
+ * married to the site's hairline idiom. Closes with the pool's own phone number
+ * and the contact page link, since times and private hire are arranged by phone.
  */
 export default function PoolFeatures() {
   const { t } = useLang();
   const c = t.pool.features;
+  // Bazen ima svoj broj (PHONES u lib/site.ts) - ovde se zove direktno, bez
+  // skretanja na kontakt stranicu.
+  const poolPhone = useSiteSettings().phones.find((p) => p.key === "pool");
 
   return (
     <section className="bg-[var(--bg)] py-[clamp(6rem,13vw,13rem)]">
@@ -55,14 +59,29 @@ export default function PoolFeatures() {
           ))}
         </div>
 
-        {/* Contact CTA - times and private hire go through the contact page. */}
+        {/* CTA - broj bazena za direktan poziv, pa link ka kontakt stranici. */}
         <div className="mt-[clamp(3rem,6vw,5rem)] flex flex-col items-center text-center">
           <p className="max-w-[48ch] text-[17.78px] leading-relaxed text-[var(--dark)]">
             {t.pool.cta.body}
           </p>
+
+          {poolPhone && (
+            <a
+              href={`tel:${poolPhone.href}`}
+              className="mt-[clamp(1.75rem,3.5vw,2.5rem)] flex flex-col items-center"
+            >
+              <span className="text-[11px] uppercase tracking-[0.3em] text-[var(--main)]">
+                {t.contact.phones.pool}
+              </span>
+              <span className="link-underline mt-[clamp(0.5rem,1vw,0.7rem)] text-[clamp(1.15rem,2.8vw,1.45rem)] leading-none tracking-[-0.01em] text-[var(--dark)]">
+                {poolPhone.label}
+              </span>
+            </a>
+          )}
+
           <Link
             href="/kontakt"
-            className="link-underline mt-[clamp(1.25rem,2.5vw,1.75rem)] text-[clamp(1rem,1.3vw,1.15rem)] text-[var(--main)]"
+            className="link-underline mt-[clamp(1.5rem,3vw,2rem)] text-[clamp(1rem,1.3vw,1.15rem)] text-[var(--main)]"
           >
             {t.pool.cta.button}
           </Link>
