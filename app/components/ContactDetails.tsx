@@ -335,7 +335,7 @@ export default function ContactDetails() {
         className="group relative flex h-[clamp(340px,52vh,600px)] w-full items-end overflow-hidden"
       >
         <Image
-          src="/kontakt/horizont.webp"
+          src="/kontakt/mileva-panorama.webp"
           alt=""
           fill
           sizes="100vw"

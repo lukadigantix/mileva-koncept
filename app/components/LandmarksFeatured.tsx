@@ -17,8 +17,8 @@ import { useLang } from "../i18n/LanguageProvider";
  */
 const IMAGES = [
   "/znamenitosti/boracki-krs-1.webp",
-  "/znamenitosti/gruzansko-jezero-1.webp",
-  "/znamenitosti/manastir-kamenac-1.webp",
+  "/znamenitosti/gruzansko-jezero.webp",
+  "/znamenitosti/manastir-kamenac.webp",
 ];
 
 /** One featured landmark. The corner label is the category - the Knić landmarks

@@ -42,3 +42,11 @@ next-env.d.ts
 
 # original (uncompressed) hero videos - kept out of the repo
 /_video_originals/
+
+# camera originals sitting in public/ - each one is repacked into the .webp /
+# .mp4 that the code actually references, so only the repack belongs in git
+/public/bazen/bazen-video.mp4
+/public/dogadjaji/d10.jpg
+/public/pocetna/FOXY8531.jpg
+/public/pocetna/IMG_1855.jpg
+/public/pocetna/IMG_3295.jpg

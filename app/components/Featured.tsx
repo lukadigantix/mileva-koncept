@@ -45,7 +45,11 @@ gsap.registerPlugin(ScrollTrigger);
  * width 50% at rest, 100% on hover, transition all .4s var(--expoOut),
  * translateX(-50%): it grows symmetrically FROM THE CENTRE (not left-to-right).
  *
- * Imagery: ONE photo (half.webp) split across both panels. Each panel's inner
+ * Imagery: svaka kartica nosi svoju sliku (vidi PANELS). Leva ima sopstvenu
+ * fotografiju preko celog okvira; desna je zadržala izvorni "split" tretman,
+ * opisan ovde jer njegova matematika i dalje važi za nju:
+ *
+ * ORIGINALNI EFEKAT: ONE photo (half.webp) split across both panels. Each panel's inner
  * layer paints the same image sized to the FULL combined width of both columns
  * plus the gutter - `background-size: calc(200% + var(--fgap)) auto` - and
  * windows onto its half with `background-position` (left column → left center,
@@ -57,8 +61,29 @@ gsap.registerPlugin(ScrollTrigger);
  */
 
 const PANELS = [
-  { pos: "left center" },
-  { pos: "right center" },
+  {
+    // Leva kartica nosi SVOJU fotografiju preko celog okvira (`cover`).
+    //
+    // `cover` popunjava tačno svoj boks, a sloj se uz to pomera ±10% visine
+    // (parallax). Zato je boks razvučen 15% preko okvira na svaku stranu
+    // (`bleed`) - to je zaliha koju taj pomeraj troši. Bez nje bi se pri kraju
+    // drifta videla praznina uz gornju ili donju ivicu.
+    image: "/bazen/bazen6.webp",
+    size: "cover",
+    pos: "center",
+    bleed: true,
+  },
+  {
+    // Desna kartica je nepromenjena: i dalje pokazuje svoju polovinu zajedničke
+    // `half.webp` - širina je postavljena na oba stupca plus gutter, a
+    // `right center` je pomera na desnu polovinu (vidi opis efekta gore).
+    // Visina joj je `auto`, pa je slika osetno viša od okvira i sama nosi
+    // zalihu za parallax - njoj `bleed` ne treba.
+    image: "/pocetna/half.webp",
+    size: "calc(200% + var(--fgap)) auto",
+    pos: "right center",
+    bleed: false,
+  },
 ] as const;
 
 /** Reference scale unit: n / 2400 of the viewport width, in px. */
@@ -203,17 +228,18 @@ export default function Featured() {
                   className="absolute inset-0 overflow-hidden"
                 >
                   {/* inner - carries scale/opacity reveal + yPercent parallax.
-                      Paints this panel's half of the shared half.webp: sized to
-                      the full combined width (200% + gutter), windowed by
-                      background-position (left/right center). */}
+                      Pozadinu (slika, veličina, težište) nosi sam panel, jer
+                      leva i desna kartica više ne dele istu fotografiju. */}
                   <div
                     ref={(el) => {
                       innerRefs.current[i] = el;
                     }}
-                    className="absolute inset-0 bg-no-repeat will-change-transform"
+                    className={`absolute bg-no-repeat will-change-transform ${
+                      panel.bleed ? "-inset-[15%]" : "inset-0"
+                    }`}
                     style={{
-                      backgroundImage: "url(/pocetna/half.webp)",
-                      backgroundSize: "calc(200% + var(--fgap)) auto",
+                      backgroundImage: `url(${panel.image})`,
+                      backgroundSize: panel.size,
                       backgroundPosition: panel.pos,
                     }}
                   />
@@ -221,6 +247,15 @@ export default function Featured() {
 
                 {/* Legibility wash over the photo (white content sits above). */}
                 <div className="absolute inset-0 bg-black/30" />
+
+                {/* Dodatni fade radi čitljivosti. Sadržaj oba panela je
+                    centriran, pa se zatamnjenje koncentriše u sredini i gasi ka
+                    ivicama - tekst dobija podlogu, a fotografija ostaje otvorena
+                    tamo gde preko nje ništa ne stoji. */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.2)_35%,transparent_75%)]"
+                />
 
                 {/* .center - absolute, centred content. */}
                 {isRight ? (

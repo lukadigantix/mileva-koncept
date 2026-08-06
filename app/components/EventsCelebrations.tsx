@@ -20,8 +20,8 @@ import { useLang } from "../i18n/LanguageProvider";
  * exhibitions & symposia.
  */
 const IMAGES = [
-  "/dogadjaji/d7.webp",
-  "/dogadjaji/d6.webp",
+  "/dogadjaji/d9.webp",
+  "/dogadjaji/d10.webp",
   "/dogadjaji/d5.webp",
   "/dogadjaji/d8.webp",
 ];

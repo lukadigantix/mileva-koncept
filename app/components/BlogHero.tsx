@@ -9,9 +9,8 @@ import { useLang } from "../i18n/LanguageProvider";
  * terracotta eyebrow + a large centred title), followed by a full-bleed
  * cinematic image band. Replaces the dark video hero on /blog.
  *
- * IMAGE is a placeholder from the existing set - swap for a real editorial shot.
  */
-const IMAGE = "/pocetna/midhero@3x.webp";
+const IMAGE = "/kontakt/mileva-vinograd.webp";
 
 export default function BlogHero() {
   const { t } = useLang();
@@ -55,7 +54,7 @@ export default function BlogHero() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-[center_62%]"
         />
         <div className="pointer-events-none absolute inset-0 bg-black/25" />
       </div>

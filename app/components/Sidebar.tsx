@@ -76,9 +76,11 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         />
       </svg>
 
-      <div className="relative z-10 mx-[var(--gutter)] flex h-full flex-col justify-center gap-[clamp(2rem,4vw,3rem)] overflow-y-auto py-[clamp(72px,11vh,110px)] lg:flex-row lg:items-center lg:justify-between lg:gap-[var(--space)]">
+      {/* Gornja ivica mora da propusti fiksno zaglavlje (98px), donja ne - zato
+          je na telefonu manja, da ispod „Pratite nas" ne zjapi prazan pojas. */}
+      <div className="relative z-10 mx-[var(--gutter)] flex h-full flex-col justify-center gap-[clamp(1.5rem,4vw,3rem)] overflow-y-auto pt-[clamp(72px,11vh,110px)] pb-[clamp(28px,5vh,110px)] lg:flex-row lg:items-center lg:justify-between lg:gap-[var(--space)] lg:pb-[clamp(72px,11vh,110px)]">
         {/* Links */}
-        <nav className="flex flex-col gap-[clamp(0.9rem,min(1.4vw,1.8vh),1.5rem)]">
+        <nav className="flex flex-col gap-[clamp(0.7rem,min(1.4vw,1.8vh),1.5rem)]">
           {links.map((link, i) => (
             <Link
               key={link.label}
@@ -89,10 +91,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 open ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
               }`}
             >
-              <span className="text-[12px] tabular-nums tracking-[0.3em] text-[var(--main)] opacity-70">
+              <span className="text-[11px] tabular-nums tracking-[0.3em] text-[var(--main)] opacity-70 lg:text-[12px]">
                 0{i + 1}
               </span>
-              <span className="text-[clamp(30px,min(4.5vw,6vh),3.75rem)] transition-colors duration-300 group-hover:text-[var(--main)]">
+              <span className="text-[clamp(26px,min(4.5vw,6vh),3.75rem)] transition-colors duration-300 group-hover:text-[var(--main)]">
                 {link.label}
               </span>
             </Link>
@@ -102,38 +104,40 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Contact panel */}
         <div
           style={reveal(links.length)}
-          className={`flex shrink-0 flex-col gap-8 text-[var(--sand)] transition-all duration-700 ease-[var(--ease-expo-out)] lg:max-w-[22rem] lg:gap-10 lg:text-right ${
+          className={`flex shrink-0 flex-col gap-6 text-[var(--sand)] transition-all duration-700 ease-[var(--ease-expo-out)] lg:max-w-[22rem] lg:gap-10 lg:text-right ${
             open ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <div className="flex flex-col gap-2 lg:items-end">
-            <span className="mb-1 text-[13px] uppercase tracking-[0.28em] text-[var(--main)] lg:text-[15px]">
+          <div className="flex flex-col gap-1.5 lg:gap-2 lg:items-end">
+            <span className="mb-0.5 text-[11px] uppercase tracking-[0.28em] text-[var(--main)] lg:mb-1 lg:text-[15px]">
               {t.contact.title}
             </span>
-            <span className="text-[18px] lg:text-[22px] leading-relaxed">
+            <span className="text-[15px] lg:text-[22px] leading-relaxed">
               {t.contact.address}
             </span>
-            <a href={`mailto:${settings.email}`} className="link-underline text-[18px] lg:text-[22px]">
+            {/* w-fit: kao flex-item link bi se rastegao na punu širinu kolone,
+                pa bi mu se ::after linija produžila preko same adrese. */}
+            <a href={`mailto:${settings.email}`} className="link-underline w-fit text-[15px] lg:text-[22px]">
               {settings.email}
             </a>
             {/* Tri broja po nameni - svaki se javlja zasebno. */}
             {settings.phones.map((p) => (
               <span key={p.key} className="flex flex-col lg:items-end">
-                <span className="text-[11px] uppercase tracking-[0.18em] opacity-60">
+                <span className="text-[10px] uppercase tracking-[0.18em] opacity-60 lg:text-[11px]">
                   {t.contact.phones[p.key]}
                 </span>
-                <a href={`tel:${p.href}`} className="link-underline text-[18px] lg:text-[22px]">
+                <a href={`tel:${p.href}`} className="link-underline w-fit text-[15px] lg:text-[22px]">
                   {p.label}
                 </a>
               </span>
             ))}
           </div>
 
-          <div className="flex flex-col gap-2 lg:items-end">
-            <span className="mb-1 text-[13px] uppercase tracking-[0.28em] text-[var(--main)] lg:text-[15px]">
+          <div className="flex flex-col gap-1.5 lg:gap-2 lg:items-end">
+            <span className="mb-0.5 text-[11px] uppercase tracking-[0.28em] text-[var(--main)] lg:mb-1 lg:text-[15px]">
               {t.contact.follow}
             </span>
-            <div className="flex gap-4 text-[18px] lg:text-[22px]">
+            <div className="flex gap-4 text-[15px] lg:text-[22px]">
               {settings.socials.map((s) => (
                 <a key={s.label} href={s.href} className="link-underline">
                   {s.label}

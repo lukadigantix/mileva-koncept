@@ -51,7 +51,9 @@ export const RIDING = {
  * vreme i on ide u strukturirane podatke; bazen je statičan.
  */
 export const OPENING_HOURS = [
-  { key: "restaurant", from: 1, to: 4, open: "09:00", close: "23:00" },
+  // Restoran radi utorak-nedelja 09-23; ponedeljak je neradan dan, pa se u
+  // statičnoj liniji jednostavno ne pominje.
+  { key: "restaurant", from: 1, to: 6, open: "09:00", close: "23:00" },
   { key: "pool", from: 1, to: 6, open: "10:00", close: "19:00" },
 ] as const;
 
@@ -100,7 +102,7 @@ export const SOCIALS = [
   { label: "Facebook", href: "https://www.facebook.com/people/Mileva-Kocept/61576673416029/" },
 ];
 
-/** Google Maps link na zapis objekta („Милева концепт"). Koristi se za red sa
+/** Google Maps link na zapis objekta („Милева Концепт"). Koristi se za red sa
     adresom, „Локација" baner i `hasMap` u strukturiranim podacima. */
 export const MAP_URL = "https://maps.app.goo.gl/ydjWmS2D9Jb2qhX8A";
 

@@ -35,7 +35,7 @@ export default function LandmarksIntro() {
         <SplitText
           as="h1"
           text={intro.heading}
-          className="mt-[clamp(1.25rem,2.5vw,2rem)] max-w-[24ch] text-[clamp(1.5rem,4.6vw,2.1rem)] leading-[1.25] tracking-[-0.01em] text-[var(--dark)]"
+          className="mt-[clamp(1.25rem,2.5vw,2rem)] max-w-[26ch] text-[clamp(1.5rem,4.6vw,2.1rem)] leading-[1.25] tracking-[-0.01em] text-[var(--dark)]"
         />
         <SplitText
           as="p"

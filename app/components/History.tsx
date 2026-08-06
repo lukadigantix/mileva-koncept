@@ -37,7 +37,7 @@ export default function History() {
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-[var(--space)]">
           <MediaReveal className="aspect-[3/4] rounded-[var(--radius2)]" parallax>
             <Image
-              src="/smestaj/s1.webp"
+              src="/pocetna/zalazak.webp"
               alt="Odmaralište Mileva"
               fill
               sizes="50vw"
@@ -50,7 +50,7 @@ export default function History() {
             parallax
           >
             <Image
-              src="/smestaj/s3.webp"
+              src="/pocetna/vidik.webp"
               alt="Odmaralište Mileva"
               fill
               sizes="50vw"

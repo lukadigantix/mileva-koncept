@@ -21,7 +21,7 @@ const RAW_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://milevakoncept.
 /** Bez završne kose crte, da se putanje spajaju bez duplog `/`. */
 export const SITE_URL = RAW_SITE_URL.replace(/\/+$/, "");
 
-export const SITE_NAME = "Милева концепт";
+export const SITE_NAME = "Милева Концепт";
 
 /**
  * Deljena OG slika (`app/opengraph-image.jpg`). Konvencija fajla je sama kači

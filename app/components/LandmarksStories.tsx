@@ -19,13 +19,13 @@ const GALLERIES: string[][] = [
     "/znamenitosti/boracki-krs-4.webp",
   ],
   [
-    "/znamenitosti/gruzansko-jezero-1.webp",
+    "/znamenitosti/gruzansko-jezero.webp",
     "/znamenitosti/gruzansko-jezero-2.webp",
     "/znamenitosti/gruzansko-jezero-3.webp",
     "/znamenitosti/gruzansko-jezero-4.webp",
   ],
   [
-    "/znamenitosti/manastir-kamenac-1.webp",
+    "/znamenitosti/manastir-kamenac.webp",
     "/znamenitosti/manastir-kamenac-2.webp",
     "/znamenitosti/manastir-kamenac-3.webp",
     "/znamenitosti/manastir-kamenac-4.webp",
@@ -116,11 +116,15 @@ export default function LandmarksStories() {
                 className="grid items-center gap-[clamp(2rem,5vw,4rem)] md:grid-cols-2"
               >
                 <div className={flipped ? "md:order-2" : undefined}>
+                  {/* Bez `parallax`: taj režim drži sloj na `scale 1.2` u
+                      mirovanju, čime trajno odseca po 8.3% gornje i donje
+                      ivice. Na Каменцу je tako nestajao krst sa kupole, koji
+                      stoji na svega 3% visine fotografije. Uvodni clip/scale
+                      reveal ostaje - gubi se samo pomeranje pri skrolovanju. */}
                   {main && (
                     <MediaReveal
                       className="aspect-[4/3] w-full rounded-[var(--radius2)]"
                       scaleFrom={1.15}
-                      parallax
                     >
                       <Image
                         src={main}

@@ -36,20 +36,11 @@ export default function Profile() {
           parallax
         >
           <Image
-            src="/pocetna/a1.webp"
+            src="/pocetna/statua.webp"
             alt={t.profile.name}
             fill
             sizes="(min-width: 768px) 56rem, 100vw"
             className="object-cover object-center"
-          />
-          {/* Warm colour grade - terracotta multiply + orange soft-light. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[var(--main)] opacity-30 mix-blend-multiply"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[#ff8a3d] opacity-20 mix-blend-soft-light"
           />
         </MediaReveal>
 

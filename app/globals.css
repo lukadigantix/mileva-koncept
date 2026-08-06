@@ -52,10 +52,10 @@
   --expoOut: cubic-bezier(0.16, 1, 0.3, 1); /* signature ease */
   --expoInOut: cubic-bezier(0.87, 0, 0.13, 1);
 
-  /* Font stack. Noto Serif JP carries the Latin/kanji glyphs; it has no
-     Cyrillic, so Serbian Cyrillic (the default language) falls through to a
-     Cyrillic-capable serif (Georgia) to keep the serif look, then to sans. */
-  --font-primary: var(--font-noto-serif-jp), "Georgia", "Times New Roman",
+  /* Font stack. Source Serif 4 pokriva latinicu, srpsku latinicu i celu
+     ćirilicu (uključujući Ђ Ј Љ Њ Ћ Џ), pa se sve iscrtava jednim fontom.
+     Rezervni nizovi stoje samo dok se webfont ne učita ili ako otkaže. */
+  --font-primary: var(--font-source-serif), "Georgia", "Times New Roman",
     "Helvetica", "Arial", serif;
 }
 

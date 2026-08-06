@@ -11,11 +11,13 @@ import { useLang } from "../i18n/LanguageProvider";
  * a day by the pool: calm morning, lunch by the water, summer afternoon,
  * lantern-lit evening - matching the photo order below.
  */
-const IMAGES = [
-  "/bazen/bazen1.webp",
-  "/bazen/bazen4.webp",
-  "/bazen/bazen2.webp",
-  "/bazen/bazen3.webp",
+const IMAGES: { src: string; position?: string }[] = [
+  { src: "/bazen/bazen1.webp" },
+  { src: "/bazen/bazen4.webp" },
+  // Portretni kadar u uskom panelu gubi 40% širine; centrirano bi sekao noge uz
+  // levu ivicu, pa je težište pomereno ulevo.
+  { src: "/bazen/bazen6.webp", position: "object-[30%_center]" },
+  { src: "/bazen/bazen7.webp" },
 ];
 
 export default function PoolGallery() {
@@ -25,7 +27,7 @@ export default function PoolGallery() {
   return (
     <section data-dark-section className="bg-[var(--overlay)] text-[var(--bg)]">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {IMAGES.map((src, i) => (
+        {IMAGES.map(({ src, position }, i) => (
           <div
             key={src}
             className="group relative flex min-h-[50vh] flex-col items-center justify-center overflow-hidden border-[var(--border2)] px-[var(--space)] py-[var(--space)] text-center lg:min-h-screen lg:border-r lg:last:border-r-0"
@@ -38,7 +40,7 @@ export default function PoolGallery() {
                   alt={labels[i] ?? ""}
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover"
+                  className={`object-cover ${position ?? ""}`}
                 />
               </div>
               <div className="absolute inset-0 bg-black/20 transition-opacity duration-700 can-hover:bg-black/40 group-hover:opacity-20" />

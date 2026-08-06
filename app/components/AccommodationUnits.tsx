@@ -85,7 +85,7 @@ export default function AccommodationUnits() {
                   <SplitText
                     as="p"
                     text={unit.desc}
-                    className="mt-[clamp(1rem,2vw,1.5rem)] max-w-[46ch] text-[17.78px] leading-relaxed text-[var(--dark)]"
+                    className="mt-[clamp(1rem,2vw,1.5rem)] max-w-[52ch] text-[17.78px] leading-relaxed text-[var(--dark)]"
                   />
                   {/* Amenity chips - terracotta hairline label, same idiom as
                       the hero eyebrow. */}

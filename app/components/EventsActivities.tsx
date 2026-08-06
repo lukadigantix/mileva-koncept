@@ -100,23 +100,29 @@ export default function EventsActivities() {
                 <h3 className="text-[22px] tracking-[0.15em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
                   {item.name}
                 </h3>
-                {/* Uslov koji gost mora da vidi pre nego što otvori karticu -
-                    isti okvir kao oznaka "Uskoro", samo prelomljen u dva reda.
+                {/* Pojas za oznake postoji na svakoj kartici, i kad je prazan:
+                    bez njega bi kartice sa oznakom bile više, pa bi im logotip
+                    i naziv stajali iznad onih bez oznake (kartice se centriraju
+                    po ukupnoj visini sadržaja). Ovako sve četiri stoje u ravni. */}
+                <div className="flex min-h-[5.25rem] justify-center pt-[clamp(0.9rem,1.5vw,1.25rem)]">
+                  {/* Uslov koji gost mora da vidi pre nego što otvori karticu -
+                      isti okvir kao oznaka "Uskoro", samo prelomljen u dva reda.
 
-                    Širina je u rem-ima, ne u `ch`: razmaknuta velika slova su
-                    znatno šira od `ch` jedinice, pa bi `max-w-[Nch]` prelamao
-                    na tri reda. `text-balance` prepušta pregledaču da dva reda
-                    izjednači, umesto da prvi natrpa a drugom ostavi jednu reč. */}
-                {item.note && (
-                  <p className="mt-[clamp(0.9rem,1.5vw,1.25rem)] max-w-[17rem] text-balance border border-[var(--bg)]/45 px-[1.1em] py-[0.7em] text-[13px] uppercase leading-[1.6] tracking-[0.16em] text-[var(--bg)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-                    {item.note}
-                  </p>
-                )}
-                {isSoon && (
-                  <span className="mt-[clamp(1rem,1.6vw,1.4rem)] border border-[var(--bg)]/45 px-[1.1em] py-[0.6em] text-[11px] uppercase leading-none tracking-[0.3em] text-[var(--bg)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-                    {a.soon}
-                  </span>
-                )}
+                      Širina je u rem-ima, ne u `ch`: razmaknuta velika slova su
+                      znatno šira od `ch` jedinice, pa bi `max-w-[Nch]` prelamao
+                      na tri reda. `text-balance` prepušta pregledaču da dva reda
+                      izjednači, umesto da prvi natrpa a drugom ostavi jednu reč. */}
+                  {item.note && (
+                    <p className="h-fit max-w-[17rem] text-balance border border-[var(--bg)]/45 px-[1.1em] py-[0.7em] text-[13px] uppercase leading-[1.6] tracking-[0.16em] text-[var(--bg)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                      {item.note}
+                    </p>
+                  )}
+                  {isSoon && (
+                    <span className="h-fit border border-[var(--bg)]/45 px-[1.1em] py-[0.6em] text-[11px] uppercase leading-none tracking-[0.3em] text-[var(--bg)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                      {a.soon}
+                    </span>
+                  )}
+                </div>
               </div>
             </>
           );

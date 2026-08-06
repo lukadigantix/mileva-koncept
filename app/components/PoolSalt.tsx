@@ -8,8 +8,12 @@ import { useLang } from "../i18n/LanguageProvider";
 /**
  * The saltwater story - why salt instead of chlorine, in the RestaurantSlowFood
  * type treatment (brand icon, centred heading, left-aligned body), closed by a
- * single wide estate photo. Placeholder imagery until dedicated pool shots
- * arrive.
+ * single wide pool photo.
+ *
+ * The source shot is portrait, so the 21/9 frame shows only about a third of
+ * its height. Centred, that band cuts the sunbather off at the bottom edge, so
+ * `object-position` drops the window to 62% - low enough to keep her and the
+ * lounger whole, high enough to keep the loungers and tree line behind her.
  */
 export default function PoolSalt() {
   const { t } = useLang();
@@ -44,11 +48,11 @@ export default function PoolSalt() {
           parallax
         >
           <Image
-            src="/pocetna/half.webp"
+            src="/bazen/bazen5.webp"
             alt=""
             fill
             sizes="(min-width: 1024px) 64rem, 100vw"
-            className="object-cover"
+            className="object-cover object-[center_62%]"
           />
         </MediaReveal>
       </div>

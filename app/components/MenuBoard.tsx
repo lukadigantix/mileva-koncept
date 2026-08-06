@@ -13,9 +13,14 @@ type MenuBoardProps = {
   /** Which board to render - the food menu or the drinks card. */
   source: "menuList" | "drinksList";
   /**
-   * Sections from the backend's digital menu. When present they replace the
-   * dictionary sections and their prices render verbatim (the admin types the
-   * full string, currency included). Absent/empty → static dictionary content.
+   * Sekcije iz digitalnog jelovnika sa backenda. Kad ih ima, zamenjuju sekcije
+   * iz rečnika i cene se ispisuju doslovno (admin kuca ceo string, sa valutom).
+   *
+   * Razlika između `undefined` i `[]` je namerna i nosi različito značenje:
+   *   undefined → backend nije odgovorio; pada se na statični rečnik, da sajt
+   *               preživi ispad API-ja sa nekim jelovnikom na ekranu
+   *   []        → backend JESTE odgovorio i kaže da nema ničega; tabla se tada
+   *               uopšte ne iscrtava, umesto da izmisli stavke iz rečnika
    */
   sections?: BoardSection[];
 };
@@ -45,8 +50,14 @@ export default function MenuBoard({ source, sections }: MenuBoardProps) {
   const { t } = useLang();
   const cms = useCms();
   const menu = t.restaurant[source];
-  const fromApi = Boolean(sections?.length);
-  const courses: BoardSection[] = fromApi ? sections! : menu.sections;
+  // `undefined` znači "backend nije odgovorio" → rečnik; sve ostalo je odgovor
+  // backenda i uzima se doslovno, pa i prazna lista.
+  const fromApi = sections !== undefined;
+  const courses: BoardSection[] = sections ?? menu.sections;
+
+  // Nema nijedne sekcije sa stavkama - ne iscrtavaj ni zaglavlje. Prazna tabla
+  // sa naslovom i prazninom ispod deluje kao greška u prikazu.
+  if (courses.length === 0) return null;
 
   return (
     <section

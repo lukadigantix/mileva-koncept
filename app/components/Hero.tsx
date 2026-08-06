@@ -24,6 +24,14 @@ type HeroProps = {
     | "kontakt"
     | "dogadjaji"
     | "bazen";
+  /**
+   * Da li se table jelovnika / karte pića uopšte iscrtavaju na strani. Kad ih
+   * nema (backend je odgovorio da nema stavki), njihova dugmad u herou se ne
+   * prikazuju - inače bi vodila na sidro kojeg na strani nema. Odnosi se samo
+   * na `variant="restaurant"`.
+   */
+  hasMenu?: boolean;
+  hasDrinks?: boolean;
 };
 
 /**
@@ -32,7 +40,11 @@ type HeroProps = {
  * the bottom of the screen. The same shell serves the home and restaurant
  * pages via `variant`.
  */
-export default function Hero({ variant = "home" }: HeroProps) {
+export default function Hero({
+  variant = "home",
+  hasMenu = true,
+  hasDrinks = true,
+}: HeroProps) {
   const { t } = useLang();
   const lenis = useLenis();
 
@@ -82,10 +94,16 @@ export default function Hero({ variant = "home" }: HeroProps) {
       target.scrollIntoView({ behavior: "smooth" });
     }
   };
+  // Dugme se prikazuje samo ako tabla na koju vodi zaista postoji na strani.
   const restaurantCtas = [
-    { label: t.restaurant.hero.menu, href: "#jelovnik", id: "jelovnik" },
-    { label: t.restaurant.drinksList.eyebrow, href: "#karta-pica", id: "karta-pica" },
-  ];
+    { label: t.restaurant.hero.menu, href: "#jelovnik", id: "jelovnik", show: hasMenu },
+    {
+      label: t.restaurant.drinksList.eyebrow,
+      href: "#karta-pica",
+      id: "karta-pica",
+      show: hasDrinks,
+    },
+  ].filter((c) => c.show);
   // The restaurant page runs its own hero clip; every other page uses the main one.
   const videoSrc = isRestaurant
     ? "/restoran/restoran.mp4"
@@ -160,7 +178,7 @@ export default function Hero({ variant = "home" }: HeroProps) {
               {/* CTA links (Reservation / Menu) - same shared component as the
                   Featured panel so every CTA link is identical. Restaurant only;
                   smestaj has no on-page boards to jump to yet. */}
-              {isRestaurant && (
+              {isRestaurant && restaurantCtas.length > 0 && (
               <nav className="mt-[clamp(1.5rem,3vw,2.5rem)] flex items-center justify-center gap-[clamp(2rem,4vw,3.5rem)]">
                 {restaurantCtas.map(({ label, href, id }) => (
                   <CtaLink

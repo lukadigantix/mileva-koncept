@@ -23,17 +23,35 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
   const { lang, t } = useLang();
   const pathname = usePathname();
   const tone = overDark ? "text-[var(--bg)]" : "text-[var(--dark)]";
-  // Naziv restorana se čita iz `restaurants.categories`, isto kao u futeru i
-  // bočnom meniju - da tri navigacije ne bi imale tri različita naziva.
-  const [restaurant] = t.restaurants.categories;
+  // Nazivi Restoran i Događaji se čitaju iz `restaurants.categories`, isto kao u
+  // futeru i bočnom meniju - da tri navigacije ne bi imale tri različita naziva.
+  // Blog nije u gornjoj traci; do njega se stiže iz menija i futera.
+  const [restaurant, , events] = t.restaurants.categories;
   const navLinks: { label: string; href: string }[] = [
     { label: restaurant, href: "/restoran" },
     { label: t.nav.accommodation, href: "/smestaj" },
     { label: t.nav.pool, href: "/bazen" },
     { label: t.nav.landmarks, href: "/znamenitosti" },
-    { label: t.nav.blog, href: "/blog" },
+    { label: events, href: "/dogadjaji" },
     { label: t.nav.contact, href: "/kontakt" },
   ];
+
+  // Prave veze, ne dugmad - tako Google može da otpuza sve tri jezičke verzije
+  // iz same navigacije, a ne samo iz hreflang oznaka. Isti skup se prikazuje na
+  // dva mesta: uz hamburger na md+, a na telefonu desno (levo nema mesta).
+  const langLinks = LANGUAGES.map(({ code, label }) => (
+    <NextLink
+      key={code}
+      href={switchLocale(code, pathname)}
+      hrefLang={code}
+      aria-current={lang === code}
+      className={`cursor-pointer text-[15.56px] tracking-[-0.01em] transition-opacity ${
+        lang === code ? "opacity-100" : "opacity-50 hover:opacity-100"
+      }`}
+    >
+      {label}
+    </NextLink>
+  ));
 
   return (
     <header
@@ -65,21 +83,7 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
             aria-label={t.aria.language}
             className="hidden items-center gap-3 md:flex"
           >
-            {/* Prave veze, ne dugmad - tako Google može da otpuza sve tri
-                jezičke verzije iz same navigacije, a ne samo iz hreflang oznaka. */}
-            {LANGUAGES.map(({ code, label }) => (
-              <NextLink
-                key={code}
-                href={switchLocale(code, pathname)}
-                hrefLang={code}
-                aria-current={lang === code}
-                className={`cursor-pointer text-[15.56px] tracking-[-0.01em] transition-opacity ${
-                  lang === code ? "opacity-100" : "opacity-50 hover:opacity-100"
-                }`}
-              >
-                {label}
-              </NextLink>
-            ))}
+            {langLinks}
           </nav>
         </div>
 
@@ -117,6 +121,15 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
               {link.label}
             </Link>
           ))}
+        </nav>
+
+        {/* Telefon: jezici zauzimaju desnu stranu trake (glavna navigacija je
+            tu skrivena), pa ostaju dostupni i dok je meni otvoren. */}
+        <nav
+          aria-label={t.aria.language}
+          className="flex items-center gap-3 md:hidden"
+        >
+          {langLinks}
         </nav>
       </div>
     </header>

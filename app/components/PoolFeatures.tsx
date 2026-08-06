@@ -61,7 +61,9 @@ export default function PoolFeatures() {
 
         {/* CTA - broj bazena za direktan poziv, pa link ka kontakt stranici. */}
         <div className="mt-[clamp(3rem,6vw,5rem)] flex flex-col items-center text-center">
-          <p className="max-w-[48ch] text-[17.78px] leading-relaxed text-[var(--dark)]">
+          {/* `whitespace-pre-line` - prelom reda stoji u rečniku (\n), pa svaki
+              jezik sam bira gde da prelomi rečenicu. */}
+          <p className="max-w-[48ch] whitespace-pre-line text-[17.78px] leading-relaxed text-[var(--dark)]">
             {t.pool.cta.body}
           </p>
 

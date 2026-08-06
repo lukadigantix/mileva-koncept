@@ -45,20 +45,28 @@ export default async function RestoranPage() {
   // Backend vraća jelovnik i kartu pića razdvojeno: koji je jelovnik na redu
   // (vikend / letnji / zimski) odlučuje on, prema danu i mesecu.
   const menu = await getPublicMenu();
-  const foodSections = toBoardSections(menu?.categories ?? []);
-  const drinkSections = toBoardSections(menu?.drinks ?? []);
+  // `null` znači da backend nije odgovorio - tada tablama ne prosleđujemo ništa
+  // pa one padaju na statični rečnik. Ako je odgovorio, prosleđujemo tačno ono
+  // što je rekao, pa i praznu listu: tabla se tada ne prikazuje umesto da
+  // izmisli stavke i cene kojih u adminu nema.
+  const foodSections = menu ? toBoardSections(menu.categories) : undefined;
+  const drinkSections = menu ? toBoardSections(menu.drinks) : undefined;
 
   return (
     <>
       <Navigation />
       <main>
-        <Hero variant="restaurant" />
+        <Hero
+          variant="restaurant"
+          hasMenu={foodSections?.length !== 0}
+          hasDrinks={drinkSections?.length !== 0}
+        />
         <RestaurantIntro />
         <RestaurantSlowFood />
         <RestaurantConcept />
         <Menus />
-        <MenuBoard source="menuList" sections={foodSections.length ? foodSections : undefined} />
-        <MenuBoard source="drinksList" sections={drinkSections.length ? drinkSections : undefined} />
+        <MenuBoard source="menuList" sections={foodSections} />
+        <MenuBoard source="drinksList" sections={drinkSections} />
       </main>
       <Footer />
     </>
