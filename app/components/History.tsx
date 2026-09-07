@@ -60,11 +60,16 @@ export default function History() {
         </div>
 
         {/* Ref body copy is a uniform ~17.8px. */}
-        <SplitText
-          as="p"
-          text={t.history.body}
-          className="mx-auto mt-[clamp(3rem,6vw,6rem)] max-w-md text-[17.78px] leading-relaxed text-[var(--dark)]"
-        />
+        <div className="mx-auto mt-[clamp(3rem,6vw,6rem)] flex max-w-md flex-col gap-[1.25em]">
+          {t.history.body.map((paragraph, i) => (
+            <SplitText
+              key={i}
+              as="p"
+              text={paragraph}
+              className="text-[17.78px] leading-relaxed text-[var(--dark)]"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

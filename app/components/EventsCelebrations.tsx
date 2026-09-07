@@ -23,7 +23,7 @@ const IMAGES = [
   "/dogadjaji/d9.webp",
   "/dogadjaji/d10.webp",
   "/dogadjaji/d5.webp",
-  "/dogadjaji/d8.webp",
+  "/dogadjaji/d11.webp",
 ];
 
 // Reusable terracotta highlight chips.

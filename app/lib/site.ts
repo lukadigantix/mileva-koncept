@@ -79,7 +79,7 @@ export const RESTAURANT_WORKING_DAYS = Array.from(
  * prikazuju, pa stranica ostaje ispravna i bez njih.
  */
 export const LEGAL_ENTITY = {
-  /** Pun poslovni naziv iz APR-a, npr. "Mileva koncept d.o.o. Grivac". */
+  /** Pun poslovni naziv iz APR-a, npr. "Mileva Koncept d.o.o. Grivac". */
   name: "",
   /** PIB (9 cifara). */
   pib: "",
@@ -91,8 +91,8 @@ export const LEGAL_ENTITY = {
     ovde a ne u rečniku — kao i nazivi društvenih mreža. */
 export const CREDIT = {
   prefix: "Design & Developed by",
-  name: "Digantix",
-  href: "https://digantix.com",
+  name: "ZeroBlynk",
+  href: "https://zeroblynk.com",
 };
 
 /** Zvanični nalozi (provereni u browseru 2026-07-31). Facebook stranica je

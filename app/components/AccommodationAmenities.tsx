@@ -76,7 +76,17 @@ export default function AccommodationAmenities() {
               scaleFrom={i === 1 ? 1.1 : 1.3}
               parallax
             >
-              <Image src={src} alt="" fill sizes="33vw" className="object-cover" />
+              {/* Treća fotografija je znatno viša od okvira (941×1672 u 3/4
+                  kadru), pa je centriran isečak uz parallax drift sekao natpis
+                  „Милева" na zidu - kadar se spušta niže da natpis ostane u
+                  slici kroz ceo pomeraj. */}
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="33vw"
+                className={`object-cover ${i === 2 ? "object-[50%_78%]" : ""}`}
+              />
             </MediaReveal>
           ))}
         </div>

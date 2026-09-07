@@ -44,11 +44,16 @@ export default function Profile() {
           />
         </MediaReveal>
 
-        <SplitText
-          as="p"
-          text={t.profile.bio}
-          className="mx-auto mt-[clamp(2rem,4vw,3rem)] max-w-md text-[17.78px] leading-relaxed text-[var(--dark)]"
-        />
+        <div className="mx-auto mt-[clamp(2rem,4vw,3rem)] flex max-w-md flex-col gap-[1.25em]">
+          {t.profile.bio.map((paragraph, i) => (
+            <SplitText
+              key={i}
+              as="p"
+              text={paragraph}
+              className="text-[17.78px] leading-relaxed text-[var(--dark)]"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
