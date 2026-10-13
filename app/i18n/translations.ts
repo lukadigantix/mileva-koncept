@@ -175,6 +175,11 @@ export type Dict = {
       errorRate: string;
       /** API nije odgovorio - ništa nije upisano, vredi pokušati ponovo. */
       errorNetwork: string;
+      /** Zatvara stranicu smeštaja umesto forme - termini se za sada
+          dogovaraju telefonom (videti AccommodationCta). `phoneLabel` je natpis
+          iznad broja: na ovoj stranici stoji samo smeštaj, a ne zajednički
+          natpis glavnog broja iz `contact.phones.main`. */
+      cta: { body: string; phoneLabel: string; button: string };
     };
   };
   restaurant: {
@@ -204,8 +209,8 @@ export type Dict = {
     menuList: MenuBoardData;
     drinksList: MenuBoardData;
   };
-  history: { heading: string; body: string };
-  profile: { name: string; bio: string };
+  history: { heading: string; body: string[] };
+  profile: { name: string; bio: string[] };
   featured: { paragraph: string };
   sidebar: {
     restaurantsLabel: string;
@@ -667,6 +672,11 @@ export const dictionaries: Record<LangCode, Dict> = {
         errorInvalid: "Молимо попуните сва обавезна поља.",
         errorRate: "Примили смо више захтева са ове адресе. Сачекајте мало па покушајте поново.",
         errorNetwork: "Тренутно не можемо да примимо захтев. Покушајте поново за који тренутак.",
+        cta: {
+          body: "Слободне термине, цене и све детаље боравка договарамо телефоном.\nПозовите нас и радо ћемо вам\u00A0помоћи.",
+          phoneLabel: "Смештај",
+          button: "Контактирајте нас",
+        },
       },
     },
     restaurant: {
@@ -818,11 +828,18 @@ export const dictionaries: Record<LangCode, Dict> = {
     },
     history: {
       heading: "Добродошли",
-      body: "Смештено у мирном и живописном селу Гривац, у општини Кнић, одмаралиште Милева Концепт представља праву оазу спокоја и уживања. Ово необично место, пажљиво осмишљено и грађено с љубављу према детаљима, идеално је за све који траже бег од свакодневице и додир с природом, без одрицања од комфора.",
+      body: [
+        "У мирном и живописном селу Гривац, надомак Кнића, налази се имање чија прича траје кроз генерације. Ово није само простор за одмор, ово је место са душом, настало на темељима породичног наслеђа, љубави према земљи и поштовања према ономе што је вековима стварано.",
+        "Са жељом да сачувамо дух села, а истовремено пружимо потпуно ново искуство боравка, Милева Концепт спаја природу, уметност, гастрономију и пажљиво осмишљене просторе у јединствену целину.",
+        "Сваки детаљ носи своју причу, од амбијента који подсећа на нека спорија и лепша времена, до савременог комфора који пружа потпуну опуштеност и уживање.",
+      ],
     },
     profile: {
       name: "Милева Концепт",
-      bio: "Милева Концепт обједињује врхунски ресторан, три топло уређене смештајне јединице и отворени базен са сланом водом који купачима дочарава осећај мора у самом срцу Шумадије. Очувана архитектура традиционалног села, ненаметљиво спојена са савременим материјалима, даје му посебну драж. Топлина дрвета и камена, звуци природе и пажљиво бирани детаљи чине сваки боравак изузетним - било да тражите романтичан викенд, породични одмор или простор за приватне прославе и догађаје.",
+      bio: [
+        "У оквиру Милева Концепта налази се ресторан са пажљиво осмишљеном гастрономском понудом, три удобне и топло уређене смештајне јединице, као и отворени базен са сланом водом који пружа осећај мора у самом срцу Шумадије.",
+        "Очувана архитектура традиционалног села, ненаметљиво проткана савременим елементима, ствара јединствен амбијент у којем се природа, уметност и комфор складно преплићу. Топлина дрвета и камена, звуци природе и пажљиво одабрани детаљи чине сваки боравак посебним, било да долазите да се одморите, уживате у гастрономији, проведете време са породицом, организујете приватну прославу или будете део неког уметничког и културног догађаја.",
+      ],
     },
     featured: {
       paragraph:
@@ -900,25 +917,25 @@ export const dictionaries: Record<LangCode, Dict> = {
           {
             name: "Венчања",
             excerpt: "Целодневна прослава под ведрим небом. Церемонија у башти, коктел уз базен и весеље до зоре, за до 200 гостију.",
-            desc: "Венчање на имању је целодневна прослава под ведрим небом: церемонија у башти, коктел уз базен и весеље које траје до касно у ноћ. Отворени простор прима до 200 гостију, а амбијент шумадијских брда сваку фотографију чини посебном. Кетеринг, декорацију и распоред столова прилагођавамо вашој визији, од интимних свадби у кругу најближих до великих слава са музиком уживо. Ту смо да вам детаљи не буду брига, него уживање.",
+            desc: "Било да сањате о венчању под ведрим небом или елегантној прослави у ресторану, наше имање пружа идеалан амбијент за ваш најлепши дан. Церемонија у башти, коктел уз базен и весеље које траје до касно у ноћ стварају незаборавну атмосферу, док отворени простор прима до 200 гостију. Кетеринг, декорацију и распоред столова прилагођавамо вашој визији, од интимних венчања у кругу најближих до великих славља са музиком уживо. Ту смо да сваки детаљ буде пажљиво организован, како бисте ви безбрижно уживали у свом посебном дану.",
             points: ["до 200 гостију", "церемонија на отвореном", "кетеринг и декор", "паркинг за госте"],
           },
           {
             name: "Рођендани и прославе",
             excerpt: "Породична слава, крштење, рођендан или годишњица. Топао амбијент и простор који окупља неколико генерација за истим столом.",
-            desc: "Породична слава, крштење, рођендан или годишњица. Најлепши тренуци заслужују топао амбијент и простор који окупља неколико генерација за истим столом. Мени прилагођавамо посном или мрсном столу и поштујемо обичаје, а лети се славље природно сели напоље, поред базена и баште. Од дечјих рођендана до великих журки за пунолетство и јубилеје, ви бирате повод и госте, а ми се бринемо да све тече глатко и срдачно, онако како приличи породичном слављу.",
+            desc: "Било да организујете крштење, рођендан, годишњицу или неки други посебан повод, наш ресторан, пространа башта и простор поред базена пружају идеалан амбијент за прославе свих величина. Мени прилагођавамо вашим жељама, било да је реч о посном или мрсном столу, уз поштовање традиције и обичаја, док сваки детаљ организације пажљиво планирамо како бисте ви могли да се посветите својим гостима. Од дечјих рођендана и пунолетстава до јубилеја и великих породичних окупљања, стварамо топлу и елегантну атмосферу у којој настају успомене које се памте.",
             points: ["породични мени", "посна и мрсна трпеза", "базен и башта", "музика до касно"],
           },
           {
-            name: "Позоришне представе",
+            name: "Милевина Позорница",
             excerpt: "Лети башта и простор поред базена постају природна позорница. Гостујуће трупе, вечери поезије и представе под звездама.",
-            desc: "Имање волимо да оживимо и представом под ведрим небом. Башта и простор поред базена лети постају природна позорница. Угошћујемо путујуће трупе и локалне ансамбле, приређујемо вечери поезије и мале сцене за публику која вечера под звездама. Уметност нам је једнако важна као и гостопримство, па сцену, тон и светло постављамо тако да представа и амбијент раде заједно.",
+            desc: "Кроз Милевину Позорницу, Милева Концепт постаје место сусрета културе, уметности и незаборавних доживљаја. Током летњих вечери, башта и простор поред базена претварају се у јединствену сцену под ведрим небом, где публика ужива у позоришним представама, вечерима поезије, концертима и другим културним догађајима. Угошћујемо реномиране уметнике, путујуће трупе и локалне ансамбле, стварајући амбијент у којем се природа, врхунска организација и уметност савршено допуњују. Сваки догађај осмишљен је тако да пружи посебно искуство и учини да свака посета Милева Концепту остане у лепом сећању.",
             points: ["сцена на отвореном", "гостујуће трупе", "вечери под звездама", "тон и светло"],
           },
           {
             name: "Изложбе и симпозијуми",
             excerpt: "Слике, фотографије и радове ликовних уметника постављамо у сали, башти и поред базена, уз колоније, разговоре и књижевне вечери.",
-            desc: "Просторе имања радо уступамо и уметности и идејама. Слике, фотографије и радове ликовних уметника постављамо у сали, башти и поред базена, а окупљања посвећена стваралаштву, попут ликовних колонија, књижевних вечери и стручних сусрета, добијају мир какав градске сале немају. Приређујемо отварања, разговоре и мале поставке, а распоред, светло и тон прилагођавамо сваком аутору и теми. Уметност нам је једнако важна као и гостопримство, па гости остају и на ноћењу, да доживљај траје и после званичног дела.",
+            desc: "Милева Концепт је место где се природа, уметност и стваралаштво сусрећу у јединственом амбијенту. У сваком кутку нашег имања налазе се пажљиво одабрана уметничка дела: скулптуре, слике и различити уметнички детаљи који простору дају посебну енергију и карактер. Са великим задовољством отварамо врата уметницима и креативцима, организујући изложбе, уметничке колоније, симпозијуме и различита културна окупљања. Наш простор се прилагођава различитим поставкама и догађајима, док гостопримством и пажњом према детаљима стварамо амбијент у којем уметност добија посебно место.",
             points: ["ликовне поставке", "отварања и разговори", "ликовне колоније", "смештај на лицу места"],
           },
         ],
@@ -1376,6 +1393,11 @@ export const dictionaries: Record<LangCode, Dict> = {
         errorInvalid: "Molimo popunite sva obavezna polja.",
         errorRate: "Primili smo više zahteva sa ove adrese. Sačekajte malo pa pokušajte ponovo.",
         errorNetwork: "Trenutno ne možemo da primimo zahtev. Pokušajte ponovo za koji trenutak.",
+        cta: {
+          body: "Slobodne termine, cene i sve detalje boravka dogovaramo telefonom.\nPozovite nas i rado ćemo vam\u00A0pomoći.",
+          phoneLabel: "Smeštaj",
+          button: "Kontaktirajte nas",
+        },
       },
     },
     restaurant: {
@@ -1422,7 +1444,7 @@ export const dictionaries: Record<LangCode, Dict> = {
           },
           {
             title: "Jesen u Milevi",
-            desc: "Jesen je stigla u Mileva koncept, a s njom i nove boje, mirisi i ukusi našeg menija. Topli sastojci, autentičan ukus i sezonske namirnice koje volimo, baš onako kako jesen zaslužuje.",
+            desc: "Jesen je stigla u Mileva Koncept, a s njom i nove boje, mirisi i ukusi našeg menija. Topli sastojci, autentičan ukus i sezonske namirnice koje volimo, baš onako kako jesen zaslužuje.",
             price: "",
           },
           {
@@ -1527,11 +1549,18 @@ export const dictionaries: Record<LangCode, Dict> = {
     },
     history: {
       heading: "Dobrodošli",
-      body: "Smešteno u mirnom i živopisnom selu Grivac, u opštini Knić, odmaralište Mileva koncept predstavlja pravu oazu spokoja i uživanja. Ovo neobično mesto, pažljivo osmišljeno i građeno s ljubavlju prema detaljima, idealno je za sve koji traže beg od svakodnevice i dodir s prirodom, bez odricanja od komfora.",
+      body: [
+        "U mirnom i živopisnom selu Grivac, nadomak Knića, nalazi se imanje čija priča traje kroz generacije. Ovo nije samo prostor za odmor, ovo je mesto sa dušom, nastalo na temeljima porodičnog nasleđa, ljubavi prema zemlji i poštovanja prema onome što je vekovima stvarano.",
+        "Sa željom da sačuvamo duh sela, a istovremeno pružimo potpuno novo iskustvo boravka, Mileva Koncept spaja prirodu, umetnost, gastronomiju i pažljivo osmišljene prostore u jedinstvenu celinu.",
+        "Svaki detalj nosi svoju priču, od ambijenta koji podseća na neka sporija i lepša vremena, do savremenog komfora koji pruža potpunu opuštenost i uživanje.",
+      ],
     },
     profile: {
-      name: "Mileva koncept",
-      bio: "Mileva koncept objedinjuje vrhunski restoran, tri toplo uređene smeštajne jedinice i otvoreni bazen sa slanom vodom koji kupačima dočarava osećaj mora u samom srcu Šumadije. Očuvana arhitektura tradicionalnog sela, nenametljivo spojena sa savremenim materijalima, daje mu posebnu draž. Toplina drveta i kamena, zvuci prirode i pažljivo birani detalji čine svaki boravak izuzetnim - bilo da tražite romantičan vikend, porodični odmor ili prostor za privatne proslave i događaje.",
+      name: "Mileva Koncept",
+      bio: [
+        "U okviru Mileva Koncepta nalazi se restoran sa pažljivo osmišljenom gastronomskom ponudom, tri udobne i toplo uređene smeštajne jedinice, kao i otvoreni bazen sa slanom vodom koji pruža osećaj mora u samom srcu Šumadije.",
+        "Očuvana arhitektura tradicionalnog sela, nenametljivo protkana savremenim elementima, stvara jedinstven ambijent u kojem se priroda, umetnost i komfor skladno prepliću. Toplina drveta i kamena, zvuci prirode i pažljivo odabrani detalji čine svaki boravak posebnim, bilo da dolazite da se odmorite, uživate u gastronomiji, provedete vreme sa porodicom, organizujete privatnu proslavu ili budete deo nekog umetničkog i kulturnog događaja.",
+      ],
     },
     featured: {
       paragraph:
@@ -1609,25 +1638,25 @@ export const dictionaries: Record<LangCode, Dict> = {
           {
             name: "Venčanja",
             excerpt: "Celodnevna proslava pod vedrim nebom. Ceremonija u bašti, koktel uz bazen i veselje do zore, za do 200 gostiju.",
-            desc: "Venčanje na imanju je celodnevna proslava pod vedrim nebom: ceremonija u bašti, koktel uz bazen i veselje koje traje do kasno u noć. Otvoreni prostor prima do 200 gostiju, a ambijent šumadijskih brda svaku fotografiju čini posebnom. Ketering, dekoraciju i raspored stolova prilagođavamo vašoj viziji, od intimnih svadbi u krugu najbližih do velikih slava sa muzikom uživo. Tu smo da vam detalji ne budu briga, nego uživanje.",
+            desc: "Bilo da sanjate o venčanju pod vedrim nebom ili elegantnoj proslavi u restoranu, naše imanje pruža idealan ambijent za vaš najlepši dan. Ceremonija u bašti, koktel uz bazen i veselje koje traje do kasno u noć stvaraju nezaboravnu atmosferu, dok otvoreni prostor prima do 200 gostiju. Ketering, dekoraciju i raspored stolova prilagođavamo vašoj viziji, od intimnih venčanja u krugu najbližih do velikih slavlja sa muzikom uživo. Tu smo da svaki detalj bude pažljivo organizovan, kako biste vi bezbrižno uživali u svom posebnom danu.",
             points: ["do 200 gostiju", "ceremonija na otvorenom", "ketering i dekor", "parking za goste"],
           },
           {
             name: "Rođendani i proslave",
             excerpt: "Porodična slava, krštenje, rođendan ili godišnjica. Topao ambijent i prostor koji okuplja nekoliko generacija za istim stolom.",
-            desc: "Porodična slava, krštenje, rođendan ili godišnjica. Najlepši trenuci zaslužuju topao ambijent i prostor koji okuplja nekoliko generacija za istim stolom. Meni prilagođavamo posnom ili mrsnom stolu i poštujemo običaje, a leti se slavlje prirodno seli napolje, pored bazena i bašte. Od dečjih rođendana do velikih žurki za punoletstvo i jubileje, vi birate povod i goste, a mi se brinemo da sve teče glatko i srdačno, onako kako priliči porodičnom slavlju.",
+            desc: "Bilo da organizujete krštenje, rođendan, godišnjicu ili neki drugi poseban povod, naš restoran, prostrana bašta i prostor pored bazena pružaju idealan ambijent za proslave svih veličina. Meni prilagođavamo vašim željama, bilo da je reč o posnom ili mrsnom stolu, uz poštovanje tradicije i običaja, dok svaki detalj organizacije pažljivo planiramo kako biste vi mogli da se posvetite svojim gostima. Od dečjih rođendana i punoletstava do jubileja i velikih porodičnih okupljanja, stvaramo toplu i elegantnu atmosferu u kojoj nastaju uspomene koje se pamte.",
             points: ["porodični meni", "posna i mrsna trpeza", "bazen i bašta", "muzika do kasno"],
           },
           {
-            name: "Pozorišne predstave",
+            name: "Milevina Pozornica",
             excerpt: "Leti bašta i prostor pored bazena postaju prirodna pozornica. Gostujuće trupe, večeri poezije i predstave pod zvezdama.",
-            desc: "Imanje volimo da oživimo i predstavom pod vedrim nebom. Bašta i prostor pored bazena leti postaju prirodna pozornica. Ugošćujemo putujuće trupe i lokalne ansamble, priređujemo večeri poezije i male scene za publiku koja večera pod zvezdama. Umetnost nam je jednako važna kao i gostoprimstvo, pa scenu, ton i svetlo postavljamo tako da predstava i ambijent rade zajedno.",
+            desc: "Kroz Milevinu Pozornicu, Mileva Koncept postaje mesto susreta kulture, umetnosti i nezaboravnih doživljaja. Tokom letnjih večeri, bašta i prostor pored bazena pretvaraju se u jedinstvenu scenu pod vedrim nebom, gde publika uživa u pozorišnim predstavama, večerima poezije, koncertima i drugim kulturnim događajima. Ugošćujemo renomirane umetnike, putujuće trupe i lokalne ansamble, stvarajući ambijent u kojem se priroda, vrhunska organizacija i umetnost savršeno dopunjuju. Svaki događaj osmišljen je tako da pruži posebno iskustvo i učini da svaka poseta Mileva Konceptu ostane u lepom sećanju.",
             points: ["scena na otvorenom", "gostujuće trupe", "večeri pod zvezdama", "ton i svetlo"],
           },
           {
             name: "Izložbe i simpozijumi",
             excerpt: "Slike, fotografije i radove likovnih umetnika postavljamo u sali, bašti i pored bazena, uz kolonije, razgovore i književne večeri.",
-            desc: "Prostore imanja rado ustupamo i umetnosti i idejama. Slike, fotografije i radove likovnih umetnika postavljamo u sali, bašti i pored bazena, a okupljanja posvećena stvaralaštvu, poput likovnih kolonija, književnih večeri i stručnih susreta, dobijaju mir kakav gradske sale nemaju. Priređujemo otvaranja, razgovore i male postavke, a raspored, svetlo i ton prilagođavamo svakom autoru i temi. Umetnost nam je jednako važna kao i gostoprimstvo, pa gosti ostaju i na noćenju, da doživljaj traje i posle zvaničnog dela.",
+            desc: "Mileva Koncept je mesto gde se priroda, umetnost i stvaralaštvo susreću u jedinstvenom ambijentu. U svakom kutku našeg imanja nalaze se pažljivo odabrana umetnička dela: skulpture, slike i različiti umetnički detalji koji prostoru daju posebnu energiju i karakter. Sa velikim zadovoljstvom otvaramo vrata umetnicima i kreativcima, organizujući izložbe, umetničke kolonije, simpozijume i različita kulturna okupljanja. Naš prostor se prilagođava različitim postavkama i događajima, dok gostoprimstvom i pažnjom prema detaljima stvaramo ambijent u kojem umetnost dobija posebno mesto.",
             points: ["likovne postavke", "otvaranja i razgovori", "likovne kolonije", "smeštaj na licu mesta"],
           },
         ],
@@ -1742,7 +1771,7 @@ export const dictionaries: Record<LangCode, Dict> = {
         { label: "Politika privatnosti", href: "/politika-privatnosti" },
         { label: "Politika kolačića", href: "/politika-kolacica" },
       ],
-      copyright: "© 2026 Mileva koncept",
+      copyright: "© 2026 Mileva Koncept",
       explore: "Navigacija",
       tagline: "Gde tradicija susreće luksuz, a gostoprimstvo postaje umetnost.",
     },
@@ -2084,6 +2113,11 @@ export const dictionaries: Record<LangCode, Dict> = {
         errorInvalid: "Please fill in all required fields.",
         errorRate: "We've had several requests from this address. Please wait a moment and try again.",
         errorNetwork: "We can't take the request right now. Please try again in a moment.",
+        cta: {
+          body: "Available dates, rates and every detail of your stay are arranged by phone.\nGive us a call and we'll gladly\u00A0help.",
+          phoneLabel: "Accommodation",
+          button: "Contact us",
+        },
       },
     },
     restaurant: {
@@ -2235,11 +2269,18 @@ export const dictionaries: Record<LangCode, Dict> = {
     },
     history: {
       heading: "Welcome",
-      body: "Nestled in the peaceful and picturesque village of Grivac, in the municipality of Knić, the Mileva Koncept resort is a true oasis of calm and enjoyment. This singular place, thoughtfully designed and built with a love for detail, is ideal for anyone seeking an escape from everyday life and a touch of nature - without giving up comfort.",
+      body: [
+        "In the peaceful and picturesque village of Grivac, near Knić, lies an estate whose story has run through generations. This is not merely a place to stay, it is a place with a soul, built on the foundations of family heritage, a love of the land and respect for everything created here over centuries.",
+        "Wishing to preserve the spirit of the village while offering an entirely new experience of staying here, Mileva Koncept brings nature, art, gastronomy and thoughtfully designed spaces together into a single whole.",
+        "Every detail carries its own story, from surroundings that recall slower, more beautiful times, to the modern comfort that allows for complete ease and enjoyment.",
+      ],
     },
     profile: {
       name: "Mileva Koncept",
-      bio: "Mileva Koncept brings together a fine restaurant, three warmly furnished accommodation units, and an outdoor pool with salt-enriched water that gives bathers the feeling of the seaside in the very heart of Šumadija. The preserved architecture of a traditional village, subtly blended with modern materials, lends it a special charm. The warmth of wood and stone, the sounds of nature, and carefully chosen details make every stay exceptional - whether you seek a romantic weekend, a family holiday, or a space for private celebrations and events.",
+      bio: [
+        "Mileva Koncept is home to a restaurant with a carefully considered gastronomic offering, three comfortable and warmly furnished accommodation units, and an outdoor pool with salt water that gives the feeling of the seaside in the very heart of Šumadija.",
+        "The preserved architecture of a traditional village, subtly interwoven with contemporary elements, creates a singular setting in which nature, art and comfort come together in harmony. The warmth of wood and stone, the sounds of nature and carefully chosen details make every stay special, whether you come to rest, to enjoy the food, to spend time with family, to host a private celebration or to be part of an artistic and cultural event.",
+      ],
     },
     featured: {
       paragraph:
@@ -2317,25 +2358,25 @@ export const dictionaries: Record<LangCode, Dict> = {
           {
             name: "Weddings",
             excerpt: "A full-day celebration under the open sky. A garden ceremony, poolside cocktails and festivities until dawn, for up to 200 guests.",
-            desc: "A wedding on the estate is a full-day celebration under the open sky: a ceremony in the garden, cocktails by the pool and festivities that last late into the night. The open grounds hold up to 200 guests, and the setting of the Šumadija hills makes every photograph special. We tailor the catering, decoration and seating to your vision, from intimate weddings among your nearest to grand celebrations with live music. We are here so the details are a pleasure, not a worry.",
+            desc: "Whether you dream of a wedding under the open sky or an elegant celebration inside the restaurant, our estate offers the ideal setting for your happiest day. A ceremony in the garden, cocktails by the pool and festivities that last late into the night create an unforgettable atmosphere, while the open grounds hold up to 200 guests. We tailor the catering, decoration and seating to your vision, from intimate weddings among your nearest to grand celebrations with live music. We are here to see that every detail is carefully arranged, so that you can enjoy your special day without a care.",
             points: ["up to 200 guests", "open-air ceremony", "catering & decor", "guest parking"],
           },
           {
             name: "Birthdays & celebrations",
             excerpt: "A family feast, a christening, a birthday or an anniversary. A warm setting with room to gather several generations at one table.",
-            desc: "A family feast, a christening, a birthday or an anniversary. The moments that matter deserve a warm setting and room enough to gather several generations at one table. We tailor the menu to a fasting or a festive table and honour the customs, and in summer the celebration moves naturally outside, by the pool and garden. From children's birthdays to big coming-of-age parties and milestones, you choose the occasion and the guests, and we keep everything running smoothly and warmly, just as a family celebration should feel.",
+            desc: "Whether you are planning a christening, a birthday, an anniversary or another special occasion, our restaurant, the spacious garden and the poolside offer the ideal setting for celebrations of every size. We tailor the menu to your wishes, be it a fasting or a festive table, honouring tradition and custom, and we plan every detail of the organisation carefully so that you can devote yourself to your guests. From children's birthdays and coming-of-age parties to milestones and large family gatherings, we create a warm and elegant atmosphere in which lasting memories are made.",
             points: ["family menu", "fasting & festive table", "pool & garden", "music until late"],
           },
           {
-            name: "Theatre performances",
+            name: "Mileva's Stage",
             excerpt: "In summer the garden and poolside become a natural stage. Guest troupes, poetry evenings and performances under the stars.",
-            desc: "We love to bring the estate to life with performances under the open sky. In summer the garden and poolside become a natural stage. We host travelling troupes and local ensembles, stage poetry evenings and small scenes for an audience dining under the stars. Art matters to us as much as hospitality, so we set the stage, sound and light so that the performance and the setting work together.",
+            desc: "Through Mileva's Stage, Mileva Koncept becomes a meeting place for culture, art and unforgettable experiences. On summer evenings the garden and the poolside turn into a stage of their own under the open sky, where the audience enjoys theatre performances, poetry evenings, concerts and other cultural events. We host renowned artists, travelling troupes and local ensembles, creating a setting in which nature, careful organisation and art complement one another perfectly. Every event is conceived to offer a special experience and to make each visit to Mileva Koncept one to remember.",
             points: ["open-air stage", "guest troupes", "evenings under the stars", "sound & light"],
           },
           {
             name: "Exhibitions & symposia",
             excerpt: "Paintings, photographs and artworks fill the hall, garden and poolside, alongside colonies, talks and literary evenings.",
-            desc: "We gladly give the estate's spaces over to art and to ideas. Paintings, photographs and works by visual artists are shown in the hall, the garden and by the pool, while gatherings devoted to creativity, such as art colonies, literary evenings and expert meetings, find a calm that city halls lack. We host openings, talks and small displays, tailoring the layout, light and tone to each artist and theme. Art matters to us as much as hospitality, so guests stay the night too, letting the experience last beyond the formal programme.",
+            desc: "Mileva Koncept is a place where nature, art and creativity meet in a setting of their own. In every corner of the estate you will find carefully chosen works of art: sculptures, paintings and artistic details of every kind that give the space its particular energy and character. It is a great pleasure for us to open our doors to artists and creatives, hosting exhibitions, art colonies, symposia and cultural gatherings of all sorts. Our space adapts to different displays and events, while our hospitality and attention to detail create a setting in which art is given a place of its own.",
             points: ["visual displays", "openings & talks", "art colonies", "on-site lodging"],
           },
         ],

@@ -5,11 +5,11 @@ import Image from "next/image";
  * home Restaurants section (grayscale image that brightens on hover, the Mileva
  * mark centred over each). Alternates pools / celebrations.
  *
- * IMAGES are the real filenames the client will provide, in the intended order
- * (bazeni1, proslave1, bazeni2, proslave2). Placeholder copies live in /public
- * for now - dropping the final shots in with the same names needs no code change.
+ * IMAGES idu naizmenično bazen / proslava. Drugo polje je prava fotografija sa
+ * imanja (`s-hrana`); ostala tri su i dalje privremene, pa ih zamena fajlom
+ * istog imena u /public menja bez diranja koda.
  */
-const IMAGES = ["/smestaj/bazeni1.webp", "/smestaj/proslave1.webp", "/smestaj/bazeni2.webp", "/smestaj/proslave2.webp"];
+const IMAGES = ["/smestaj/bazeni1.webp", "/smestaj/s-hrana.webp", "/smestaj/proslave2.webp", "/smestaj/bazeni2.webp"];
 
 export default function LeisureGallery() {
   return (

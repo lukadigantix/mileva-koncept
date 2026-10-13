@@ -93,7 +93,7 @@ export default function Header({ open, overDark, onToggle }: HeaderProps) {
         <Link href="/" className="absolute left-1/2 -translate-x-1/2">
           <Image
             src="/logo/mileva-logo-text.png"
-            alt="Mileva koncept"
+            alt="Mileva Koncept"
             width={3266}
             height={701}
             priority

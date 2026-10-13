@@ -119,8 +119,8 @@ export const SEO: Record<LangCode, SeoDict> = {
   },
 
   "sr-latn": {
-    brand: "Mileva koncept",
-    siteTitle: "Restoran i smeštaj u Šumadiji - Mileva koncept, Grivac",
+    brand: "Mileva Koncept",
+    siteTitle: "Restoran i smeštaj u Šumadiji - Mileva Koncept, Grivac",
     siteDescription:
       "Restoran sa domaćom kuhinjom, apartman sa bazenom od slane vode i prostor za proslave u Grivcu kod Knića - nadomak Gružanskog jezera, 30 minuta od Kragujevca.",
     keywords: [
@@ -138,11 +138,11 @@ export const SEO: Record<LangCode, SeoDict> = {
       "vikend u Šumadiji",
       "seoski turizam Knić",
       "Grivac",
-      "Mileva koncept",
+      "Mileva Koncept",
     ],
     pages: {
       home: {
-        title: "Restoran i smeštaj u Šumadiji - Mileva koncept, Grivac",
+        title: "Restoran i smeštaj u Šumadiji - Mileva Koncept, Grivac",
         description:
           "Restoran sa domaćom kuhinjom, apartman sa bazenom od slane vode i prostor za proslave u Grivcu kod Knića - nadomak Gružanskog jezera, 30 minuta od Kragujevca.",
       },
@@ -154,7 +154,7 @@ export const SEO: Record<LangCode, SeoDict> = {
       restoran: {
         title: "Restoran kod Gružanskog jezera",
         description:
-          "Restoran Mileva koncept u Grivcu kod Knića - domaća šumadijska kuhinja sa vatre, lokalne namirnice i bašta sa pogledom. Dvadesetak minuta od Kragujevca.",
+          "Restoran Mileva Koncept u Grivcu kod Knića - domaća šumadijska kuhinja sa vatre, lokalne namirnice i bašta sa pogledom. Dvadesetak minuta od Kragujevca.",
       },
       bazen: {
         title: "Bazen sa slanom vodom u Šumadiji",
@@ -164,7 +164,7 @@ export const SEO: Record<LangCode, SeoDict> = {
       dogadjaji: {
         title: "Svadbe i proslave u Šumadiji",
         description:
-          "Svadbe, krštenja, slave i rođendani u Mileva konceptu kod Knića - bašta, terasa, bazen i domaća kuhinja. Prostor za proslave nadomak Kragujevca.",
+          "Svadbe, krštenja, slave i rođendani u Mileva Konceptu kod Knića - bašta, terasa, bazen i domaća kuhinja. Prostor za proslave nadomak Kragujevca.",
       },
       kvadovi: {
         title: "Rentiranje kvadova u Šumadiji",
@@ -179,12 +179,12 @@ export const SEO: Record<LangCode, SeoDict> = {
       blog: {
         title: "Blog o Šumadiji i domaćoj kuhinji",
         description:
-          "Priče sa imanja Mileva koncept u Grivcu - domaća kuhinja, priroda Šumadije, saveti za izlete oko Knića, Gruže i Gružanskog jezera.",
+          "Priče sa imanja Mileva Koncept u Grivcu - domaća kuhinja, priroda Šumadije, saveti za izlete oko Knića, Gruže i Gružanskog jezera.",
       },
       kontakt: {
         title: "Kontakt i rezervacije - Grivac, Knić",
         description:
-          "Kontakt Mileva koncepta u Grivcu kod Knića - adresa, telefon, imejl i radno vreme. Pišite nam za rezervaciju stola, smeštaja ili proslave u srcu Šumadije.",
+          "Kontakt Mileva Koncepta u Grivcu kod Knića - adresa, telefon, imejl i radno vreme. Pišite nam za rezervaciju stola, smeštaja ili proslave u srcu Šumadije.",
       },
       privatnost: {
         title: "Politika privatnosti",

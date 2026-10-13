@@ -58,7 +58,7 @@ export default function AccommodationIntro() {
             parallax
           >
             <Image
-              src="/smestaj/s2.webp"
+              src="/smestaj/smestaj-spolja.webp"
               alt="Smeštaj Mileva"
               fill
               sizes="50vw"
